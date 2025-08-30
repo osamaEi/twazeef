@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نشر الوظائف | منصة توافق</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.cdnfonts.com/css/neo-sans-arabic" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+    :root {
+        /* الألوان الأساسية */
+        --primary-green: #003c6d;
+        --primary-light: #005085;
+        --primary-lighter: #e8eff5;
+        --primary-lightest: #f4f9fa;
+        --primary-dark: #003655;
+        --primary-darker: #003858;
+        --primary-darkest: #00182b;
+
+        /* تدرجات رمادية محايدة */
+        --grey-900: #1a1a1a;
+        --grey-800: #2c2c2c;
+        --grey-700: #424242;
+        --grey-500: #757575;
+        --grey-300: #e0e0e0;
+        --grey-100: #f5f5f5;
+        --grey-50: #fafafa;
+        --pure-white: #FFFFFF;
+
+        /* التدرجات */
+        --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+        --gradient-light: linear-gradient(135deg, var(--primary-light) 0%, #0067a3 100%);
+        --gradient-dark: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+        
+        --shadow-sm: 0 2px 8px rgba(0, 69, 109, 0.08);
+        --shadow-md: 0 6px 20px rgba(0, 60, 109, 0.12);
+        --shadow-lg: 0 12px 40px rgba(0, 65, 109, 0.15);
+        --shadow-xl: 0 25px 65px rgba(0, 74, 109, 0.18);
+
+        --font-main: 'Neo Sans Arabic', sans-serif;
+
+        /* المتغيرات التقنية */
+        --container-width: 1400px;
+        --border-radius-sm: 12px;
+        --border-radius-md: 20px;
+        --border-radius-lg: 28px;
+        --nav-height: 90px;
+        --top-bar-height: 45px;
+        
+        /* الانتقالات */
+        --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --transition-slow: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* التهيئات الأساسية */
+    *, *::before, *::after { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: border-box; 
+    }
+
+    html { 
+        scroll-behavior: smooth; 
+        overflow-x: hidden; 
+        font-size: 16px;
+    }
+
+    body { 
+        font-family: var(--font-main); 
+        background-color: var(--pure-white); 
+        color: var(--grey-700); 
+        line-height: 1.7; 
+        font-size: 16px; 
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: "kern" 1, "liga" 1;
+    }
+
+    ::selection { 
+        background-color: var(--primary-green); 
+        color: var(--pure-white); 
+    }
+
+    ::-webkit-scrollbar { 
+        width: 6px; 
+        background: var(--grey-100); 
+    }
+
+    ::-webkit-scrollbar-thumb { 
+        background: var(--gradient-primary); 
+        border-radius: 6px;
+        border: 2px solid var(--grey-100);
+    }
+
+    ::-webkit-scrollbar-thumb:hover { 
+        background: var(--primary-dark); 
+    }
+
+    a { 
+        text-decoration: none; 
+        color: var(--primary-green); 
+        transition: var(--transition-fast); 
+    }
+
+    a:hover { 
+        color: var(--primary-dark); 
+    }
+
+    h1, h2, h3, h4, h5, h6 { 
+        font-family: var(--font-main);
+        font-weight: 500; 
+        color: var(--primary-darker); 
+        line-height: 1.3; 
+        margin-bottom: 1rem;
+        font-feature-settings: "kern" 1;
+    }
+
+    .container { 
+        max-width: var(--container-width); 
+        margin: 0 auto; 
+        padding: 0 1.5rem;
+        position: relative;
+        width: 100%;
+    }
+
+    /* الشريط العلوي */
+    .gov-top-bar {
+        background: rgb(245, 245, 245);
+        backdrop-filter: blur(20px);
+        font-size: 13px;
+        padding: 8px 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1001;
+        font-weight: 400;
+    }
+
+    .gov-top-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .gov-left-info {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .gov-official-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--grey-700);
+    }
+
+    .gov-flag-icon {
+        width: 20px;
+        height: 15px;
+        border-radius: 2px;
+        border: 1px solid var(--grey-300);
+    }
+
+    .gov-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--grey-500);
+    }
+
+    .gov-date i {
+        color: #000000;
+        font-size: 16px;
+    }
+
+    .gov-date-mobile {
+        display: none;
+    }
+
+    .beta-badge {
+        background: #dfdfdf;
+        color: #000000;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* شريط التنقل */
+    #navbar {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 1.2rem 0;
+        background: rgb(255, 255, 255);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 109, 70, 0.1);
+        transition: var(--transition-medium);
+    }
+
+    #navbar.scrolled {
+        padding: 1rem 0;
+        background: rgba(255, 255, 255, 0.99);
+        box-shadow: var(--shadow-md);
+    }
+
+    .nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--primary-darker);
+        text-decoration: none;
+    }
+
+    .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        list-style: none;
+    }
+
+    .nav-link {
+        color: var(--grey-700);
+        font-weight: 500;
+        font-size: 1.1rem;
+        padding: 0.75rem 0;
+        position: relative;
+        text-decoration: none;
+        transition: var(--transition-fast);
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+        transition: var(--transition-fast);
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+        width: 100%;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        color: var(--primary-green);
+        transform: translateY(-2px);
+    }
+
+    .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: var(--primary-green);
+        cursor: pointer;
+        z-index: 1002;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: var(--transition-fast);
+    }
+
+    /* المحتوى الرئيسي */
+    .main-content {
+        padding-top: 180px;
+        min-height: 100vh;
+        background: var(--grey-50);
+    }
+
+    /* رأس الصفحة */
+    .service-header {
+        background: var(--pure-white);
+        padding: 3rem 0;
+        border-bottom: 1px solid var(--grey-300);
+    }
+
+    .service-hero {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .service-info {
+        max-width: 800px;
+    }
+
+    .service-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--primary-lighter);
+        color: var(--primary-green);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .service-title {
+        font-size: 2.5rem;
+        color: var(--primary-darker);
+        margin-bottom: 1rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .service-description {
+        font-size: 1.2rem;
+        color: var(--grey-700);
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .service-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e8f5e8;
+        color: #2e7d2e;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 2px solid #c8e6c8;
+    }
+
+    .service-icon {
+        width: 120px;
+        height: 120px;
+        background: var(--gradient-primary);
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--pure-white);
+        font-size: 3rem;
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* منطقة المحتوى */
+    .content-area {
+        padding: 3rem 0;
+    }
+
+    .content-layout {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 3rem;
+        align-items: start;
+    }
+
+    /* التبويبات */
+    .tabs-container {
+        background: var(--pure-white);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--grey-300);
+    }
+
+    .tabs-nav {
+        display: flex;
+        background: var(--grey-50);
+        padding: 0.5rem;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--grey-300);
+    }
+
+    .tab-btn {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        background: transparent;
+        border: none;
+        font-family: var(--font-main);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--grey-700);
+        cursor: pointer;
+        transition: var(--transition-fast);
+        position: relative;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .tab-btn:hover {
+        background: var(--primary-lightest);
+        color: var(--primary-green);
+        transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+        background: var(--pure-white);
+        color: var(--primary-green);
+        box-shadow: var(--shadow-sm);
+        transform: translateY(-2px);
+    }
+
+    .tab-content {
+        display: none;
+        padding: 2.5rem;
+        min-height: 400px;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-content h3 {
+        font-size: 1.4rem;
+        color: var(--primary-darker);
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        border-bottom: 2px solid var(--primary-green);
+        padding-bottom: 0.5rem;
+    }
+
+    .steps-list {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .step-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: var(--grey-50);
+        border-radius: var(--border-radius-md);
+        border-right: 4px solid var(--primary-green);
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--gradient-primary);
+        color: var(--pure-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .step-content h4 {
+        font-size: 1.1rem;
+        color: var(--primary-darker);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .step-content p {
+        color: var(--grey-700);
+        line-height: 1.6;
+    }
+
+    .requirements-list, .documents-list {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .requirement-item, .document-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        background: var(--grey-50);
+        border-radius: var(--border-radius-sm);
+        border-right: 3px solid var(--primary-green);
+        transition: var(--transition-fast);
+    }
+
+    .requirement-item:hover, .document-item:hover {
+        background: var(--primary-lightest);
+        transform: translateX(-3px);
+    }
+
+    .requirement-number, .document-number {
+        min-width: 24px;
+        height: 24px;
+        background: var(--primary-green);
+        color: var(--pure-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .requirement-text, .document-text {
+        font-weight: 500;
+        color: var(--grey-700);
+        line-height: 1.6;
+    }
+
+    .info-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: var(--grey-700);
+    }
+
+    .info-label i {
+        color: var(--primary-green);
+        font-size: 0.9rem;
+        width: 16px;
+    }
+
+    /* الشريط الجانبي */
+    .sidebar {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .sidebar-card {
+        background: var(--pure-white);
+        border-radius: var(--border-radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--grey-300);
+    }
+
+    .sidebar-card h3 {
+        font-size: 1.2rem;
+        color: var(--primary-darker);
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .sidebar-card h3 i {
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--grey-100);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: var(--grey-700);
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: var(--primary-green);
+    }
+
+    .contact-info {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--grey-50);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-lighter);
+        color: var(--primary-green);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .contact-text {
+        font-size: 0.95rem;
+        color: var(--grey-700);
+    }
+
+    /* أزرار */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1.25rem 2.5rem;
+        border-radius: 50px;
+        font-family: var(--font-main);
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: var(--transition-medium);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        min-width: 200px;
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: var(--pure-white);
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+        background: var(--gradient-dark);
+    }
+
+    .btn-secondary {
+        background: var(--pure-white);
+        color: var(--primary-green);
+        border-color: var(--primary-green);
+        width: 100%;
+    }
+
+    .btn-secondary:hover {
+        background: var(--primary-green);
+        color: var(--pure-white);
+        transform: translateY(-2px);
+    }
+
+    /* الفوتر */
+    footer {
+        background: var(--primary-darkest);
+        color: var(--pure-white);
+        padding: 80px 0 0;
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .footer-section h3 {
+        color: var(--pure-white);
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+    }
+
+    .footer-links {
+        list-style: none;
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .footer-links a {
+        color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: var(--transition-fast);
+        text-decoration: none;
+        font-size: 1rem;
+    }
+
+    .footer-links a:hover {
+        color: var(--pure-white);
+        transform: translateX(-5px);
+    }
+
+    .footer-bottom {
+        border-top: 2px solid var(--primary-green);
+        padding: 2rem 0;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .footer-bottom-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 0 40px;
+    }
+
+    .footer-bottom-content div:first-child {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+    }
+
+    .footer-bottom-links {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .footer-bottom-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: var(--transition-fast);
+    }
+
+    .footer-bottom-links a:hover {
+        color: var(--pure-white);
+    }
+
+    /* الاستجابة */
+    @media (max-width: 1200px) {
+        .content-layout {
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .gov-top-content {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .content-layout {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .service-hero {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 2rem;
+        }
+
+        .tabs-nav {
+            flex-direction: column;
+        }
+
+        .tab-btn {
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .gov-top-bar {
+            position: relative;
+        }
+
+        #navbar {
+            top: 0;
+        }
+
+        .main-content {
+            padding-top: 120px;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 350px;
+            height: 100vh;
+            background: var(--pure-white);
+            flex-direction: column;
+            padding: 6rem 2rem 2rem;
+            align-items: flex-start;
+            gap: 2rem;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            transition: right 0.4s ease-in-out;
+            z-index: 999;
+        }
+
+        .nav-menu.active {
+            right: 0;
+        }
+
+        .service-title {
+            font-size: 2rem;
+        }
+
+        .service-hero {
+            gap: 1.5rem;
+        }
+
+        .service-icon {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .content-area {
+            padding: 2rem 0;
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .sidebar-card {
+            padding: 1.5rem;
+        }
+
+        .gov-left-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .gov-official-badge {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .gov-left-info > .gov-date {
+            display: none !important;
+        }
+
+        .gov-top-content > .beta-badge {
+            display: none !important;
+        }
+
+        .gov-date-mobile {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .gov-date-mobile .gov-date {
+            display: flex !important;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--grey-500);
+        }
+
+        .gov-date-mobile .beta-badge {
+            display: block !important;
+            margin: 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 0 1rem;
+        }
+
+        .service-hero {
+            gap: 1rem;
+        }
+
+        .tab-content {
+            padding: 1rem;
+        }
+
+        .sidebar-card {
+            padding: 1rem;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <!-- الشريط العلوي -->
+    <div class="gov-top-bar">
+        <div class="gov-top-content">
+            <div class="gov-left-info">
+                <div class="gov-official-badge">
+                    <div class="gov-flag">
+                        <img width="32" height="23" decoding="async" data-nimg="1" style="margin-right: -10px;margin-top: 5px;" src="https://my.gov.sa/_next/static/media/icon_saudi.b4b403e4.svg">
+                    </div>
+                    <span>موقع رسمي لمنصة توافق للبحث عن الوظائف في المملكة العربية والسعودية</span>
+                </div>
+                <div class="gov-date">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>السبت، 15 صفر 1447 هـ</span>
+                </div>
+                <div class="gov-date-mobile">
+                    <div class="gov-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>السبت، 15 صفر 1447 هـ</span>
+                    </div>
+                    <div class="beta-badge">
+                        نسخة تجريبية
+                    </div>
+                </div>
+            </div>
+            <div class="beta-badge">
+                نسخة تجريبية
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط التنقل -->
+    <header id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="nav-logo">
+                <img src="elaf.png" width="300">
+            </a>
+            
+            <nav class="nav-menu" id="navMenu">
+                <a href="#" class="nav-link">الرئيسية</a>
+                <a href="#" class="nav-link active">الخدمات</a>
+                <a href="#" class="nav-link">الفرص الوظيفية</a>
+                <a href="#" class="nav-link">النماذج الملهمة</a>
+                <a href="#" class="nav-link">المؤشرات</a>
+            </nav>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="القائمة">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <!-- رأس الصفحة -->
+        <section class="service-header">
+            <div class="container">
+                <div class="service-hero">
+                    <div class="service-info">
+                        <div class="service-badge">
+                            <i class="fas fa-briefcase"></i>
+                            <span>خدمة إلكترونية</span>
+                        </div>
+                        
+                        <h1 class="service-title">نشر الوظائف والإعلانات</h1>
+                        
+                        <p class="service-description">
+                            خدمة إلكترونية تمكن أصحاب العمل والشركات من نشر إعلانات التوظيف والوصول إلى قاعدة بيانات المرشحين المؤهلين لإيجاد الكفاءات المناسبة لمتطلبات العمل بكفاءة وسرعة.
+                        </p>
+                        
+                        <div class="service-status">
+                            <i class="fas fa-check-circle"></i>
+                            <span>الخدمة متاحة</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- منطقة المحتوى -->
+        <section class="content-area">
+            <div class="container">
+                <div class="content-layout">
+                    <!-- التبويبات الرئيسية -->
+                    <div class="tabs-container">
+                        <div class="tabs-nav">
+                            <button class="tab-btn active" data-tab="steps">الخطوات</button>
+                            <button class="tab-btn" data-tab="requirements">المتطلبات</button>
+                            <button class="tab-btn" data-tab="documents">المستندات المطلوبة</button>
+                        </div>
+
+                        <!-- محتوى الخطوات -->
+                        <div class="tab-content active" id="steps">
+                            <h3>خطوات نشر إعلان وظيفي جديد</h3>
+                            <div class="steps-list">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>إنشاء حساب الشركة</h4>
+                                        <p>سجل حساب جديد للشركة أو المؤسسة باستخدام السجل التجاري والبيانات الرسمية للجهة.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>توثيق الحساب</h4>
+                                        <p>أكمل عملية توثيق الشركة بتقديم المستندات المطلوبة والحصول على موافقة الإدارة.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>إنشاء إعلان الوظيفة</h4>
+                                        <p>اختر "نشر وظيفة جديدة" واملأ تفاصيل المنصب والمتطلبات والمؤهلات المطلوبة بدقة.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h4>تحديد شروط التوظيف</h4>
+                                        <p>حدد الراتب ومزايا العمل ومكان العمل ونوع الدوام ومتطلبات التقديم.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">5</div>
+                                    <div class="step-content">
+                                        <h4>مراجعة ونشر الإعلان</h4>
+                                        <p>راجع جميع البيانات والتأكد من صحتها ثم انشر الإعلان ليصبح مرئياً للباحثين عن العمل.</p>
+                                    </div>
+                                </div>
+
+                                <div class="step-item">
+                                    <div class="step-number">6</div>
+                                    <div class="step-content">
+                                        <h4>إدارة الطلبات</h4>
+                                        <p>استقبل طلبات المتقدمين وقم بإدارة عملية التقييم والتواصل مع المرشحين.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- محتوى المتطلبات -->
+                        <div class="tab-content" id="requirements">
+                            <h3>المتطلبات الأساسية للخدمة</h3>
+                            <div class="requirements-list">
+                                <div class="requirement-item">
+                                    <div class="requirement-number">1</div>
+                                    <div class="requirement-text">وجود سجل تجاري ساري المفعول للشركة أو المؤسسة</div>
+                                </div>
+
+                                <div class="requirement-item">
+                                    <div class="requirement-number">2</div>
+                                    <div class="requirement-text">ترخيص مزاولة النشاط التجاري أو المهني</div>
+                                </div>
+
+                                <div class="requirement-item">
+                                    <div class="requirement-number">3</div>
+                                    <div class="requirement-text">بيانات تواصل رسمية للشركة (عنوان - هاتف - إيميل)</div>
+                                </div>
+
+                                <div class="requirement-item">
+                                    <div class="requirement-number">4</div>
+                                    <div class="requirement-text">مفوض معتمد لإدارة حساب الشركة في المنصة</div>
+                                </div>
+
+                                <div class="requirement-item">
+                                    <div class="requirement-number">5</div>
+                                    <div class="requirement-text">تحديد الميزانية المخصصة للتوظيف والرواتب</div>
+                                </div>
+
+                                <div class="requirement-item">
+                                    <div class="requirement-number">6</div>
+                                    <div class="requirement-text">الالتزام بأنظمة العمل والعمال في المملكة</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- محتوى المستندات -->
+                        <div class="tab-content" id="documents">
+                            <h3>المستندات والوثائق المطلوبة لنشر الوظائف</h3>
+                            <div class="documents-list">
+                                <div class="document-item">
+                                    <div class="document-number">1</div>
+                                    <div class="document-text">صورة من السجل التجاري ساري المفعول</div>
+                                </div>
+
+                                <div class="document-item">
+                                    <div class="document-number">2</div>
+                                    <div class="document-text">رخصة مزاولة النشاط التجاري أو المهني</div>
+                                </div>
+
+                                <div class="document-item">
+                                    <div class="document-number">3</div>
+                                    <div class="document-text">شهادة تسجيل في المؤسسة العامة للتأمينات الاجتماعية</div>
+                                </div>
+
+                                <div class="document-item">
+                                    <div class="document-number">4</div>
+                                    <div class="document-text">توكيل أو تفويض للمسؤول عن إدارة التوظيف</div>
+                                </div>
+
+                                <div class="document-item">
+                                    <div class="document-number">5</div>
+                                    <div class="document-text">الوصف الوظيفي التفصيلي للمنصب المطلوب</div>
+                                </div>
+
+                                <div class="document-item">
+                                    <div class="document-number">6</div>
+                                    <div class="document-text">موافقة الإدارة على شروط ومتطلبات التوظيف</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- الشريط الجانبي -->
+                    <div class="sidebar">
+                        <!-- معلومات الخدمة -->
+                        <div class="sidebar-card">
+                            <h3>
+                                <i class="fas fa-info-circle"></i>
+                                معلومات الخدمة
+                            </h3>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-users"></i>
+                                    الفئة المستهدفة
+                                </span>
+                                <span class="info-value">أصحاب العمل والشركات</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-clock"></i>
+                                    مدة الإنجاز
+                                </span>
+                                <span class="info-value">24 ساعة</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    تكلفة الخدمة
+                                </span>
+                                <span class="info-value">حسب باقة النشر</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-language"></i>
+                                    لغة الخدمة
+                                </span>
+                                <span class="info-value">العربية والإنجليزية</span>
+                            </div>
+                        </div>
+
+                        <!-- قنوات الخدمة -->
+                        <div class="sidebar-card">
+                            <h3>
+                                <i class="fas fa-desktop"></i>
+                                قنوات تقديم الخدمة
+                            </h3>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-globe"></i>
+                                    الموقع الإلكتروني
+                                </span>
+                                <span class="info-value">متاح</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    التطبيق الذكي
+                                </span>
+                                <span class="info-value">متاح</span>
+                            </div>
+                        </div>
+
+                        <!-- التواصل -->
+                        <div class="sidebar-card">
+                            <h3>
+                                <i class="fas fa-headset"></i>
+                                الدعم والمساعدة
+                            </h3>
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="contact-text">
+                                        <strong>الهاتف:</strong><br>
+                                        +966-11-456-7890
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="contact-text">
+                                        <strong>البريد الإلكتروني:</strong><br>
+                                        support@tawafuq.com
+                                    </div>
+                                </div>
+
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="contact-text">
+                                        <strong>أوقات العمل:</strong><br>
+                                        الأحد - الخميس: 8:00 - 17:00
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- زر بدء الخدمة -->
+                        <div class="sidebar-card">
+                            <a href="#" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>انشر وظيفة الآن</span>
+                            </a>
+                            <br><br>
+                            <a href="#" class="btn btn-secondary">
+                                <i class="fas fa-download"></i>
+                                <span>دليل أصحاب العمل</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+<footer style="background: var(--primary-darkest); color: var(--pure-white); padding: 80px 0 0;">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
+            <!-- قسم المنصة -->
+            <div>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <div>
+                        <img src="elaf1.png" width="280">
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem;">
+                    توافق هي منصة توظيف حديثة تهدف إلى ربط أصحاب العمل بالكفاءات المميزة، وتسهيل الوصول إلى فرص عمل نوعية في مختلف المجالات والقطاعات.
+                </p>
+                
+                <!-- إحصائيات الفوتر -->
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: var(--border-radius-md); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h4 style="color: var(--saudi-gold); margin-bottom: 1rem; font-size: 1.1rem;">إحصائيات المنصة</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; font-weight: 600; color: var(--pure-white);">12.5M+</div>
+                            <div style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7);">باحث عن عمل</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; font-weight: 600; color: var(--pure-white);">99.8%</div>
+                            <div style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7);">معدل نجاح التوظيف</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخدمات -->
+            <div>
+                <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--pure-white); position: relative; padding-bottom: 0.5rem;">
+                    خدمات المنصة
+                </h3>
+                <div style="position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--primary-green);"></div>
+                
+                <ul style="list-style: none; display: grid; gap: 0.75rem;">
+                    <li><a href="#" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-gem" style="color: var(--primary-light);"></i>
+                        استعراض الوظائف المميزة
+                    </a></li>
+                    <li><a href="#" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-building" style="color: var(--primary-light);"></i>
+                        تسجيل الشركات وأصحاب العمل
+                    </a></li>
+                    <li><a href="#" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-file-contract" style="color: var(--primary-light);"></i>
+                        إدارة إعلانات التوظيف
+                    </a></li>
+                    <li><a href="#" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-shield-alt" style="color: var(--primary-light);"></i>
+                        دعم وتوثيق الحسابات
+                    </a></li>
+                    <li><a href="#" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-headset" style="color: var(--primary-light);"></i>
+                        الدعم الفني المباشر
+                    </a></li>
+                </ul>
+            </div>
+
+            <!-- معلومات الاتصال -->
+            <div>
+                <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--pure-white); position: relative; padding-bottom: 0.5rem;">
+                    تواصل معنا
+                </h3>
+                
+                <ul style="list-style: none; display: grid; gap: 1rem;">
+                    <li style="display: flex; align-items: center; gap: 1rem; color: rgba(255, 255, 255, 0.8); font-size: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(0, 69, 109, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-light); flex-shrink: 0;">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--pure-white); margin-bottom: 0.2rem;">الهاتف</div>
+                            <div>+966-11-456-7890</div>
+                        </div>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 1rem; color: rgba(255, 255, 255, 0.8); font-size: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(0, 69, 109, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-light); flex-shrink: 0;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--pure-white); margin-bottom: 0.2rem;">البريد الإلكتروني</div>
+                            <div>info@tawafuq.com</div>
+                        </div>
+                    </li>
+                    <li style="display: flex; align-items: center; gap: 1rem; color: rgba(255, 255, 255, 0.8); font-size: 1rem;">
+                        <div style="width: 40px; height: 40px; background: rgba(0, 69, 109, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-light); flex-shrink: 0;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--pure-white); margin-bottom: 0.2rem;">أوقات العمل</div>
+                            <div>الأحد - الخميس: 8:00 - 17:00</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- وسائل التواصل -->
+                <div style="margin-top: 2rem;">
+                    <h4 style="color: var(--saudi-gold); margin-bottom: 1rem; font-size: 1rem;">تابعنا على</h4>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--pure-white); text-decoration: none; transition: var(--transition-medium); backdrop-filter: blur(10px);" 
+                           onmouseover="this.style.background='var(--primary-light)'; this.style.transform='translateY(-3px)'" 
+                           onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--pure-white); text-decoration: none; transition: var(--transition-medium); backdrop-filter: blur(10px);" 
+                           onmouseover="this.style.background='var(--primary-light)'; this.style.transform='translateY(-3px)'" 
+                           onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--pure-white); text-decoration: none; transition: var(--transition-medium); backdrop-filter: blur(10px);" 
+                           onmouseover="this.style.background='var(--primary-light)'; this.style.transform='translateY(-3px)'" 
+                           onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--pure-white); text-decoration: none; transition: var(--transition-medium); backdrop-filter: blur(10px);" 
+                           onmouseover="this.style.background='var(--primary-light)'; this.style.transform='translateY(-3px)'" 
+                           onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='translateY(0)'">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الروابط المهمة -->
+            <div>
+                <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--pure-white); position: relative; padding-bottom: 0.5rem;">
+                    روابط مهمة
+                </h3>
+                
+                <ul style="list-style: none; display: grid; gap: 0.75rem;">
+                    <li><a href="#vision" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-eye" style="color: var(--primary-light);"></i>
+                        عن المنصة
+                    </a></li>
+                    <li><a href="#golden-opportunities" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-gem" style="color: var(--primary-light);"></i>
+                        الوظائف المتاحة
+                    </a></li>
+                    <li><a href="#success-stories" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-trophy" style="color: var(--primary-light);"></i>
+                        قصص نجاح
+                    </a></li>
+                    <li><a href="#journey" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-map" style="color: var(--primary-light);"></i>
+                        خطوات الانضمام
+                    </a></li>
+                    <li><a href="#dashboard" style="color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; gap: 0.75rem; transition: var(--transition-fast); text-decoration: none; font-size: 1rem;" onmouseover="this.style.color='var(--pure-white)'; this.style.transform='translateX(-5px)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.8)'; this.style.transform='translateX(0)'">
+                        <i class="fas fa-chart-bar" style="color: var(--primary-light);"></i>
+                        مؤشرات التوظيف
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+
+            <!-- الفوتر السفلي -->
+            <div style="border-top: 2px solid var(--primary-green); padding: 2rem 0; text-align: center; background: rgba(0, 0, 0, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 0 40px;">
+                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.95rem;">
+                        &copy; 2025 منصة توافق. جميع الحقوق محفوظة
+                    </div>
+                    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                        <a href="#" style="color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 0.9rem; transition: var(--transition-fast);" onmouseover="this.style.color='var(--pure-white)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.7)'">سياسة الخصوصية</a>
+                        <a href="#" style="color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 0.9rem; transition: var(--transition-fast);" onmouseover="this.style.color='var(--pure-white)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.7)'">شروط الاستخدام</a>
+                        <a href="#" style="color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 0.9rem; transition: var(--transition-fast);" onmouseover="this.style.color='var(--pure-white)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.7)'">إخلاء المسؤولية</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- زر العودة للأعلى -->
+    <button id="scrollTopBtn" style="position: fixed; bottom: 2rem; left: 2rem; width: 55px; height: 55px; background: var(--gradient-primary); color: var(--pure-white); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; z-index: 999; box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transform: translateY(20px); transition: var(--transition-medium);" 
+            onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+            onmouseover="this.style.transform='translateY(0) scale(1.05)'" 
+            onmouseout="this.style.transform='translateY(0) scale(1)'">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // إدارة شريط التنقل
+        const navbar = document.getElementById('navbar');
+        const navMenu = document.getElementById('navMenu');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        // تأثير التمرير على شريط التنقل
+        function handleNavbarScroll() {
+            const isScrolled = window.scrollY > 100;
+            if (navbar) navbar.classList.toggle('scrolled', isScrolled);
+            if (scrollTopBtn) {
+                if (isScrolled) {
+                    scrollTopBtn.style.opacity = '1';
+                    scrollTopBtn.style.visibility = 'visible';
+                    scrollTopBtn.style.transform = 'translateY(0)';
+                } else {
+                    scrollTopBtn.style.opacity = '0';
+                    scrollTopBtn.style.visibility = 'hidden';
+                    scrollTopBtn.style.transform = 'translateY(20px)';
+                }
+            }
+        }
+
+        // استمع لحدث التمرير
+        let ticking = false;
+        function optimizedScroll() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    handleNavbarScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+        window.addEventListener('scroll', optimizedScroll, { passive: true });
+
+        // قائمة الهاتف المحمول
+        if (mobileMenuBtn && navMenu) {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navMenu.classList.toggle('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) {
+                    if (navMenu.classList.contains('active')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                }
+            });
+        }
+
+        // إغلاق القائمة
+        function closeMenu() {
+            if (navMenu && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                const icon = mobileMenuBtn?.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            }
+        }
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', (e) => {
+            if (navMenu && !navMenu.contains(e.target) && !mobileMenuBtn?.contains(e.target)) {
+                closeMenu();
+            }
+        });
+
+        // إدارة التبويبات
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+
+                // إزالة النشاط من جميع التبويبات
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // تفعيل التبويب المحدد
+                button.classList.add('active');
+                const targetContent = document.getElementById(targetTab);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // تحميل ناجح
+        console.log('🎯 تم تحميل صفحة خدمة نشر الوظائف بنجاح');
+    });
+    </script>
+</body>
+</html>

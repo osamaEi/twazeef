@@ -1,0 +1,1574 @@
+/* ===== CSS محسن لصفحات الإدارة ===== */
+/* Admin Views Enhanced CSS - Matching Modern Dashboard Design */
+
+:root {
+    /* الألوان الموحدة مع منصة توافق */
+    --primary-green: #003c6d;
+    --primary-light: #005085;
+    --primary-lighter: #e8eff5;
+    --primary-lightest: #f4f9fa;
+    --primary-dark: #003655;
+    --primary-darker: #003858;
+    --primary-darkest: #00182b;
+
+    /* تدرجات رمادية */
+    --grey-900: #1a1a1a;
+    --grey-800: #2c2c2c;
+    --grey-700: #424242;
+    --grey-600: #616161;
+    --grey-500: #757575;
+    --grey-400: #9e9e9e;
+    --grey-300: #e0e0e0;
+    --grey-200: #eeeeee;
+    --grey-100: #f5f5f5;
+    --grey-50: #fafafa;
+    --pure-white: #FFFFFF;
+
+    /* التدرجات */
+    --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+    --gradient-light: linear-gradient(135deg, var(--primary-light) 0%, #0067a3 100%);
+    --gradient-dark: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+
+    /* الظلال */
+    --shadow-sm: 0 2px 8px rgba(0, 69, 109, 0.08);
+    --shadow-md: 0 6px 20px rgba(0, 60, 109, 0.12);
+    --shadow-lg: 0 12px 40px rgba(0, 65, 109, 0.15);
+    --shadow-xl: 0 25px 65px rgba(0, 74, 109, 0.18);
+
+    /* الخطوط */
+    --font-main: 'Neo Sans Arabic', sans-serif;
+
+    /* المتغيرات التقنية */
+    --sidebar-width: 340px;
+    --header-height: 90px;
+    --border-radius-sm: 12px;
+    --border-radius-md: 20px;
+    --border-radius-lg: 28px;
+
+    /* الانتقالات */
+    --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-slow: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== التهيئات الأساسية ===== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--grey-50);
+    color: var(--grey-700);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: var(--primary-green);
+    color: var(--pure-white);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    background: var(--grey-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 6px;
+}
+
+/* ===== صفحات إدارة الوظائف ===== */
+.admin-jobs-page {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* رأس الصفحة */
+.page-header {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-content h1.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    margin-bottom: 0.5rem;
+}
+
+.header-content p.page-subtitle {
+    color: var(--grey-600);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    background: var(--grey-50);
+    border: 2px solid transparent;
+    border-radius: 25px;
+    padding: 0.75rem 1.2rem 0.75rem 3rem;
+    font-size: 0.9rem;
+    width: 300px;
+    transition: var(--transition-fast);
+    font-family: var(--font-main);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    background: var(--pure-white);
+    box-shadow: 0 0 0 4px rgba(0, 109, 70, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    right: 1.2rem;
+    color: var(--grey-500);
+    font-size: 1.1rem;
+}
+
+.filter-dropdown {
+    position: relative;
+}
+
+.filter-select {
+    background: var(--pure-white);
+    border: 2px solid var(--grey-200);
+    border-radius: 20px;
+    padding: 0.75rem 1.2rem;
+    font-size: 0.9rem;
+    min-width: 150px;
+    transition: var(--transition-fast);
+    font-family: var(--font-main);
+    cursor: pointer;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(0, 109, 70, 0.1);
+}
+
+/* بطاقات الإحصائيات */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-medium);
+    border-top: 4px solid var(--primary-green);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(0, 109, 70, 0.02) 100%);
+    pointer-events: none;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-top-color: var(--primary-light);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--pure-white);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-icon.active {
+    background: var(--gradient-primary);
+}
+
+.stat-icon.paused {
+    background: linear-gradient(135deg, #ffa726, #ff9800);
+}
+
+.stat-icon.closed {
+    background: linear-gradient(135deg, #9e9e9e, #757575);
+}
+
+.stat-icon.total {
+    background: linear-gradient(135deg, #42a5f5, #2196f3);
+}
+
+.stat-icon.applicants {
+    background: linear-gradient(135deg, #66bb6a, #4caf50);
+}
+
+.stat-icon.companies {
+    background: linear-gradient(135deg, #ab47bc, #8e24aa);
+}
+
+.stat-icon.views {
+    background: linear-gradient(135deg, #26a69a, #009688);
+}
+
+.stat-content h3.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--grey-900);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.stat-content p.stat-label {
+    color: var(--grey-600);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* بطاقة المحتوى */
+.content-card {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 1px solid var(--grey-100);
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    background: var(--primary-lightest);
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid var(--grey-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.card-title i {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* الأزرار */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    font-family: var(--font-main);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-medium);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--gradient-primary);
+    color: var(--pure-white);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--pure-white);
+    color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-green);
+    color: var(--pure-white);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: var(--pure-white);
+    border-color: #4caf50;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ff9800, #ffa726);
+    color: var(--pure-white);
+    border-color: #ff9800;
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+    color: var(--pure-white);
+    border-color: #f44336;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #2196f3, #42a5f5);
+    color: var(--pure-white);
+    border-color: #2196f3;
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+/* الجداول */
+.table-container {
+    overflow-x: auto;
+    padding: 0;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--pure-white);
+}
+
+.data-table th {
+    background: var(--primary-green);
+    color: var(--pure-white);
+    padding: 1.2rem 1rem;
+    text-align: right;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.data-table td {
+    padding: 1.2rem 1rem;
+    border-bottom: 1px solid var(--grey-100);
+    color: var(--grey-700);
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.data-table tr:hover {
+    background: var(--primary-lightest);
+    transform: scale(1.01);
+    transition: var(--transition-fast);
+}
+
+/* معلومات الوظيفة */
+.job-info h4.job-title {
+    font-weight: 700;
+    color: var(--grey-900);
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+}
+
+.job-info p.job-location {
+    color: var(--grey-600);
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem;
+}
+
+.job-info .job-category {
+    background: var(--primary-lightest);
+    color: var(--primary-green);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* معلومات الشركة */
+.company-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.company-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--grey-100);
+}
+
+.company-name {
+    font-weight: 600;
+    color: var(--grey-800);
+    font-size: 0.9rem;
+}
+
+/* شارات الحالة */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--pure-white);
+    text-align: center;
+    display: inline-block;
+    min-width: 80px;
+}
+
+.status-badge.active {
+    background: var(--gradient-primary);
+}
+
+.status-badge.paused {
+    background: linear-gradient(135deg, #ffa726, #ff9800);
+}
+
+.status-badge.closed {
+    background: linear-gradient(135deg, #9e9e9e, #757575);
+}
+
+.status-badge.under-review {
+    background: linear-gradient(135deg, #42a5f5, #2196f3);
+}
+
+.status-badge.approved {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+}
+
+.status-badge.rejected {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+}
+
+/* شارات الإيقاف والإغلاق */
+.pause-reason,
+.close-reason {
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pure-white);
+    text-align: center;
+    display: inline-block;
+}
+
+.pause-reason.company-request {
+    background: linear-gradient(135deg, #ff9800, #ffa726);
+}
+
+.pause-reason.admin-pause {
+    background: linear-gradient(135deg, #9c27b0, #ab47bc);
+}
+
+.pause-reason.expired {
+    background: linear-gradient(135deg, #9e9e9e, #757575);
+}
+
+.close-reason.filled {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+}
+
+.close-reason.expired {
+    background: linear-gradient(135deg, #9e9e9e, #757575);
+}
+
+.close-reason.company-request {
+    background: linear-gradient(135deg, #ff9800, #ffa726);
+}
+
+.close-reason.admin-close {
+    background: linear-gradient(135deg, #f44336, #ef5350);
+}
+
+/* الإجراءات */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.actions .btn {
+    min-width: 35px;
+    height: 35px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* الترقيم */
+.applicants-count {
+    background: var(--primary-lightest);
+    color: var(--primary-green);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+    min-width: 40px;
+}
+
+/* التواريخ */
+.date {
+    color: var(--grey-600);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* الترقيم */
+.pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    background: var(--grey-50);
+    border-top: 1px solid var(--grey-100);
+}
+
+.pagination-info {
+    color: var(--grey-600);
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.page-link {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--grey-600);
+    font-weight: 500;
+    transition: var(--transition-fast);
+    border: 1px solid var(--grey-200);
+}
+
+.page-link:hover {
+    background: var(--primary-lightest);
+    color: var(--primary-green);
+    border-color: var(--primary-light);
+}
+
+.page-link.active {
+    background: var(--primary-green);
+    color: var(--pure-white);
+    border-color: var(--primary-green);
+}
+
+.page-link.prev,
+.page-link.next {
+    background: var(--pure-white);
+    color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.page-link.prev:hover,
+.page-link.next:hover {
+    background: var(--primary-green);
+    color: var(--pure-white);
+}
+
+/* ===== صفحات إدارة المتقدمين ===== */
+.admin-applicants-page {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* شريط الإجراءات المجمعة */
+.bulk-actions-bar {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.bulk-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bulk-actions-left input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-green);
+}
+
+.bulk-actions-left label {
+    font-weight: 600;
+    color: var(--grey-700);
+    cursor: pointer;
+}
+
+.selected-count {
+    background: var(--primary-lightest);
+    color: var(--primary-green);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.bulk-actions-right {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* معلومات المتقدم */
+.applicant-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.applicant-avatar {
+    width: 45px;
+    height: 45px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pure-white);
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.applicant-details h4.applicant-name {
+    font-weight: 700;
+    color: var(--grey-900);
+    margin-bottom: 0.2rem;
+    font-size: 0.95rem;
+}
+
+.applicant-details p {
+    color: var(--grey-600);
+    font-size: 0.8rem;
+    margin-bottom: 0.1rem;
+}
+
+/* قسم الأولوية */
+.priority-queue-section {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
+}
+
+.section-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: var(--grey-600);
+    font-size: 0.9rem;
+}
+
+.priority-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.priority-card {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    border: 2px solid var(--grey-200);
+    transition: var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.priority-card.urgent {
+    border-color: #ff9800;
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+}
+
+.priority-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.priority-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #ff9800;
+    color: var(--pure-white);
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.priority-info {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--grey-200);
+}
+
+.waiting-time {
+    display: block;
+    color: var(--grey-600);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.priority-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* مؤشرات النجاح */
+.success-metrics-section {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.metric-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--grey-50);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-200);
+}
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: var(--pure-white);
+    font-size: 1.3rem;
+}
+
+.metric-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    color: var(--grey-600);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-change {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.metric-change.positive {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+/* ===== صفحات تفاصيل الوظيفة ===== */
+.admin-job-details-page {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* شريط التنقل */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-link {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.breadcrumb-link:hover {
+    color: var(--primary-dark);
+}
+
+.breadcrumb-separator {
+    color: var(--grey-400);
+}
+
+.breadcrumb-current {
+    color: var(--grey-600);
+    font-weight: 600;
+}
+
+/* شريط الحالة */
+.status-banner {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.status-banner.active {
+    border-left: 4px solid var(--primary-green);
+    background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+}
+
+.status-banner.paused {
+    border-left: 4px solid #ff9800;
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+}
+
+.status-banner.closed {
+    border-left: 4px solid #9e9e9e;
+    background: linear-gradient(135deg, #f5f5f5, #eeeeee);
+}
+
+.status-content {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--grey-800);
+}
+
+.status-content i {
+    font-size: 1.3rem;
+}
+
+.status-banner.active .status-content i {
+    color: var(--primary-green);
+}
+
+.status-banner.paused .status-content i {
+    color: #ff9800;
+}
+
+.status-banner.closed .status-content i {
+    color: #9e9e9e;
+}
+
+.status-actions {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* شبكة المحتوى */
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* تفاصيل الوظيفة */
+.detail-row {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--grey-100);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--grey-700);
+    min-width: 150px;
+    margin-left: 1rem;
+}
+
+.detail-value {
+    color: var(--grey-900);
+    flex: 1;
+}
+
+.company-link {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.company-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* وصف الوظيفة */
+.description-section {
+    margin-bottom: 2rem;
+}
+
+.description-section h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.description-section h4::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--primary-green);
+    border-radius: 2px;
+}
+
+.description-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.description-section li {
+    padding: 0.5rem 0;
+    color: var(--grey-700);
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+.description-section li::before {
+    content: '•';
+    color: var(--primary-green);
+    font-weight: bold;
+    position: absolute;
+    right: 0;
+}
+
+/* ملخص المتقدمين */
+.applicants-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--grey-50);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-200);
+}
+
+.stat-item .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 0.5rem;
+}
+
+.stat-item .stat-label {
+    color: var(--grey-600);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* قائمة الطلبات */
+.applications-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.application-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--grey-100);
+    transition: var(--transition-fast);
+}
+
+.application-item:hover {
+    background: var(--primary-lightest);
+}
+
+.application-item:last-child {
+    border-bottom: none;
+}
+
+.applicant-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.applicant-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pure-white);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.applicant-details h5.applicant-name {
+    font-weight: 700;
+    color: var(--grey-900);
+    margin-bottom: 0.2rem;
+    font-size: 0.95rem;
+}
+
+.applicant-details p.applicant-title {
+    color: var(--grey-600);
+    font-size: 0.85rem;
+}
+
+.application-status {
+    margin-left: auto;
+    margin-right: 1rem;
+}
+
+.application-date {
+    color: var(--grey-500);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ===== صفحات تعديل الوظيفة ===== */
+.admin-job-edit-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* النموذج */
+.edit-form {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    background: var(--grey-50);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-200);
+}
+
+.form-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-darker);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title::before {
+    content: '';
+    width: 3px;
+    height: 20px;
+    background: var(--primary-green);
+    border-radius: 2px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--grey-700);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--grey-200);
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+    background: var(--pure-white);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 3px rgba(0, 109, 70, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-green);
+    margin-left: 0.5rem;
+}
+
+/* أزرار النموذج */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 2rem;
+    border-top: 2px solid var(--grey-100);
+}
+
+/* ===== التصميم المتجاوب ===== */
+@media (max-width: 1200px) {
+    .stats-row {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .priority-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .admin-jobs-page,
+    .admin-applicants-page,
+    .admin-job-details-page,
+    .admin-job-edit-page {
+        padding: 1rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .header-actions {
+        justify-content: center;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .bulk-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .bulk-actions-right {
+        justify-content: center;
+    }
+
+    .pagination-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .status-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .status-actions {
+        justify-content: center;
+    }
+
+    .applicants-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+/* ===== الأنيميشن ===== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.6s ease-out;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* ===== تحسينات إضافية ===== */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--grey-100);
+    border-top: 4px solid var(--primary-green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* تأثيرات التفاعل */
+.stat-card:hover .stat-icon {
+    transform: scale(1.1);
+    transition: var(--transition-fast);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    transition: var(--transition-fast);
+}
+
+.data-table tr:hover td {
+    background: var(--primary-lightest);
+    transition: var(--transition-fast);
+}
+
+/* تخصيص شريط التمرير */
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: var(--grey-100);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
+
+/* تحسينات إضافية للنماذج */
+.form-input:invalid,
+.form-select:invalid,
+.form-textarea:invalid {
+    border-color: #f44336;
+}
+
+.form-input:valid,
+.form-select:valid,
+.form-textarea:valid {
+    border-color: #4caf50;
+}
+
+/* تأثيرات التحميل */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--primary-green);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* تحسينات للجداول */
+.data-table th:first-child,
+.data-table td:first-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.data-table th:last-child,
+.data-table td:last-child {
+    border-radius: 8px 0 0 8px;
+}
+
+/* تحسينات للأزرار */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn:disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* تحسينات للبطاقات */
+.stat-card:empty {
+    display: none;
+}
+
+.content-card:empty {
+    display: none;
+}
+
+/* تحسينات للتنبيهات */
+.alert {
+    border-radius: var(--border-radius-sm);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.alert-success {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border-color: #4caf50;
+}
+
+.alert-warning {
+    background: #fff8e1;
+    color: #f57c00;
+    border-color: #ff9800;
+}
+
+.alert-info {
+    background: #e3f2fd;
+    color: #1976d2;
+    border-color: #2196f3;
+}
+
+.alert-danger {
+    background: #ffebee;
+    color: #c62828;
+    border-color: #f44336;
+}

@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة تسجيل الدخول - خدمات الشركات</title>
+    <link href="https://fonts.cdnfonts.com/css/neo-sans-arabic" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* الألوان الأساسية */
+        --primary-green: #003c6d;
+        --primary-light: #005085;
+        --primary-lighter: #e8eff5;
+        --primary-lightest: #f4f9fa;
+        --primary-dark: #003655;
+        --primary-darker: #003858;
+        --primary-darkest: #00182b;
+            --neutral-50: #fafafa;
+            --neutral-100: #f5f5f5;
+            --neutral-200: #e5e5e5;
+            --neutral-300: #d4d4d4;
+            --neutral-400: #a3a3a3;
+            --neutral-500: #737373;
+            --neutral-600: #525252;
+            --neutral-700: #404040;
+            --neutral-800: #262626;
+            --neutral-900: #171717;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Neo Sans Arabic', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, var(--primary-lightest) 25%, #ffffff 50%, var(--primary-lighter) 75%, #f1f5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+            background-attachment: fixed;
+        }
+
+        /* شبكة نقطية في الخلفية */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, var(--primary-green) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.03;
+            z-index: -1;
+            animation: drift 30s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 
+                0 40px 80px rgba(0, 74, 109, 0.08),
+                0 20px 40px rgba(0, 78, 109, 0.06),
+                0 8px 16px rgba(0, 69, 109, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 65, 109, 0.08);
+            animation: slideInScale 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* القسم الأيمن - العبارات والشعار */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 50%, var(--primary-dark) 100%);
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 40%),
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.02) 50%, transparent 70%);
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .government-logo {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .government-logo::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 30px;
+            z-index: -1;
+            animation: rotateGlow 4s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .government-logo i {
+            color: white;
+            font-size: 48px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-title {
+            color: white;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 350px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .features-list {
+            list-style: none;
+            text-align: right;
+            position: relative;
+            z-index: 2;
+        }
+
+        .features-list li {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            animation: slideInRight 0.8s ease-out;
+            animation-delay: calc(var(--delay) * 0.1s);
+        }
+
+        .features-list li:nth-child(1) { --delay: 1; }
+        .features-list li:nth-child(2) { --delay: 2; }
+        .features-list li:nth-child(3) { --delay: 3; }
+        .features-list li:nth-child(4) { --delay: 4; }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .features-list li i {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* القسم الأيسر - نموذج تسجيل الدخول */
+        .login-section {
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+        }
+
+        .login-header {
+            margin-bottom: 48px;
+        }
+
+        .login-title {
+            color: var(--primary-dark);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .login-subtitle {
+            color: var(--neutral-500);
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--neutral-700);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neutral-400);
+            font-size: 18px;
+            transition: color 0.3s ease;
+            z-index: 2;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 20px 60px 20px 20px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            background: var(--neutral-50);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+            direction: rtl;
+            font-family: 'Neo Sans Arabic', sans-serif;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-green);
+            background: white;
+            box-shadow: 0 0 0 6px rgba(0, 69, 109, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .form-input:focus + .input-icon {
+            color: var(--primary-green);
+        }
+
+        .form-input:focus ~ .form-label {
+            color: var(--primary-green);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--neutral-400);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-green);
+            background: rgba(0, 65, 109, 0.05);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neutral-300);
+            border-radius: 6px;
+            position: relative;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .custom-checkbox input {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .custom-checkbox input:checked + .checkmark {
+            background: var(--primary-green);
+            border-color: var(--primary-green);
+            transform: scale(1.1);
+        }
+
+        .custom-checkbox input:checked + .checkmark::after {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform-origin: center;
+            transform: translate(-50%, -60%) rotate(45deg) scale(0);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .custom-checkbox input:checked + .checkmark::after {
+            transform: translate(-50%, -60%) rotate(45deg) scale(1);
+            opacity: 1;
+        }
+
+        .remember-text {
+            color: var(--neutral-600);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .forgot-password::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-green);
+            transition: width 0.3s ease;
+        }
+
+        .forgot-password:hover::after {
+            width: 100%;
+        }
+
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 20px 32px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 12px 24px rgba(0, 74, 109, 0.15),
+                0 6px 12px rgba(0, 69, 109, 0.1);
+            font-family: 'Neo Sans Arabic', sans-serif;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 20px 40px rgba(0, 69, 109, 0.2),
+                0 10px 20px rgba(0, 74, 109, 0.15);
+        }
+
+        .login-button:hover::before {
+            left: 100%;
+        }
+
+        .login-button:active {
+            transform: translateY(-1px);
+        }
+
+        .security-notice {
+            margin-top: 32px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-lightest), rgba(0, 69, 109, 0.02));
+            border-radius: 12px;
+            border: 1px solid rgba(0, 60, 109, 0.1);
+            text-align: center;
+        }
+
+        .security-notice i {
+            color: var(--primary-green);
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .security-notice p {
+            color: var(--neutral-600);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* استجابة للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin: 20px;
+            }
+
+            .welcome-section {
+                padding: 60px 40px;
+                order: 2;
+            }
+
+            .login-section {
+                padding: 60px 40px;
+                order: 1;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .login-title {
+                font-size: 26px;
+            }
+
+            .features-list {
+                text-align: center;
+            }
+
+            .features-list li {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .welcome-section,
+            .login-section {
+                padding: 40px 30px;
+            }
+
+            .main-container {
+                border-radius: 24px;
+            }
+
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+
+        /* تحسينات إضافية للتفاعل */
+        .form-input:valid:not(:placeholder-shown) {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .form-input:invalid:not(:placeholder-shown) {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .loading {
+            position: relative;
+            pointer-events: none;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* تأثيرات هوفر متقدمة */
+        .login-section .form-group:hover .form-label {
+            color: var(--primary-green);
+        }
+
+        .login-section .form-group:hover .input-icon {
+            color: var(--primary-green);
+            transform: translateY(-50%) scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- القسم الأيمن - العبارات والشعار -->
+        <div class="welcome-section">
+            <img src="elaf1.png" width="400" style="margin-bottom: 40px;">
+            
+            <p class="welcome-subtitle">
+                البوابة الرسمية لمنصة توافق للتوظيف
+                نظام موحد وآمن لجميع الخدمات التوظيفية
+            </p>
+            
+            <ul class="features-list">
+                <li>
+                    <i class="fas fa-shield-alt"></i>
+                    حماية متقدمة وتشفير عالي المستوى
+                </li>
+                <li>
+                    <i class="fas fa-clock"></i>
+                    خدمات متاحة على مدار الساعة
+                </li>
+                <li>
+                    <i class="fas fa-mobile-alt"></i>
+                    متوافق مع جميع الأجهزة والمنصات
+                </li>
+                <li>
+                    <i class="fas fa-users"></i>
+                    خدمة ملايين الموظفين بثقة وأمان
+                </li>
+            </ul>
+        </div>
+
+        <!-- القسم الأيسر - نموذج تسجيل الدخول -->
+        <div class="login-section">
+            <div class="login-header">
+                <h2 class="login-title">تسجيل الدخول</h2>
+                <p class="login-subtitle">
+                    قم بإدخال بياناتك للوصول إلى حسابك
+                </p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">اسم المستخدم أو رقم الهوية</label>
+                    <div class="input-container">
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            class="form-input" 
+                            placeholder="أدخل اسم المستخدم أو رقم الهوية"
+                            required
+                            autocomplete="username"
+                        >
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">كلمة المرور</label>
+                    <div class="input-container password-container">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="أدخل كلمة المرور"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <i class="fas fa-lock input-icon"></i>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="remember">
+                            <div class="checkmark"></div>
+                        </div>
+                        <span class="remember-text">تذكرني</span>
+                    </label>
+                    <a href="#" class="forgot-password">نسيت كلمة المرور؟</a>
+                </div>
+
+                <button type="submit" class="login-button" id="loginBtn">
+                    <i class="fas fa-sign-in-alt" style="margin-left: 8px;"></i>
+                    دخول إلى النظام
+                </button>
+            </form>
+
+            <div class="security-notice">
+                <i class="fas fa-shield-check"></i>
+                <p>
+                    جلستك محمية بتقنيات الأمان المتقدمة وبروتوكولات التشفير العالمية
+                    <br>
+                    <strong>SSL/TLS 256-bit | ISO 27001 Certified</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تبديل إظهار/إخفاء كلمة المرور
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // معالجة إرسال النموذج
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // التحقق من صحة البيانات
+            if (!username.trim() || !password.trim()) {
+                showMessage('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+
+            // إضافة تأثير التحميل
+            loginBtn.classList.add('loading');
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-left: 8px;"></i> جاري التحقق...';
+
+            // محاكاة عملية التحقق
+            setTimeout(() => {
+                showMessage('تم تسجيل الدخول بنجاح', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'Dashboard';
+                }, 1500);
+            }, 2500);
+        });
+
+        // عرض الرسائل
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                padding: 20px 28px;
+                border-radius: 16px;
+                color: white;
+                font-weight: 600;
+                font-size: 15px;
+                z-index: 10000;
+                transform: translateX(400px);
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+                backdrop-filter: blur(10px);
+                font-family: 'Neo Sans Arabic', sans-serif;
+                ${type === 'success' 
+                    ? 'background: linear-gradient(135deg, #10b981, #059669);' 
+                    : 'background: linear-gradient(135deg, #ef4444, #dc2626);'
+                }
+            `;
+            
+            messageDiv.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}" 
+                   style="margin-left: 10px; font-size: 18px;"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                messageDiv.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    if (document.body.contains(messageDiv)) {
+                        document.body.removeChild(messageDiv);
+                    }
+                }, 400);
+            }, 4000);
+        }
+
+        // تحسينات التفاعل
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // تأثير معاينة ثلاثية الأبعاد
+        document.addEventListener('mousemove', function(e) {
+            const container = document.querySelector('.main-container');
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const deltaX = (e.clientX - centerX) / rect.width;
+            const deltaY = (e.clientY - centerY) / rect.height;
+            
+            container.style.transform = `
+                perspective(2000px) 
+                rotateY(${deltaX * 1}deg) 
+                rotateX(${-deltaY * 1}deg)
+                translateZ(0)
+            `;
+        });
+
+        document.addEventListener('mouseleave', function() {
+            const container = document.querySelector('.main-container');
+            container.style.transform = 'perspective(2000px) rotateY(0deg) rotateX(0deg) translateZ(0)';
+        });
+
+        // تحسين تجربة المستخدم
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.style.fontWeight = '600';
+                } else {
+                    this.style.fontWeight = '500';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
