@@ -38,15 +38,9 @@
                             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
                                 <i class="fas fa-users"></i>
                                 <span>{{ __('sidebar.all_users') }}</span>
-                                <span class="nav-badge">156</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.users.create') }}" class="nav-link {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                                <i class="fas fa-user-plus"></i>
-                                <span>{{ __('sidebar.add_new_user') }}</span>
-                            </a>
-                        </li>
+                   
                         
                     </ul>
                 </div>
@@ -58,7 +52,6 @@
                             <a href="{{ route('admin.pending-registrations.index') }}" class="nav-link {{ request()->routeIs('admin.pending-registrations.*') ? 'active' : '' }}">
                                 <i class="fas fa-clock"></i>
                                 <span>التسجيلات المعلقة</span>
-                                <span class="nav-badge" id="pending-count">0</span>
                             </a>
                         </li>
                      
@@ -72,15 +65,9 @@
                             <a href="{{ route('admin.companies.index') }}" class="nav-link {{ request()->routeIs('admin.companies.index') ? 'active' : '' }}">
                                 <i class="fas fa-building"></i>
                                 <span>{{ __('sidebar.all_companies') }}</span>
-                                <span class="nav-badge">24</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.companies.create') }}" class="nav-link {{ request()->routeIs('admin.companies.create') ? 'active' : '' }}">
-                                <i class="fas fa-plus-circle"></i>
-                                <span>{{ __('sidebar.add_new_company') }}</span>
-                            </a>
-                        </li>
+                     
                         
                     </ul>
                 </div>
@@ -92,7 +79,6 @@
                             <a href="{{ route('admin.jobs.index') }}" class="nav-link {{ request()->routeIs('admin.jobs.index') ? 'active' : '' }}">
                                 <i class="fas fa-briefcase"></i>
                                 <span>{{ __('sidebar.all_jobs') }}</span>
-                                <span class="nav-badge"></span>
                             </a>
                         </li>
                      
@@ -106,7 +92,6 @@
                             <a href="{{ route('admin.applicants.index') }}" class="nav-link {{ request()->routeIs('admin.applicants.index') ? 'active' : '' }}">
                                 <i class="fas fa-file-alt"></i>
                                 <span>{{ __('sidebar.all_applications') }}</span>
-                                <span class="nav-badge">234</span>
                             </a>
                         </li>
                       
