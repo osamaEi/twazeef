@@ -16,23 +16,7 @@
         
         <div class="header-actions">
             <!-- Language Switcher -->
-            <div class="language-switcher" id="languageSwitcher">
-                <button class="header-btn language-btn" title="{{ __('topnav.change_language') }}">
-                    <i class="fas fa-globe"></i>
-                    <span class="current-lang">{{ app()->getLocale() === 'ar' ? 'العربية' : 'English' }}</span>
-                </button>
-                
-                <div class="language-dropdown" id="languageDropdown">
-                    <a href="{{ route('language.switch', 'ar') }}" class="language-option {{ app()->getLocale() === 'ar' ? 'active' : '' }}">
-                        <span class="flag">🇸🇦</span>
-                        <span>العربية</span>
-                    </a>
-                    <a href="{{ route('language.switch', 'en') }}" class="language-option {{ app()->getLocale() === 'en' ? 'active' : '' }}">
-                        <span class="flag">🇺🇸</span>
-                        <span>English</span>
-                    </a>
-                </div>
-            </div>
+      
             
             <button class="header-btn" title="{{ __('topnav.messages') }}">
                 <i class="fas fa-envelope"></i>
