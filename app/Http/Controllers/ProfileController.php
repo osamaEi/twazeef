@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -35,6 +36,75 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update company profile information.
+     */
+    public function updateCompany(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'company_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'website' => 'nullable|url|max:255',
+            'entity_type' => 'nullable|string|max:255',
+            'license_number' => 'nullable|string|max:255',
+            'establishment_date' => 'nullable|date',
+            'business_sector' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'address' => 'nullable|string|max:500',
+        ]);
+
+        $user->fill($validated);
+        $user->save();
+
+        return Redirect::route('company.profile')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Upload company documents.
+     */
+    public function uploadDocument(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'document_file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+            'document_type' => 'required|in:logo,license,certificate',
+        ]);
+
+        $user = $request->user();
+        $file = $request->file('document_file');
+        $documentType = $request->input('document_type');
+
+        // Delete old file if exists
+        $oldField = $this->getDocumentField($documentType);
+        if ($user->$oldField) {
+            Storage::disk('public')->delete($user->$oldField);
+        }
+
+        // Store new file
+        $path = $file->store('company-documents', 'public');
+
+        // Update user record
+        $user->$oldField = $path;
+        $user->save();
+
+        return Redirect::back()->with('status', 'document-uploaded');
+    }
+
+    /**
+     * Get the document field name based on type.
+     */
+    private function getDocumentField(string $type): string
+    {
+        return match ($type) {
+            'logo' => 'logo',
+            'license' => 'license_image',
+            'certificate' => 'certificate_image',
+            default => 'logo',
+        };
     }
 
     /**
@@ -83,5 +153,25 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         return view('profile.employee', compact('user'));
+    }
+
+    /**
+     * Export company data.
+     */
+    public function exportData(Request $request): RedirectResponse
+    {
+        // This would typically generate and download a file
+        // For now, we'll just redirect with a success message
+        return Redirect::back()->with('status', 'export-started');
+    }
+
+    /**
+     * Share company profile.
+     */
+    public function shareProfile(Request $request): RedirectResponse
+    {
+        // This would typically handle sharing functionality
+        // For now, we'll just redirect with a success message
+        return Redirect::back()->with('status', 'profile-shared');
     }
 }

@@ -52,6 +52,14 @@ Route::middleware(['auth', 'user.active'])->group(function () {
     Route::get('/company/profile', [ProfileController::class, 'companyProfile'])->middleware('role:company')->name('company.profile');
     Route::get('/employee/profile', [ProfileController::class, 'employeeProfile'])->middleware('role:employee')->name('employee.profile');
 
+    // Company profile specific routes
+    Route::middleware('role:company')->group(function () {
+        Route::patch('/company/profile/update', [ProfileController::class, 'updateCompany'])->name('company.profile.update');
+        Route::post('/company/documents/upload', [ProfileController::class, 'uploadDocument'])->name('company.documents.upload');
+        Route::post('/company/profile/export', [ProfileController::class, 'exportData'])->name('company.profile.export');
+        Route::post('/company/profile/share', [ProfileController::class, 'shareProfile'])->name('company.profile.share');
+    });
+
     // Jobs routes
     Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
     Route::get('/jobs/{job}', [JobController::class, 'show'])->name('jobs.show');

@@ -348,23 +348,84 @@
             {{ $applications->links() }}
         </div>
     @endif
-</div>
 
-<!-- Confirmation Modal -->
-<div id="confirmModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>تأكيد الإجراء</h3>
-            <button class="modal-close" onclick="closeModal('confirmModal')">
+    <!-- Success/Error Toast Notifications -->
+    <div class="toast-container" id="toastContainer">
+        <div class="toast success" id="successToast">
+            <div class="toast-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">نجح!</h4>
+                <p class="toast-message">تم تحديث حالة التقديم بنجاح</p>
+            </div>
+            <button class="toast-close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="modal-body">
-            <p id="confirmMessage"></p>
+        
+        <div class="toast error" id="errorToast">
+            <div class="toast-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="toast-content">
+                <h4 class="toast-title">خطأ!</h4>
+                <p class="toast-message">حدث خطأ أثناء تحديث الحالة</p>
+            </div>
+            <button class="toast-close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal('confirmModal')">إلغاء</button>
-            <button class="btn btn-primary" id="confirmButton">تأكيد</button>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تأكيد الإجراء</h3>
+                <span class="close" onclick="closeModal('confirmModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('confirmModal')">إلغاء</button>
+                <button id="confirmButton" class="btn btn-primary">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تحديث حالة التقديم</h3>
+                <span class="close" onclick="closeModal('statusModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="statusForm">
+                    @csrf
+                    <input type="hidden" id="applicationId" name="application_id">
+                    <div class="form-group">
+                        <label for="newStatus">الحالة الجديدة:</label>
+                        <select id="newStatus" name="status" class="form-select" required>
+                            <option value="pending">في الانتظار</option>
+                            <option value="shortlisted">قائمة مختصرة</option>
+                            <option value="interviewed">تمت المقابلة</option>
+                            <option value="accepted">مقبول</option>
+                            <option value="rejected">مرفوض</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">ملاحظات (اختياري):</label>
+                        <textarea id="notes" name="notes" class="form-textarea" rows="3" placeholder="أضف ملاحظات حول هذا التقديم..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('statusModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="submitStatusUpdate()">تحديث الحالة</button>
+            </div>
         </div>
     </div>
 </div>
@@ -1294,7 +1355,9 @@ function updateApplicationStatus(applicationId, status) {
             updateStatusBadge(applicationId, data.new_status, data.status_text);
             updateStatusActions(applicationId, data.new_status);
             showSuccessMessage(data.message);
-            location.reload(); // Refresh to update counts
+            // Update the counts in the filter tabs
+            updateFilterCounts();
+            // Don't reload the page, just update the UI
         } else {
             showErrorMessage(data.message || 'حدث خطأ أثناء تحديث الحالة');
         }
@@ -1307,6 +1370,55 @@ function updateApplicationStatus(applicationId, status) {
         button.innerHTML = originalText;
         button.disabled = false;
     });
+}
+
+// Add function to update filter counts
+function updateFilterCounts() {
+    const rows = document.querySelectorAll('.application-row');
+    const counts = {
+        all: rows.length,
+        pending: 0,
+        shortlisted: 0,
+        interviewed: 0,
+        accepted: 0,
+        rejected: 0
+    };
+    
+    rows.forEach(row => {
+        const status = row.getAttribute('data-status');
+        if (status && counts.hasOwnProperty(status)) {
+            counts[status]++;
+        }
+    });
+    
+    // Update tab counts
+    Object.keys(counts).forEach(status => {
+        const tab = document.querySelector(`[data-status="${status}"] .tab-count`);
+        if (tab) {
+            tab.textContent = counts[status];
+        }
+    });
+    
+    // Update stats grid
+    const totalApplications = document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-value');
+    if (totalApplications) {
+        totalApplications.textContent = counts.all;
+    }
+    
+    const pendingApplications = document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value');
+    if (pendingApplications) {
+        pendingApplications.textContent = counts.pending;
+    }
+    
+    const shortlistedApplications = document.querySelector('.stats-grid .stat-card:nth-child(3) .stat-value');
+    if (shortlistedApplications) {
+        shortlistedApplications.textContent = counts.shortlisted;
+    }
+    
+    const acceptedApplications = document.querySelector('.stats-grid .stat-card:nth-child(4) .stat-value');
+    if (acceptedApplications) {
+        acceptedApplications.textContent = counts.accepted;
+    }
 }
 
 function updateStatusBadge(applicationId, newStatus, statusText) {

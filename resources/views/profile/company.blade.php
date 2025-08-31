@@ -40,14 +40,20 @@
                     <i class="fas fa-edit"></i>
                     <span>{{ __('Edit Profile') }}</span>
                 </button>
-                <button class="action-btn secondary" data-action="download">
-                    <i class="fas fa-download"></i>
-                    <span>{{ __('Export Data') }}</span>
-                </button>
-                <button class="action-btn secondary" data-action="share">
-                    <i class="fas fa-share-alt"></i>
-                    <span>{{ __('Share') }}</span>
-                </button>
+                <form method="POST" action="{{ route('company.profile.export') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="action-btn secondary">
+                        <i class="fas fa-download"></i>
+                        <span>{{ __('Export Data') }}</span>
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('company.profile.share') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="action-btn secondary">
+                        <i class="fas fa-share-alt"></i>
+                        <span>{{ __('Share') }}</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -445,7 +451,7 @@
                 </div>
 
                 <div class="settings-sections">
-                    <!-- Profile Settings -->
+                    <!-- Profile Information Settings -->
                     <div class="settings-card">
                         <div class="settings-header">
                             <div class="settings-icon">
@@ -456,7 +462,7 @@
                                 <p class="settings-description">{{ __('Update your company\'s profile information and contact details') }}</p>
                             </div>
                         </div>
-                        <form method="post" action="{{ route('profile.update') }}" class="settings-form">
+                        <form method="post" action="{{ route('company.profile.update') }}" class="settings-form">
                             @csrf
                             @method('patch')
                             <div class="form-group">
@@ -506,7 +512,7 @@
                                 <p class="settings-description">{{ __('Update your business information and legal details') }}</p>
                             </div>
                         </div>
-                        <form method="post" action="{{ route('profile.update') }}" class="settings-form">
+                        <form method="post" action="{{ route('company.profile.update') }}" class="settings-form">
                             @csrf
                             @method('patch')
                             <div class="form-group">
@@ -651,7 +657,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="upload-form" id="uploadForm" enctype="multipart/form-data">
+                <form class="upload-form" id="uploadForm" method="POST" action="{{ route('company.documents.upload') }}" enctype="multipart/form-data">
+                    @csrf
                     <div class="form-group">
                         <label for="documentFile" class="form-label">{{ __('Select File') }}</label>
                         <input type="file" class="form-file" id="documentFile" name="document_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
@@ -679,33 +686,7 @@
     </div>
 
     <!-- Success/Error Toast Notifications -->
-    <div class="toast-container" id="toastContainer">
-        <div class="toast success" id="successToast">
-            <div class="toast-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="toast-content">
-                <h4 class="toast-title">{{ __('Success!') }}</h4>
-                <p class="toast-message">{{ __('Your changes have been saved successfully.') }}</p>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="toast error" id="errorToast">
-            <div class="toast-icon">
-                <i class="fas fa-exclamation-circle"></i>
-            </div>
-            <div class="toast-content">
-                <h4 class="toast-title">{{ __('Error!') }}</h4>
-                <p class="toast-message">{{ __('Something went wrong. Please try again.') }}</p>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
+ 
 </div>
 
 <!-- JavaScript for Profile Functionality -->
@@ -788,19 +769,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Document Replace Buttons
+    const replaceBtns = document.querySelectorAll('.btn-replace');
+    replaceBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const documentCard = this.closest('.document-card');
+            const documentType = documentCard.classList.contains('logo-card') ? 'logo' : 
+                               documentCard.classList.contains('license-card') ? 'license' : 'certificate';
+            
+            document.querySelector('#documentType').value = documentType;
+            openModal('uploadModal');
+        });
+    });
+
     // Form Submissions
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Show success toast (in real app, this would handle actual form submission)
-            showToast('success', 'Your changes have been saved successfully.');
-            
-            // Close modal if it's open
-            const modal = this.closest('.modal-overlay');
-            if (modal) {
-                closeModal(modal.id);
+            // Don't prevent default for actual form submissions
+            // Only prevent for demo forms
+            if (this.id === 'editForm') {
+                e.preventDefault();
+                showToast('success', 'Your changes have been saved successfully.');
+                closeModal('editModal');
             }
         });
     });
@@ -843,69 +834,148 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const action = this.dataset.action;
             
-            switch(action) {
-                case 'edit':
-                    // Switch to settings tab
-                    document.querySelector('[data-tab="settings"]').click();
-                    break;
-                case 'download':
-                    // Handle data export
-                    showToast('success', 'Company data export started.');
-                    break;
-                case 'share':
-                    // Handle company sharing
-                    if (navigator.share) {
-                        navigator.share({
-                            title: '{{ $user->company_name }} - Company Profile',
-                            url: window.location.href
-                        });
-                    } else {
-                        // Fallback: copy to clipboard
-                        navigator.clipboard.writeText(window.location.href);
-                        showToast('success', 'Company profile link copied to clipboard!');
-                    }
-                    break;
+            if (action === 'edit') {
+                // Switch to settings tab
+                document.querySelector('[data-tab="settings"]').click();
+            }
+        });
+    });
+
+    // Handle form validation and submission feedback
+    const profileForms = document.querySelectorAll('.settings-form');
+    profileForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('.btn-save');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+            
+            // Simulate form submission delay (remove in production)
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                submitBtn.style.background = 'var(--success-green)';
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.style.background = '';
+                }, 2000);
+            }, 1000);
+        });
+    });
+
+    // Handle file upload preview
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                
+                // Show file info
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'file-info';
+                fileInfo.innerHTML = `
+                    <div style="background: var(--primary-lightest); padding: 0.5rem; border-radius: var(--border-radius-sm); margin-top: 0.5rem;">
+                        <strong>Selected file:</strong> ${fileName}<br>
+                        <small>Size: ${fileSize} MB</small>
+                    </div>
+                `;
+                
+                // Remove previous file info
+                const prevInfo = this.parentNode.querySelector('.file-info');
+                if (prevInfo) prevInfo.remove();
+                
+                this.parentNode.appendChild(fileInfo);
+            }
+        });
+    });
+
+    // Handle status messages from server
+    @if(session('status'))
+        showToast('success', '{{ session('status') }}');
+    @endif
+
+    @if($errors->any())
+        showToast('error', 'Please check the form for errors.');
+    @endif
+
+    // Auto-save functionality for text inputs
+    const autoSaveInputs = document.querySelectorAll('.form-input, .form-textarea');
+    let autoSaveTimeout;
+    
+    autoSaveInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                // Add visual feedback
+                this.style.borderColor = 'var(--success-green)';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                }, 1000);
+            }, 2000);
+        });
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + S to save
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            const activeForm = document.querySelector('.settings-form');
+            if (activeForm) {
+                activeForm.querySelector('.btn-save').click();
+            }
+        }
+        
+        // Escape to close modals
+        if (e.key === 'Escape') {
+            const activeModal = document.querySelector('.modal-overlay.active');
+            if (activeModal) {
+                closeModal(activeModal.id);
+            }
+        }
+    });
+
+    // Initialize tooltips for better UX
+    const tooltipElements = document.querySelectorAll('[title]');
+    tooltipElements.forEach(element => {
+        element.addEventListener('mouseenter', function(e) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = this.title;
+            tooltip.style.cssText = `
+                position: absolute;
+                background: var(--grey-900);
+                color: var(--pure-white);
+                padding: 0.5rem;
+                border-radius: var(--border-radius-sm);
+                font-size: 0.85rem;
+                z-index: 1000;
+                pointer-events: none;
+                white-space: nowrap;
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = this.getBoundingClientRect();
+            tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+            tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + 'px';
+            
+            this._tooltip = tooltip;
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            if (this._tooltip) {
+                this._tooltip.remove();
+                this._tooltip = null;
             }
         });
     });
 });
 </script>
-<style>
 
-:root {
-    --primary-green: #003c6d;
-    --primary-light: #005085;
-    --primary-lighter: #e8eff5;
-    --primary-lightest: #f4f9fa;
-    --primary-dark: #003655;
-    --primary-darker: #003858;
-    --primary-darkest: #00182b;
-    --grey-900: #1a1a1a;
-    --grey-800: #2c2c2c;
-    --grey-700: #424242;
-    --grey-500: #757575;
-    --grey-300: #e0e0e0;
-    --grey-100: #f5f5f5;
-    --grey-50: #fafafa;
-    --pure-white: #FFFFFF;
-    --success-green: #10b981;
-    --warning-orange: #f59e0b;
-    --error-red: #ef4444;
-    --info-blue: #3b82f6;
-    --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
-    --gradient-light: linear-gradient(135deg, var(--primary-light) 0%, #0067a3 100%);
-    --gradient-dark: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
-    --shadow-sm: 0 2px 8px rgba(0, 69, 109, 0.08);
-    --shadow-md: 0 6px 20px rgba(0, 60, 109, 0.12);
-    --shadow-lg: 0 12px 40px rgba(0, 65, 109, 0.15);
-    --shadow-xl: 0 25px 65px rgba(0, 74, 109, 0.18);
-    --border-radius-sm: 12px;
-    --border-radius-md: 20px;
-    --border-radius-lg: 28px;
-    --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-    --transition-slow: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-</style>
 @endsection

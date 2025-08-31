@@ -91,6 +91,7 @@
         <form class="application-form" method="POST" action="{{ route('applications.store') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="job_id" value="{{ $job->id }}">
+            <input type="hidden" name="debug_token" value="{{ time() }}">
             
             <div class="application-form-grid">
                 <div class="form-main-content">
@@ -294,33 +295,33 @@
 <style>
 /* ===== FILE UPLOAD AREAS ===== */
 .file-upload-area {
-    border: 2px dashed #cbd5e1;
-    border-radius: 12px;
+    border: 2px dashed var(--grey-300);
+    border-radius: var(--border-radius-sm);
     padding: 2rem;
     text-align: center;
-    background: #f8fafc;
+    background: var(--primary-lightest);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .file-upload-area:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
+    border-color: var(--info-blue);
+    background: var(--primary-lighter);
 }
 
 .file-upload-area.dragover {
-    border-color: #10b981;
-    background: #ecfdf5;
+    border-color: var(--success-green);
+    background: var(--primary-lightest);
 }
 
 .upload-icon {
     font-size: 3rem;
-    color: #94a3b8;
+    color: var(--grey-500);
     margin-bottom: 1rem;
 }
 
 .upload-text p {
-    color: #64748b;
+    color: var(--grey-500);
     font-size: 1rem;
     margin-bottom: 1rem;
 }
@@ -340,16 +341,16 @@
 
 /* ===== DASHBOARD STYLES ===== */
 .dashboard-section {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-300);
     overflow: hidden;
 }
 
 .dashboard-header-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: var( --primary-green);
+    color: var(--pure-white);
     padding: 2rem;
     text-align: center;
 }
@@ -407,12 +408,12 @@
 }
 
 .application-status-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
     padding: 2rem;
     text-align: center;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--grey-300);
 }
 
 .status-header {
@@ -425,11 +426,11 @@
 }
 
 .status-icon.success {
-    color: #10b981;
+    color: var(--success-green);
 }
 
 .application-status-card h2 {
-    color: #1e293b;
+    color: var(--grey-900);
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
@@ -441,8 +442,8 @@
     gap: 1.5rem;
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: #f8fafc;
-    border-radius: 12px;
+    background: var(--primary-lightest);
+    border-radius: var(--border-radius-sm);
 }
 
 .detail-item {
@@ -453,13 +454,13 @@
 }
 
 .detail-item .label {
-    color: #64748b;
+    color: var(--grey-500);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .detail-item .value {
-    color: #1e293b;
+    color: var(--grey-900);
     font-weight: 600;
     font-size: 1rem;
 }
@@ -473,20 +474,20 @@
 }
 
 .status-badge.pending {
-    background: #fef3c7;
-    color: #92400e;
+    background: var(--warning-orange);
+    color: var(--pure-white);
 }
 
 .job-summary {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: #f8fafc;
-    border-radius: 12px;
+    background: var(--primary-lightest);
+    border-radius: var(--border-radius-sm);
     text-align: left;
 }
 
 .job-summary h3 {
-    color: #1e293b;
+    color: var(--grey-900);
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -504,20 +505,20 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem;
-    background: white;
+    background: var(--pure-white);
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--grey-300);
 }
 
 .info-item i {
-    color: #3b82f6;
+    color: var(--info-blue);
     font-size: 1.2rem;
     width: 20px;
     text-align: center;
 }
 
 .info-item span {
-    color: #374151;
+    color: var(--grey-700);
     font-weight: 500;
 }
 
@@ -530,12 +531,12 @@
 
 /* ===== JOB SUMMARY HEADER ===== */
 .job-summary-header {
-    background: white;
-    border-radius: 16px;
+    background: var(--primary-green);
+  
     padding: 2rem;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-100);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -553,7 +554,7 @@
 .job-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #1e293b;
+    color: white;
     margin-bottom: 1rem;
     line-height: 1.2;
 }
@@ -562,11 +563,11 @@
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    background: var(--primary-lightest);
+    border: 1px solid var(--grey-300);
+    border-radius: var(--border-radius-sm);
     padding: 0.75rem 1.5rem;
-    color: #475569;
+    color: var(--grey-700);
     font-weight: 500;
     font-size: 1.1rem;
 }
@@ -581,16 +582,16 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    background: var(--primary-lightest);
+    border: 1px solid var(--grey-300);
+    border-radius: var(--border-radius-sm);
     padding: 1rem;
-    color: #475569;
+    color: var(--grey-700);
     font-weight: 500;
 }
 
 .meta-item i {
-    color: #3b82f6;
+    color: var(--info-blue);
     font-size: 1.1rem;
 }
 
@@ -616,22 +617,22 @@
 
 /* ===== FORM SECTIONS ===== */
 .form-section {
-    background: white;
-    border-radius: 16px;
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
     padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-300);
 }
 
 .form-section h2 {
-    color: #1e293b;
+    color: var(--grey-900);
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .section-description {
-    color: #64748b;
+    color: var(--grey-500);
     font-size: 1rem;
     margin-bottom: 1.5rem;
     line-height: 1.6;
@@ -643,7 +644,7 @@
 
 .form-group label {
     display: block;
-    color: #374151;
+    color: var(--grey-700);
     font-weight: 600;
     margin-bottom: 0.75rem;
     font-size: 1rem;
@@ -668,17 +669,17 @@
 .progress-card,
 .requirements-card,
 .tips-card {
-    background: white;
-    border-radius: 16px;
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
     padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--grey-300);
 }
 
 .progress-card h3,
 .requirements-card h3,
 .tips-card h3 {
-    color: #1e293b;
+    color: var(--grey-900);
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -709,29 +710,29 @@
 }
 
 .step.completed .step-icon {
-    background: #10b981;
-    color: white;
+    background: var(--success-green);
+    color: var(--pure-white);
 }
 
 .step.active .step-icon {
-    background: #3b82f6;
-    color: white;
+    background: var(--info-blue);
+    color: var(--pure-white);
 }
 
 .step:not(.completed):not(.active) .step-icon {
-    background: #e5e7eb;
-    color: #6b7280;
+    background: var(--grey-300);
+    color: var(--grey-500);
 }
 
 .step-content h4 {
-    color: #1e293b;
+    color: var(--grey-900);
     font-weight: 600;
     margin-bottom: 0.25rem;
     font-size: 0.9rem;
 }
 
 .step-content p {
-    color: #64748b;
+    color: var(--grey-500);
     font-size: 0.8rem;
     margin: 0;
 }
@@ -744,8 +745,8 @@
 
 .requirements-list li {
     padding: 0.5rem 0;
-    border-bottom: 1px solid #f1f5f9;
-    color: #374151;
+    border-bottom: 1px solid var(--grey-100);
+    color: var(--grey-700);
     font-size: 0.9rem;
 }
 
@@ -755,7 +756,7 @@
 
 .requirements-list li::before {
     content: '•';
-    color: #3b82f6;
+    color: var(--info-blue);
     font-weight: bold;
     margin-right: 0.5rem;
 }
@@ -765,7 +766,7 @@
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1rem;
-    color: #6b7280;
+    color: var(--grey-500);
     font-size: 0.9rem;
 }
 
@@ -774,7 +775,7 @@
 }
 
 .tip-item i {
-    color: #10b981;
+    color: var(--success-green);
     font-size: 1rem;
 }
 
@@ -792,31 +793,31 @@
 
 .form-label {
     display: block;
-    color: #374151;
+    color: var(--grey-700);
     font-weight: 600;
     margin-bottom: 0.5rem;
     font-size: 0.95rem;
 }
 
 .required {
-    color: #ef4444;
+    color: var(--error-red);
 }
 
 .form-input,
 .form-textarea {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--grey-300);
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: white;
+    background: var(--pure-white);
 }
 
 .form-input:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--info-blue);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -826,7 +827,7 @@
 }
 
 .error-message {
-    color: #ef4444;
+    color: var(--error-red);
     font-size: 0.875rem;
     margin-top: 0.5rem;
     display: block;
@@ -854,7 +855,7 @@
 .progress-bar {
     width: 100%;
     height: 8px;
-    background: #e5e7eb;
+    background: var(--grey-300);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 1.5rem;
@@ -862,7 +863,7 @@
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    background: var( --primary-green);
     border-radius: 4px;
     transition: width 0.3s ease;
 }
@@ -871,9 +872,9 @@
 .submission-status {
     margin-top: 1.5rem;
     padding: 1.5rem;
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border: 1px solid #93c5fd;
-    border-radius: 12px;
+    background: var(--primary-lightest);
+    border: 1px solid var(--info-blue);
+    border-radius: var(--border-radius-sm);
     text-align: center;
 }
 
@@ -882,7 +883,7 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    color: #1e40af;
+    color: var(--primary-green);
     font-weight: 600;
 }
 
@@ -1096,33 +1097,34 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
+    background: var( --primary-green);
+    color: var(--pure-white);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
+    background: var(--gradient-dark);
     transform: translateY(-2px);
 }
 
 .btn-outline {
     background: transparent;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
+    color: var(--grey-500);
+    border: 2px solid var(--grey-300);
 }
 
 .btn-outline:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: var(--primary-lightest);
+    border-color: var(--grey-300);
 }
 
 .btn-success {
-    background: #10b981;
-    color: white;
+    background: var(--success-green);
+    color: var(--pure-white);
 }
 
 .btn-success:hover {
-    background: #059669;
+    background: var(--success-green);
+    opacity: 0.9;
 }
 
 .btn-sm {
@@ -1134,25 +1136,25 @@
 .form-control {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--grey-300);
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
-    background: white;
+    background: var(--pure-white);
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: var(--info-blue);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-control.is-invalid {
-    border-color: #ef4444;
+    border-color: var(--error-red);
 }
 
 .invalid-feedback {
-    color: #ef4444;
+    color: var(--error-red);
     font-size: 0.875rem;
     margin-top: 0.5rem;
 }
@@ -1162,26 +1164,26 @@
     justify-content: flex-end;
     margin-top: 0.5rem;
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--grey-500);
 }
 
 .current-count {
-    color: #3b82f6;
+    color: var(--info-blue);
     font-weight: 600;
 }
 
 .form-help {
     margin-top: 0.75rem;
     padding: 0.75rem;
-    background: #f8fafc;
+    background: var(--primary-lightest);
     border-radius: 8px;
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid var(--info-blue);
 }
 
 .form-help p {
     margin: 0.25rem 0;
     font-size: 0.875rem;
-    color: #64748b;
+    color: var(--grey-500);
 }
 
 /* ===== RESPONSIVE ===== */
@@ -1329,7 +1331,21 @@ function updateProgressBar() {
 }
 
 function handleFormSubmission(e) {
-    e.preventDefault();
+    // Add debugging
+    console.log('Form submission started');
+    
+    // Validate cover letter length
+    const coverLetter = document.getElementById('cover_letter');
+    if (coverLetter && coverLetter.value.length < 100) {
+        e.preventDefault();
+        alert('رسالة التقديم يجب أن تكون 100 حرف على الأقل');
+        return;
+    }
+    
+    // Don't prevent default - let the form submit normally
+    // e.preventDefault();
+    
+    console.log('Form validation passed, submitting...');
     
     // Show submission status
     const submitBtn = document.getElementById('submitBtn');
@@ -1338,12 +1354,10 @@ function handleFormSubmission(e) {
     if (submitBtn && submissionStatus) {
         submitBtn.style.display = 'none';
         submissionStatus.style.display = 'block';
-        
-        // Simulate form submission
-        setTimeout(() => {
-            showSuccessModal();
-        }, 2000);
     }
+    
+    // Let the form submit normally - don't show modal
+    // The form will redirect to the success page after submission
 }
 
 function showSuccessModal() {
