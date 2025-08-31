@@ -164,19 +164,20 @@
                                     {{ $job->status === 'active' ? 'نشطة' : 'معلق' }}
                                 </span>
                             </td>
-                            <td>
-                                <div class="flex gap-1">
-                                    <a href="{{ route('jobs.show', $job) }}" class="btn btn-outline">عرض</a>
-                                    @auth
-                                        @if(auth()->user()->isEmployee())
-                                            <a href="{{ route('applications.create', $job) }}" class="btn btn-primary">تقدم الآن</a>
-                                        @endif
-                                        @if(auth()->user()->isCompany() && $job->company_id === auth()->user()->id)
-                                            <a href="{{ route('jobs.edit', $job) }}" class="btn btn-secondary">تعديل</a>
-                                        @endif
-                                    @endauth
-                                </div>
-                            </td>
+                                                    <td>
+                            <div class="flex gap-1">
+                                <a href="{{ route('jobs.show', $job) }}" class="btn btn-outline">عرض</a>
+                                @auth
+                                    @if(auth()->user()->isEmployee())
+                                        <a href="{{ route('applications.create', $job) }}" class="btn btn-primary">تقدم الآن</a>
+                                    @endif
+                                    @if(auth()->user()->isCompany() && $job->company_id === auth()->user()->id)
+                                        <a href="{{ route('jobs.edit', $job) }}" class="btn btn-secondary">تعديل</a>
+                                        <a href="{{ route('jobs.applications.index', $job) }}" class="btn btn-info">المتقدمين</a>
+                                    @endif
+                                @endauth
+                            </div>
+                        </td>
                         </tr>
                     @endforeach
                 </tbody>

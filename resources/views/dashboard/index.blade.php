@@ -27,6 +27,7 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/profile.css') }}">
     
     <!-- RTL/LTR Specific Styles -->
     <style>
