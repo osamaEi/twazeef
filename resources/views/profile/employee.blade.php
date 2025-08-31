@@ -2261,33 +2261,7 @@
     </div>
 
     <!-- Success/Error Toast Notifications -->
-    <div class="toast-container" id="toastContainer">
-        <div class="toast success" id="successToast">
-            <div class="toast-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="toast-content">
-                <h4 class="toast-title">{{ __('Success!') }}</h4>
-                <p class="toast-message">{{ __('Your changes have been saved successfully.') }}</p>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="toast error" id="errorToast">
-            <div class="toast-icon">
-                <i class="fas fa-exclamation-circle"></i>
-            </div>
-            <div class="toast-content">
-                <h4 class="toast-title">{{ __('Error!') }}</h4>
-                <p class="toast-message">{{ __('Something went wrong. Please try again.') }}</p>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
+
 </div>
 
 <!-- JavaScript for Profile Functionality -->

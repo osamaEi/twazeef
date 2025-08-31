@@ -349,34 +349,6 @@
         </div>
     @endif
 
-    <!-- Success/Error Toast Notifications -->
-    <div class="toast-container" id="toastContainer">
-        <div class="toast success" id="successToast">
-            <div class="toast-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="toast-content">
-                <h4 class="toast-title">نجح!</h4>
-                <p class="toast-message">تم تحديث حالة التقديم بنجاح</p>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="toast error" id="errorToast">
-            <div class="toast-icon">
-                <i class="fas fa-exclamation-circle"></i>
-            </div>
-            <div class="toast-content">
-                <h4 class="toast-title">خطأ!</h4>
-                <p class="toast-message">حدث خطأ أثناء تحديث الحالة</p>
-            </div>
-            <button class="toast-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
 
     <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal">
