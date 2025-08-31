@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Job extends Model
 {
@@ -31,6 +32,7 @@ class Job extends Model
         'company_id',
         'title',
         'description',
+        'image',
         'location',
         'type',
         'experience_level',
@@ -140,7 +142,7 @@ class Job extends Model
             'contract' => 'عقد مؤقت',
             'freelance' => 'عمل حر',
         ];
-        
+
         return $types[$this->type] ?? $this->type;
     }
 
@@ -155,7 +157,7 @@ class Job extends Model
             'senior' => 'خبير',
             'executive' => 'تنفيذي',
         ];
-        
+
         return $levels[$this->experience_level] ?? $this->experience_level;
     }
 
@@ -215,5 +217,24 @@ class Job extends Model
     public function isClosed()
     {
         return $this->status === self::STATUS_CLOSED;
+    }
+
+    /**
+     * Get the job image URL
+     */
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return Storage::disk('public')->url($this->image);
+        }
+        return null;
+    }
+
+    /**
+     * Check if job has an image
+     */
+    public function hasImage()
+    {
+        return !empty($this->image);
     }
 }

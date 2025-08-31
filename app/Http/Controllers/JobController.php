@@ -66,6 +66,7 @@ class JobController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'location' => 'required|string|max:255',
             'type' => 'required|in:full-time,part-time,contract,freelance',
             'experience_level' => 'required|in:entry,mid,senior,executive',
@@ -82,6 +83,14 @@ class JobController extends Controller
 
         $job = new Job($request->all());
         $job->company_id = Auth::id();
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('jobs', $imageName, 'public');
+            $job->image = $imagePath;
+        }
 
         // Set default status if not provided
         if (!$job->status) {
@@ -137,6 +146,7 @@ class JobController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'location' => 'required|string|max:255',
             'type' => 'required|in:full-time,part-time,contract,freelance',
             'experience_level' => 'required|in:entry,mid,senior,executive',
@@ -153,6 +163,19 @@ class JobController extends Controller
 
         // Prepare data for update
         $data = $request->all();
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($job->image) {
+                Storage::disk('public')->delete($job->image);
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('jobs', $imageName, 'public');
+            $data['image'] = $imagePath;
+        }
 
         // Handle empty arrays for skills and benefits
         if (empty($data['skills'])) {
@@ -186,6 +209,11 @@ class JobController extends Controller
     {
         if ($job->company_id !== Auth::id()) {
             abort(403);
+        }
+
+        // Delete image if exists
+        if ($job->image) {
+            Storage::disk('public')->delete($job->image);
         }
 
         $job->delete();

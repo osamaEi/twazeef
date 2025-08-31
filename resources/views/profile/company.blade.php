@@ -870,5 +870,42 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<style>
 
+:root {
+    --primary-green: #003c6d;
+    --primary-light: #005085;
+    --primary-lighter: #e8eff5;
+    --primary-lightest: #f4f9fa;
+    --primary-dark: #003655;
+    --primary-darker: #003858;
+    --primary-darkest: #00182b;
+    --grey-900: #1a1a1a;
+    --grey-800: #2c2c2c;
+    --grey-700: #424242;
+    --grey-500: #757575;
+    --grey-300: #e0e0e0;
+    --grey-100: #f5f5f5;
+    --grey-50: #fafafa;
+    --pure-white: #FFFFFF;
+    --success-green: #10b981;
+    --warning-orange: #f59e0b;
+    --error-red: #ef4444;
+    --info-blue: #3b82f6;
+    --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+    --gradient-light: linear-gradient(135deg, var(--primary-light) 0%, #0067a3 100%);
+    --gradient-dark: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+    --shadow-sm: 0 2px 8px rgba(0, 69, 109, 0.08);
+    --shadow-md: 0 6px 20px rgba(0, 60, 109, 0.12);
+    --shadow-lg: 0 12px 40px rgba(0, 65, 109, 0.15);
+    --shadow-xl: 0 25px 65px rgba(0, 74, 109, 0.18);
+    --border-radius-sm: 12px;
+    --border-radius-md: 20px;
+    --border-radius-lg: 28px;
+    --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-slow: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+</style>
 @endsection

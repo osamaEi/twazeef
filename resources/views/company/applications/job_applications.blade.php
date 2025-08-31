@@ -58,8 +58,6 @@
         </div>
     </div>
 
-  
-
     <!-- Filter Tabs -->
     <div class="filter-tabs">
         <button class="filter-tab active" data-status="all">
@@ -128,7 +126,7 @@
         
         <div class="table-content">
             @forelse($applications as $application)
-                <div class="table-row application-row" data-status="{{ $application->status }}">
+                <div class="table-row application-row" data-status="{{ $application->status }}" data-application-id="{{ $application->id }}">
                     <div class="row-content">
                         <div class="row-main">
                             <div class="row-avatar">
@@ -142,6 +140,9 @@
                                     <span><i class="fas fa-calendar"></i> {{ $application->created_at->diffForHumans() }}</span>
                                     @if($application->applicant->phone)
                                         <span><i class="fas fa-phone"></i> {{ $application->applicant->phone }}</span>
+                                    @endif
+                                    @if($application->resume_path)
+                                        <span><i class="fas fa-file-pdf"></i> <a href="{{ asset('storage/' . $application->resume_path) }}" target="_blank" class="cv-link">عرض السيرة الذاتية</a></span>
                                     @endif
                                 </div>
                             </div>
@@ -175,10 +176,10 @@
                         </div>
                         
                         <div class="row-actions">
-                            <a href="{{ route('jobs.applications.show', ['job' => $job, 'application' => $application]) }}" class="btn btn-outline btn-sm">
+                            <button class="btn btn-outline btn-sm" onclick="toggleApplicationDetails('{{ $application->id }}')">
                                 <i class="fas fa-eye"></i>
-                                عرض
-                            </a>
+                                عرض التفاصيل
+                            </button>
                             
                             <div class="status-actions">
                                 @if($application->status === 'pending')
@@ -209,35 +210,125 @@
                         </div>
                     </div>
                     
-                    @if($application->cover_letter || $application->applicant->skills)
-                        <div class="row-details">
-                            @if($application->cover_letter)
-                                <div class="detail-section">
-                                    <h4>رسالة التقديم:</h4>
-                                    <p>{{ Str::limit($application->cover_letter, 200) }}</p>
-                                    @if(strlen($application->cover_letter) > 200)
-                                        <button class="btn btn-link btn-sm show-more" data-content="{{ $application->cover_letter }}">
-                                            عرض المزيد
-                                        </button>
+                    <!-- Application Details Section -->
+                    <div class="row-details" id="details-{{ $application->id }}" style="display: none;">
+                        <div class="details-grid">
+                            <!-- Personal Information -->
+                            <div class="detail-section">
+                                <h4><i class="fas fa-user"></i> المعلومات الشخصية</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <span class="info-label">الاسم الكامل:</span>
+                                        <span class="info-value">{{ $application->applicant->name }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">البريد الإلكتروني:</span>
+                                        <span class="info-value">{{ $application->applicant->email }}</span>
+                                    </div>
+                                    @if($application->applicant->phone)
+                                    <div class="info-item">
+                                        <span class="info-label">رقم الهاتف:</span>
+                                        <span class="info-value">{{ $application->applicant->phone }}</span>
+                                    </div>
                                     @endif
-                                </div>
-                            @endif
-                            
-                            @if($application->applicant->skills)
-                                <div class="detail-section">
-                                    <h4>المهارات:</h4>
-                                    <div class="skills-tags">
-                                        @foreach(array_slice($application->applicant->skills, 0, 6) as $skill)
-                                            <span class="skill-tag">{{ $skill }}</span>
-                                        @endforeach
-                                        @if(count($application->applicant->skills) > 6)
-                                            <span class="skill-tag more-skills">+{{ count($application->applicant->skills) - 6 }} المزيد</span>
-                                        @endif
+                                    @if($application->applicant->address)
+                                    <div class="info-item">
+                                        <span class="info-label">العنوان:</span>
+                                        <span class="info-value">{{ $application->applicant->address }}</span>
+                                    </div>
+                                    @endif
+                                    <div class="info-item">
+                                        <span class="info-label">تاريخ التقديم:</span>
+                                        <span class="info-value">{{ $application->created_at->format('Y/m/d H:i') }}</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- Skills Section -->
+                            @if($application->applicant->skills && count($application->applicant->skills) > 0)
+                            <div class="detail-section">
+                                <h4><i class="fas fa-tools"></i> المهارات</h4>
+                                <div class="skills-tags">
+                                    @foreach($application->applicant->skills as $skill)
+                                        <span class="skill-tag">{{ $skill }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Cover Letter Section -->
+                            @if($application->cover_letter)
+                            <div class="detail-section">
+                                <h4><i class="fas fa-envelope"></i> رسالة التقديم</h4>
+                                <div class="cover-letter-content">
+                                    <p>{{ $application->cover_letter }}</p>
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- CV/Resume Section -->
+                            @if($application->resume_path)
+                            <div class="detail-section">
+                                <h4><i class="fas fa-file-pdf"></i> السيرة الذاتية</h4>
+                                <div class="cv-section">
+                                    <div class="cv-preview">
+                                        <i class="fas fa-file-pdf fa-3x"></i>
+                                        <p>تم رفع السيرة الذاتية</p>
+                                    </div>
+                                    <div class="cv-actions">
+                                        <a href="{{ asset('storage/' . $application->resume_path) }}" target="_blank" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                            عرض السيرة الذاتية
+                                        </a>
+                                        <a href="{{ asset('storage/' . $application->resume_path) }}" download class="btn btn-outline btn-sm">
+                                            <i class="fas fa-download"></i>
+                                            تحميل السيرة الذاتية
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Company Information (if available) -->
+                            @if($application->applicant->company_name)
+                            <div class="detail-section">
+                                <h4><i class="fas fa-building"></i> معلومات الشركة</h4>
+                                <div class="info-grid">
+                                    @if($application->applicant->company_name)
+                                    <div class="info-item">
+                                        <span class="info-label">اسم الشركة:</span>
+                                        <span class="info-value">{{ $application->applicant->company_name }}</span>
+                                    </div>
+                                    @endif
+                                    @if($application->applicant->company_position)
+                                    <div class="info-item">
+                                        <span class="info-label">المنصب الحالي:</span>
+                                        <span class="info-value">{{ $application->applicant->company_position }}</span>
+                                    </div>
+                                    @endif
+                                    @if($application->applicant->company_website)
+                                    <div class="info-item">
+                                        <span class="info-label">موقع الشركة:</span>
+                                        <span class="info-value">
+                                            <a href="{{ $application->applicant->company_website }}" target="_blank">{{ $application->applicant->company_website }}</a>
+                                        </span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Notes Section -->
+                            @if($application->notes)
+                            <div class="detail-section">
+                                <h4><i class="fas fa-sticky-note"></i> ملاحظات</h4>
+                                <div class="notes-content">
+                                    <p>{{ $application->notes }}</p>
+                                </div>
+                            </div>
                             @endif
                         </div>
-                    @endif
+                    </div>
                 </div>
             @empty
                 <div class="empty-state">
@@ -297,9 +388,9 @@
 }
 
 .alert-info {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border: 1px solid #93c5fd;
-    color: #1e40af;
+    background: linear-gradient(135deg, #e8eff5 0%, #d4e7f0 100%);
+    border: 1px solid #005085;
+    color: #003c6d;
 }
 
 .alert i {
@@ -329,8 +420,8 @@
     background: white;
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(0, 60, 109, 0.08);
+    border: 1px solid #e8eff5;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -338,7 +429,7 @@
 
 .stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 60, 109, 0.12);
 }
 
 .stat-header {
@@ -352,7 +443,7 @@
     width: 60px;
     height: 60px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #003c6d 0%, #005085 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -372,7 +463,7 @@
 .stat-value {
     font-size: 3rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #1a1a1a;
     margin-bottom: 0.5rem;
     line-height: 1;
 }
@@ -380,13 +471,13 @@
 .stat-label {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #475569;
+    color: #424242;
     margin-bottom: 0.5rem;
 }
 
 .stat-description {
     font-size: 0.9rem;
-    color: #64748b;
+    color: #757575;
     line-height: 1.5;
 }
 
@@ -471,9 +562,9 @@
     gap: 0.75rem;
     padding: 1rem 1.5rem;
     background: white;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #e0e0e0;
     border-radius: 12px;
-    color: #64748b;
+    color: #757575;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -482,13 +573,13 @@
 }
 
 .filter-tab:hover {
-    border-color: #cbd5e1;
-    color: #475569;
+    border-color: #c0c0c0;
+    color: #424242;
 }
 
 .filter-tab.active {
-    background: #3b82f6;
-    border-color: #3b82f6;
+    background: #003c6d;
+    border-color: #003c6d;
     color: white;
 }
 
@@ -518,7 +609,7 @@
 .search-box input {
     width: 100%;
     padding: 1rem 1rem 1rem 3rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #e0e0e0;
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -526,8 +617,8 @@
 
 .search-box input:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #003c6d;
+    box-shadow: 0 0 0 3px rgba(0, 60, 109, 0.1);
 }
 
 .search-box i {
@@ -535,7 +626,7 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8;
+    color: #757575;
 }
 
 .filter-controls {
@@ -546,7 +637,7 @@
 
 .filter-select {
     padding: 1rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #e0e0e0;
     border-radius: 12px;
     font-size: 1rem;
     background: white;
@@ -569,31 +660,31 @@
 
 .btn-outline {
     background: transparent;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
+    color: #757575;
+    border: 2px solid #e0e0e0;
 }
 
 .btn-outline:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
+    background: #f5f5f5;
+    border-color: #c0c0c0;
 }
 
 .btn-primary {
-    background: #3b82f6;
+    background: #003c6d;
     color: white;
 }
 
 .btn-primary:hover {
-    background: #2563eb;
+    background: #005085;
 }
 
 .btn-secondary {
-    background: #64748b;
+    background: #757575;
     color: white;
 }
 
 .btn-secondary:hover {
-    background: #475569;
+    background: #424242;
 }
 
 .btn-sm {
@@ -605,8 +696,8 @@
 .data-table {
     background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(0, 60, 109, 0.08);
+    border: 1px solid #e8eff5;
     overflow: hidden;
 }
 
@@ -615,8 +706,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 2rem;
-    border-bottom: 1px solid #f1f5f9;
-    background: #f8fafc;
+    border-bottom: 1px solid #e8eff5;
+    background: #f4f9fa;
 }
 
 .table-title {
@@ -625,7 +716,7 @@
     gap: 1rem;
     font-size: 1.5rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #1a1a1a;
     margin: 0;
 }
 
@@ -639,12 +730,12 @@
 }
 
 .table-row {
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid #e8eff5;
     transition: all 0.3s ease;
 }
 
 .table-row:hover {
-    background: #f8fafc;
+    background: #f4f9fa;
 }
 
 .row-content {
@@ -666,7 +757,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #003c6d 0%, #005085 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -689,12 +780,12 @@
 .row-title {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #1a1a1a;
     margin-bottom: 0.5rem;
 }
 
 .row-subtitle {
-    color: #64748b;
+    color: #757575;
     margin-bottom: 0.5rem;
 }
 
@@ -702,13 +793,24 @@
     display: flex;
     gap: 1.5rem;
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: #757575;
+    flex-wrap: wrap;
 }
 
 .row-meta span {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.cv-link {
+    color: #003c6d;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cv-link:hover {
+    text-decoration: underline;
 }
 
 .row-status {
@@ -744,31 +846,77 @@
     gap: 0.5rem;
 }
 
+/* Enhanced Row Details */
 .row-details {
-    padding: 0 2rem 2rem 2rem;
-    background: #f8fafc;
-    border-top: 1px solid #f1f5f9;
+    padding: 2rem;
+    background: #f4f9fa;
+    border-top: 1px solid #e8eff5;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
 }
 
 .detail-section {
-    margin-bottom: 1.5rem;
-}
-
-.detail-section:last-child {
-    margin-bottom: 0;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 60, 109, 0.05);
+    border: 1px solid #e8eff5;
 }
 
 .detail-section h4 {
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: #475569;
-    margin-bottom: 0.75rem;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e8eff5;
 }
 
-.detail-section p {
-    color: #64748b;
-    line-height: 1.6;
-    margin-bottom: 0.75rem;
+.detail-section h4 i {
+    color: #003c6d;
+}
+
+.info-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f4f9fa;
+    border-radius: 8px;
+    border: 1px solid #e8eff5;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #424242;
+    min-width: 120px;
+}
+
+.info-value {
+    color: #1a1a1a;
+    text-align: left;
+    flex: 1;
+}
+
+.info-value a {
+    color: #003c6d;
+    text-decoration: none;
+}
+
+.info-value a:hover {
+    text-decoration: underline;
 }
 
 .skills-tags {
@@ -778,28 +926,70 @@
 }
 
 .skill-tag {
-    background: #e0e7ff;
-    color: #3730a3;
+    background: #e8eff5;
+    color: #003c6d;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 500;
 }
 
-.more-skills {
-    background: #f1f5f9;
-    color: #64748b;
+.cover-letter-content {
+    background: #f4f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e8eff5;
 }
 
-.btn-link {
-    background: transparent;
-    color: #3b82f6;
-    text-decoration: underline;
-    padding: 0;
+.cover-letter-content p {
+    color: #1a1a1a;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
 }
 
-.btn-link:hover {
-    color: #2563eb;
+.cv-section {
+    text-align: center;
+}
+
+.cv-preview {
+    background: #f4f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 2px dashed #c0c0c0;
+    margin-bottom: 1rem;
+}
+
+.cv-preview i {
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+}
+
+.cv-preview p {
+    color: #757575;
+    margin: 0;
+    font-weight: 500;
+}
+
+.cv-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.notes-content {
+    background: #fef3c7;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #fbbf24;
+}
+
+.notes-content p {
+    color: #92400e;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
 }
 
 /* Empty State */
@@ -809,18 +999,18 @@
 }
 
 .empty-content i {
-    color: #cbd5e1;
+    color: #c0c0c0;
     margin-bottom: 1.5rem;
 }
 
 .empty-content h4 {
     font-size: 1.5rem;
-    color: #64748b;
+    color: #757575;
     margin-bottom: 0.5rem;
 }
 
 .empty-content p {
-    color: #94a3b8;
+    color: #757575;
     font-size: 1.1rem;
 }
 
@@ -864,14 +1054,14 @@
 
 .modal-header h3 {
     margin: 0;
-    color: #1e293b;
+    color: #1a1a1a;
 }
 
 .modal-close {
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: #94a3b8;
+    color: #757575;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 8px;
@@ -879,8 +1069,8 @@
 }
 
 .modal-close:hover {
-    background: #f1f5f9;
-    color: #64748b;
+    background: #f5f5f5;
+    color: #424242;
 }
 
 .modal-body {
@@ -888,7 +1078,7 @@
 }
 
 .modal-body p {
-    color: #64748b;
+    color: #757575;
     line-height: 1.6;
     margin: 0;
 }
@@ -922,10 +1112,6 @@
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .quick-opportunities {
         grid-template-columns: 1fr;
     }
     
@@ -966,6 +1152,24 @@
     
     .status-actions {
         justify-content: center;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .info-label {
+        min-width: auto;
+    }
+    
+    .cv-actions {
+        flex-direction: column;
     }
 }
 </style>
@@ -1033,6 +1237,23 @@ function resetFilters() {
             tab.classList.remove('active');
         }
     });
+}
+
+function toggleApplicationDetails(applicationId) {
+    const detailsSection = document.getElementById(`details-${applicationId}`);
+    const button = event.target;
+    
+    if (detailsSection.style.display === 'none') {
+        detailsSection.style.display = 'block';
+        button.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء التفاصيل';
+        button.classList.add('btn-primary');
+        button.classList.remove('btn-outline');
+    } else {
+        detailsSection.style.display = 'none';
+        button.innerHTML = '<i class="fas fa-eye"></i> عرض التفاصيل';
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-outline');
+    }
 }
 
 function updateStatus(applicationId, status) {
@@ -1217,16 +1438,6 @@ function backToJob() {
 function refreshTable() {
     location.reload();
 }
-
-// Show more content functionality
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('show-more')) {
-        const content = e.target.dataset.content;
-        const paragraph = e.target.previousElementSibling;
-        paragraph.textContent = content;
-        e.target.style.display = 'none';
-    }
-});
 
 // Close modal when clicking outside
 window.onclick = function(event) {

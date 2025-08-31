@@ -25,9 +25,7 @@ use Illuminate\Support\Facades\Mail;
 // Language switching route
 Route::get('language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('welcome');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'user.active'])->name('dashboard');
 

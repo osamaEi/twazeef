@@ -103,6 +103,23 @@
                         <h3>تفاصيل الوظيفة</h3>
                         
                         <div class="form-group">
+                            <label for="image">صورة الوظيفة</label>
+                            <div class="image-upload-container">
+                                <div class="image-preview" id="imagePreview">
+                                    <i class="fas fa-image"></i>
+                                    <span>اضغط لاختيار صورة</span>
+                                </div>
+                                <input type="file" id="image" name="image" accept="image/*" class="image-input" onchange="previewImage(this)">
+                                <div class="image-info">
+                                    <small class="form-help">يُسمح بملفات الصور: JPG, PNG, GIF, WebP. الحد الأقصى: 2MB</small>
+                                </div>
+                            </div>
+                            @error('image')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        
+                        <div class="form-group">
                             <label for="description">وصف الوظيفة *</label>
                             <textarea id="description" name="description" rows="8" required class="form-control" placeholder="اكتب وصفاً مفصلاً للوظيفة والمتطلبات...">{{ old('description') }}</textarea>
                             @error('description')
@@ -393,6 +410,53 @@ form.addEventListener('input', function() {
     }, 30000); // Auto-save after 30 seconds of inactivity
 });
 
+// Image preview functionality
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const file = input.files[0];
+    
+    if (file) {
+        // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('حجم الصورة يجب أن يكون أقل من 2MB');
+            input.value = '';
+            return;
+        }
+        
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('نوع الملف غير مسموح به. يرجى اختيار صورة بصيغة JPG, PNG, GIF, أو WebP');
+            input.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <img src="${e.target.result}" alt="معاينة الصورة" class="preview-image">
+                <button type="button" class="remove-image" onclick="removeImage()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            preview.classList.add('has-image');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeImage() {
+    const preview = document.getElementById('imagePreview');
+    const input = document.getElementById('image');
+    
+    preview.innerHTML = `
+        <i class="fas fa-image"></i>
+        <span>اضغط لاختيار صورة</span>
+    `;
+    preview.classList.remove('has-image');
+    input.value = '';
+}
+
 // Form validation
 form.addEventListener('submit', function(e) {
     const title = document.getElementById('title').value.trim();
@@ -507,6 +571,93 @@ form.addEventListener('submit', function(e) {
     font-size: 0.875rem;
     margin-top: 0.25rem;
     display: block;
+}
+
+/* Image Upload Styles */
+.image-upload-container {
+    position: relative;
+}
+
+.image-preview {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #e1e5e9;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-preview:hover {
+    border-color: var(--primary-color);
+    background: #f0f9ff;
+}
+
+.image-preview.has-image {
+    border-style: solid;
+    border-color: var(--primary-color);
+}
+
+.image-preview i {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.image-preview span {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.remove-image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.remove-image:hover {
+    background: #ef4444;
+    transform: scale(1.1);
+}
+
+.image-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.image-info {
+    margin-top: 0.5rem;
+    text-align: center;
 }
 
 /* Skills and Benefits Tags */

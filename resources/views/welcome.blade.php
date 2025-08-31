@@ -282,140 +282,64 @@
         </div>
         
         <div class="opportunities-grid">
-            <div class="opportunity-card">
-                <div class="opportunity-image">
-                    <img src="7.png">
+            @forelse($topJobs as $job)
+                <div class="opportunity-card">
+                    <div class="opportunity-image">
+                        @if($job->hasImage())
+                            <img src="{{ asset('storage/'.$job->image) }}" alt="{{ $job->title }}">
+                        @else
+                            <img src="7.png" alt="{{ $job->title }}">
+                        @endif
+                    </div>
+                    <div class="opportunity-content">
+                        <div class="opportunity-category" style="margin-top: -20px;width: 150px;margin-bottom: 10px;margin-right: -20px;">
+                            <i class="fas fa-briefcase"></i>
+                            <span>{{ $job->company->company_name ?? 'شركة خاصة' }}</span>
+                        </div>
+                        <h3 class="opportunity-title">{{ $job->title }}</h3>                            
+                        <p class="opportunity-desc">
+                            {{ \Illuminate\Support\Str::limit($job->description, 150) }}
+                        </p>
+                        <div class="meta-item" style="border: 3px solid #003655;background: var(--primary-lighter)">
+                            <div class="meta-label">الراتب المتوقع</div>
+                            <div class="meta-value">{{ $job->formatted_salary }}</div>
+                        </div>
+                        <br>
+                        <div class="opportunity-meta">
+                            <div class="meta-item">
+                                <div class="meta-label">نوع العقد</div>
+                                <div class="meta-value">{{ $job->formatted_type }}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">سنوات الخبرة</div>
+                                <div class="meta-value">{{ $job->formatted_experience }}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">الموقع</div>
+                                <div class="meta-value">{{ $job->location }}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">الجهة المشرفة</div>
+                                <div class="meta-value">{{ $job->company->company_name ?? 'شركة خاصة' }}</div>
+                            </div>
+                        </div>
+                        <a href="{{ route('jobs.show', $job) }}">
+                        <button style="font-size: 16px; margin-top: 20px; background: var(--primary-lighter); color: var(--primary-green); border: none; padding: 1.4rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition-medium); width: 100%; font-family: var(--font-main); transform: translateY(0px); box-shadow: none;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span style="margin-right: 0.5rem;">التقديم على الوظيفة</span>
+                        </button>
+                        </a>
+                    </div>
                 </div>
-                <div class="opportunity-content">
-                    <div class="opportunity-category" style="margin-top: -20px;width: 150px;margin-bottom: 10px;margin-right: -20px;">
-                        <i class="fas fa-solar-panel"></i>
-                        <span>الطاقة المتجددة</span>
+            @empty
+                <div class="opportunity-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <div class="opportunity-content">
+                        <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <h3>لا توجد وظائف متاحة حالياً</h3>
+                        <p>يرجى العودة لاحقاً للاطلاع على أحدث الفرص الوظيفية</p>
                     </div>
-                    <h3 class="opportunity-title">مهندس طاقة شمسية</h3>                            
-                    <p class="opportunity-desc">
-                        وظيفة حكومية في مشروع استراتيجي للطاقة الشمسية، تشمل الإشراف على محطات الطاقة وإدارة عمليات التشغيل والصيانة.
-                    </p>
-                    <div class="meta-item" style="border: 3px solid #003655;background: var(--primary-lighter)">
-                        <div class="meta-label">الراتب المتوقع</div>
-                        <div class="meta-value">15,000 ريال</div>
-                    </div>
-                    <br>
-                    <div class="opportunity-meta">
-                        <div class="meta-item">
-                            <div class="meta-label">نوع العقد</div>
-                            <div class="meta-value">دوام كامل</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">سنوات الخبرة</div>
-                            <div class="meta-value">5 سنوات</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">الموقع</div>
-                            <div class="meta-value">جدة</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">الجهة المشرفة</div>
-                            <div class="meta-value">اسم الشركة</div>
-                        </div>
-                    </div>
-                    <a href="auth">
-                    <button style="font-size: 16px; margin-top: 20px; background: var(--primary-lighter); color: var(--primary-green); border: none; padding: 1.4rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition-medium); width: 100%; font-family: var(--font-main); transform: translateY(0px); box-shadow: none;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    <span style="margin-right: 0.5rem;">التقديم على الوظيفة</span>
-                    </button>
-                    </a>
                 </div>
-            </div>
-
-            <div class="opportunity-card">
-                <div class="opportunity-image">
-                    <img src="7.png">
-                </div>
-                <div class="opportunity-content">
-                    <div class="opportunity-category" style="margin-top: -20px;width: 120px;margin-bottom: 10px;margin-right: -20px;">
-                        <i class="fas fa-microchip"></i>
-                        <span>التكنولوجيا</span>
-                    </div>
-                    <h3 class="opportunity-title">أخصائي تقنية المعلومات</h3>
-                    <p class="opportunity-desc">
-                        وظيفة في مدينة تقنية حكومية، تتضمن إدارة مراكز البيانات ودعم مشاريع الذكاء الاصطناعي والأنظمة الحكومية الرقمية.
-                    </p>
-                    <div class="meta-item" style="border: 3px solid #003655;background: var(--primary-lighter)">
-                        <div class="meta-label">الراتب المتوقع</div>
-                        <div class="meta-value">18,000 ريال</div>
-                    </div>
-                    <br>
-                    <div class="opportunity-meta">
-                        <div class="meta-item">
-                            <div class="meta-label">نوع العقد</div>
-                            <div class="meta-value">دوام كامل</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">سنوات الخبرة</div>
-                            <div class="meta-value">3 سنوات</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">الموقع</div>
-                            <div class="meta-value">جدة</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">الجهة المشرفة</div>
-                            <div class="meta-value">اسم الشركة</div>
-                        </div>
-                    </div>
-                    <a href="auth">
-                    <button style="font-size: 16px; margin-top: 20px; background: var(--primary-lighter); color: var(--primary-green); border: none; padding: 1.4rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition-medium); width: 100%; font-family: var(--font-main); transform: translateY(0px); box-shadow: none;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    <span style="margin-right: 0.5rem;">التقديم على الوظيفة</span>
-                    </button>
-                    </a>
-                </div>
-            </div>
-
-            <div class="opportunity-card">
-                <div class="opportunity-image">
-                    <img src="7.png">
-                </div>
-                <div class="opportunity-content">
-                    <div class="opportunity-category" style="margin-top: -20px;width: 100px;margin-bottom: 10px;margin-right: -20px;">
-                        <i class="fas fa-industry"></i>
-                        <span>الصناعة</span>
-                    </div>
-                    <h3 class="opportunity-title">مهندس صناعي</h3>
-                    <p class="opportunity-desc">
-                        وظيفة في مجمع صناعي للبتروكيماويات، تشمل الإشراف على خطوط الإنتاج وضمان الجودة وفق المعايير العالمية.
-                    </p>
-                    <div class="meta-item" style="border: 3px solid #003655;background: var(--primary-lighter)">
-                        <div class="meta-label">الراتب المتوقع</div>
-                        <div class="meta-value">14,000 ريال</div>
-                    </div>
-                    <br>
-                    <div class="opportunity-meta">
-                        <div class="meta-item">
-                            <div class="meta-label">نوع العقد</div>
-                            <div class="meta-value">دوام كامل</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">سنوات الخبرة</div>
-                            <div class="meta-value">4 سنوات</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">الموقع</div>
-                            <div class="meta-value">جدة - الصناعية</div>
-                        </div>
-                        <div class="meta-item">
-                            <div class="meta-label">الجهة المشرفة</div>
-                            <div class="meta-value">اسم الشركة</div>
-                        </div>
-                    </div>
-                    <a href="auth">
-                    <button style="font-size: 16px; margin-top: 20px; background: var(--primary-lighter); color: var(--primary-green); border: none; padding: 1.4rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; transition: var(--transition-medium); width: 100%; font-family: var(--font-main); transform: translateY(0px); box-shadow: none;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    <span style="margin-right: 0.5rem;">التقديم على الوظيفة</span>
-                    </button>
-                    </a>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>

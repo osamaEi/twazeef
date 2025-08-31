@@ -48,6 +48,11 @@
         <div class="jobs-grid">
             @forelse($jobs as $job)
                 <div class="job-card">
+                    @if($job->hasImage())
+                        <div class="job-image">
+                            <img src="{{ $job->image_url }}" alt="{{ $job->title }}" class="job-card-image">
+                        </div>
+                    @endif
                     <div class="job-header">
                         <h3 class="job-title">{{ $job->title }}</h3>
                         <span class="status-badge status-active">نشط</span>
@@ -175,6 +180,25 @@
     padding: 1.5rem;
     transition: all 0.3s ease;
     background: white;
+    overflow: hidden;
+}
+
+.job-image {
+    margin: -1.5rem -1.5rem 1rem -1.5rem;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+}
+
+.job-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.job-card:hover .job-card-image {
+    transform: scale(1.05);
 }
 
 .job-card:hover {

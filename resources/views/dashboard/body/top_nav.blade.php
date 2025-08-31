@@ -98,8 +98,10 @@
                     <div class="dropdown-divider"></div>
                     <form method="POST" action="{{ route('logout') }}" class="dropdown-item logout-form">
                         @csrf
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>{{ __('topnav.logout') }}</span>
+                        <button type="submit" class="dropdown-item logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>{{ __('topnav.logout') }}</span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -407,19 +409,28 @@
 }
 
 .logout-form {
+    padding: 0;
+    margin: 0;
+}
+
+.logout-btn {
     cursor: pointer;
     border: none;
     background: none;
     width: 100%;
     text-align: right;
+    padding: 0.75rem 1.5rem;
+    color: #333;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
 }
 
-.logout-form:hover {
+.logout-btn:hover {
     background: #fff5f5;
     color: #e53e3e;
 }
 
-.logout-form:hover i {
+.logout-btn:hover i {
     color: #e53e3e;
 }
 
@@ -464,16 +475,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Handle user dropdown item clicks
-    const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+    const dropdownItems = dropdown.querySelectorAll('.dropdown-item:not(.logout-btn)');
     dropdownItems.forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Handle logout form separately
-            if (item.classList.contains('logout-form')) {
-                item.submit();
-                return;
-            }
             
             // Get the href from the anchor tag
             const href = item.getAttribute('href');
@@ -485,6 +490,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Handle logout form submission
+    const logoutForm = dropdown.querySelector('.logout-form');
+    if (logoutForm) {
+        logoutForm.addEventListener('submit', function(e) {
+            // Close dropdown before logout
+            userProfile.classList.remove('active');
+            // Form will submit normally
+        });
+    }
     
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {

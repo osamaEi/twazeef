@@ -39,7 +39,11 @@
                 </div>
                 
                 <div>
-                    <img src="{{ asset('7.png') }}" class="project-image" alt="{{ $job->title }}">
+                    @if($job->hasImage())
+                        <img src="{{ asset('storage/'.$job->image) }}" class="project-image" alt="{{ $job->title }}">
+                    @else
+                        <img src="{{ asset('7.png') }}" class="project-image" alt="{{ $job->title }}">
+                    @endif
                 </div>
             </div>
         </div>

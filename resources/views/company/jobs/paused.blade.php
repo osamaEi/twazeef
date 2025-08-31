@@ -48,6 +48,11 @@
         <div class="jobs-grid">
             @forelse($jobs as $job)
                 <div class="job-card">
+                    @if($job->hasImage())
+                        <div class="job-image">
+                            <img src="{{ $job->image_url }}" alt="{{ $job->title }}" class="job-card-image">
+                        </div>
+                    @endif
                     <div class="job-header">
                         <h3 class="job-title">{{ $job->title }}</h3>
                         <span class="status-badge status-paused">معلق</span>
