@@ -99,6 +99,67 @@ class Job extends Model
     }
 
     /**
+     * Check if a user has already applied to this job
+     */
+    public function hasUserApplied($userId)
+    {
+        return $this->applications()->where('applicant_id', $userId)->exists();
+    }
+
+    /**
+     * Get the application for a specific user
+     */
+    public function getUserApplication($userId)
+    {
+        return $this->applications()->where('applicant_id', $userId)->first();
+    }
+
+    /**
+     * Get formatted salary range
+     */
+    public function getFormattedSalaryAttribute()
+    {
+        if ($this->salary_min && $this->salary_max) {
+            return "{$this->salary_min} - {$this->salary_max} {$this->salary_currency}";
+        } elseif ($this->salary_min) {
+            return "من {$this->salary_min} {$this->salary_currency}";
+        } elseif ($this->salary_max) {
+            return "حتى {$this->salary_max} {$this->salary_currency}";
+        }
+        return 'غير محدد';
+    }
+
+    /**
+     * Get formatted job type
+     */
+    public function getFormattedTypeAttribute()
+    {
+        $types = [
+            'full-time' => 'دوام كامل',
+            'part-time' => 'دوام جزئي',
+            'contract' => 'عقد مؤقت',
+            'freelance' => 'عمل حر',
+        ];
+        
+        return $types[$this->type] ?? $this->type;
+    }
+
+    /**
+     * Get formatted experience level
+     */
+    public function getFormattedExperienceAttribute()
+    {
+        $levels = [
+            'entry' => 'مبتدئ',
+            'mid' => 'متوسط',
+            'senior' => 'خبير',
+            'executive' => 'تنفيذي',
+        ];
+        
+        return $levels[$this->experience_level] ?? $this->experience_level;
+    }
+
+    /**
      * Get all available types
      */
     public static function getAvailableTypes()

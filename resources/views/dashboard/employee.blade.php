@@ -135,7 +135,7 @@
                     <h3>الملف الشخصي</h3>
                 </div>
                 <div class="action-links">
-                    <a href="{{ route('profile.edit') }}" class="action-link">
+                    <a href="{{ route('employee.profile') }}" class="action-link">
                         <i class="fas fa-user-edit"></i>
                         <span>تعديل الملف الشخصي</span>
                     </a>
@@ -263,7 +263,15 @@
                         
                         <div class="job-actions">
                             <a href="{{ route('jobs.show', $job) }}" class="btn btn-sm btn-outline">عرض التفاصيل</a>
-                            {{-- <a href="{{ route('applications.create', ['job_id' => $job->id]) }}" class="btn btn-sm btn-primary">تقدم الآن</a> --}}
+                            @if(auth()->user()->applications()->where('job_id', $job->id)->exists())
+                                <span class="btn btn-sm btn-success disabled">تم التقديم</span>
+                            @else
+                                @if($job && $job->id)
+                                    <a href="{{ route('applications.create', $job) }}" class="btn btn-sm btn-primary">تقدم الآن</a>
+                                @else
+                                    <span class="btn btn-sm btn-secondary disabled">خطأ في تحميل الوظيفة</span>
+                                @endif
+                            @endif
                         </div>
                     </div>
                 @empty

@@ -1,5 +1,5 @@
     <!-- الشريط الجانبي الأبيض المحسن -->
-    <aside class="sidebar {{ app()->getLocale() === 'ar' ? 'sidebar-rtl' : 'sidebar-ltr' }}" style="width : 314px;">
+    <aside class="sidebar {{ app()->getLocale() === 'ar' ? 'sidebar-rtl' : 'sidebar-ltr' }}">
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <div class="sidebar-logo-icon">💼</div>
@@ -26,6 +26,12 @@
                             <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span>{{ __('sidebar.overview') }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.profile') }}" class="nav-link {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
+                                <i class="fas fa-user"></i>
+                                <span>{{ __('sidebar.profile') }}</span>
                             </a>
                         </li>
                     </ul>
@@ -120,7 +126,18 @@
                                 <span class="nav-badge">{{ auth()->user()->jobs()->count() }}</span>
                             </a>
                         </li>
-                    
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ __('sidebar.profile_management') }}</div>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="{{ route('company.profile') }}" class="nav-link {{ request()->routeIs('company.profile') ? 'active' : '' }}">
+                                <i class="fas fa-user"></i>
+                                <span>{{ __('sidebar.profile') }}</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -179,16 +196,45 @@
             @else
                 <!-- User/Job Seeker Navigation -->
                 <div class="nav-section">
+                    <div class="nav-section-title">{{ __('sidebar.dashboard') }}</div>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="{{ route('employee.dashboard') }}" class="nav-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>{{ __('sidebar.overview') }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
                     <div class="nav-section-title">{{ __('sidebar.job_search') }}</div>
                     <ul>
                         <li class="nav-item">
-                            <a href="{{ route('jobs.index') }}" class="nav-link">
+                            <a href="{{ route('jobs.index') }}" class="nav-link {{ request()->routeIs('jobs.index') ? 'active' : '' }}">
                                 <i class="fas fa-search"></i>
                                 <span>{{ __('sidebar.search_jobs') }}</span>
                             </a>
                         </li>
-                      
-                     
+                        <li class="nav-item">
+                            <a href="{{ route('applications.index') }}" class="nav-link {{ request()->routeIs('applications.*') ? 'active' : '' }}">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>{{ __('sidebar.my_applications') }}</span>
+                                <span class="nav-badge">{{ auth()->user()->applications()->count() }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">{{ __('sidebar.profile_management') }}</div>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="{{ route('employee.profile') }}" class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">
+                                <i class="fas fa-user"></i>
+                                <span>{{ __('sidebar.profile') }}</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 

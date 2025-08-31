@@ -23,6 +23,11 @@ Route::middleware('guest')->group(function () {
         ->name('company.register');
     Route::post('company/register', [AuthController::class, 'registerCompany']);
 
+    // Company login routes
+    Route::get('company/login', [AuthController::class, 'showCompanyLogin'])
+        ->name('company.login');
+    Route::post('company/login', [AuthController::class, 'loginCompany']);
+
     // Registration selection route
     Route::get('register', function () {
         return view('auth.register');
@@ -56,9 +61,9 @@ Route::middleware('auth')->group(function () {
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    // Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-    //     ->middleware('throttle:6,1')
-    //     ->name('verification.send');
+    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');
@@ -72,6 +77,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // Route for sending verification emails (can be accessed without auth)
-// Route::post('send-verification-email', [EmailVerificationNotificationController::class, 'store'])
-//     ->middleware('throttle:6,1')
-//     ->name('verification.send');
+Route::post('send-verification-email', [EmailVerificationNotificationController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('verification.send');

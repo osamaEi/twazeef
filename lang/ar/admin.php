@@ -404,7 +404,7 @@ return [
         'title' => 'إدارة التسجيلات الجديدة',
         'welcome_title' => 'إدارة التسجيلات الجديدة!',
         'welcome_message' => 'يمكنك مراجعة وتفعيل حسابات المستخدمين الجدد.',
-        
+
         'stats' => [
             'total_pending' => 'إجمالي التسجيلات المعلقة',
             'total_pending_desc' => 'حسابات تنتظر التفعيل',
@@ -413,12 +413,12 @@ return [
             'pending_companies' => 'الشركات الجديدة',
             'pending_companies_desc' => 'حسابات الشركات المعلقة',
         ],
-        
+
         'tabs' => [
             'employees' => 'الموظفين الجدد',
             'companies' => 'الشركات الجديدة',
         ],
-        
+
         'table' => [
             'name' => 'الاسم',
             'company_name' => 'اسم الشركة',
@@ -430,28 +430,40 @@ return [
             'registration_date' => 'تاريخ التسجيل',
             'actions' => 'الإجراءات',
         ],
-        
+
         'status' => [
             'active' => 'مفعل',
             'pending' => 'معلق',
             'activated' => 'تم التفعيل',
         ],
-        
+
         'actions' => [
             'activate' => 'تفعيل',
             'deactivate' => 'إلغاء التفعيل',
             'bulk_activate' => 'تفعيل المحدد',
             'view' => 'عرض',
         ],
-        
+
         'confirm' => [
             'activate_single' => 'هل أنت متأكد من تفعيل هذا الحساب؟',
             'deactivate_single' => 'هل أنت متأكد من إلغاء تفعيل هذا الحساب؟',
             'activate_bulk' => 'هل أنت متأكد من تفعيل :count حساب؟',
         ],
-        
+
         'not_specified' => 'غير محدد',
         'no_employees' => 'لا توجد تسجيلات معلقة للموظفين',
         'no_companies' => 'لا توجد تسجيلات معلقة للشركات',
+
+        'messages' => [
+            'activate_success' => 'تم تفعيل الحساب بنجاح',
+            'activate_error' => 'حدث خطأ أثناء تفعيل الحساب',
+            'deactivate_success' => 'تم إلغاء تفعيل الحساب بنجاح',
+            'deactivate_error' => 'حدث خطأ أثناء إلغاء التفعيل',
+            'bulk_activate_success' => 'تم تفعيل :count حساب بنجاح',
+            'bulk_activate_error' => 'حدث خطأ أثناء التفعيل الدفعي',
+            'account_activated' => 'تم تفعيل الحساب',
+            'account_deactivated' => 'تم إلغاء تفعيل الحساب',
+            'account_pending' => 'الحساب معلق',
+        ],
     ],
 ];

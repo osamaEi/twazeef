@@ -54,4 +54,38 @@ class Application extends Model
     {
         return $query->whereIn('status', ['reviewed', 'shortlisted', 'interviewed']);
     }
+
+    /**
+     * Get human-readable status text
+     */
+    public function getStatusText()
+    {
+        $statuses = [
+            'pending' => 'معلق',
+            'reviewed' => 'تم المراجعة',
+            'shortlisted' => 'قائمة مختصرة',
+            'interviewed' => 'تمت المقابلة',
+            'accepted' => 'مقبول',
+            'rejected' => 'مرفوض',
+            'withdrawn' => 'منسحب',
+        ];
+
+        return $statuses[$this->status] ?? $this->status;
+    }
+
+    /**
+     * Get all available statuses
+     */
+    public static function getAvailableStatuses()
+    {
+        return [
+            'pending' => 'معلق',
+            'reviewed' => 'تم المراجعة',
+            'shortlisted' => 'قائمة مختصرة',
+            'interviewed' => 'تمت المقابلة',
+            'accepted' => 'مقبول',
+            'rejected' => 'مرفوض',
+            'withdrawn' => 'منسحب',
+        ];
+    }
 }

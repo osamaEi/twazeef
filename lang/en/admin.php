@@ -54,5 +54,17 @@ return [
         'not_specified' => 'Not specified',
         'no_employees' => 'No pending employee registrations',
         'no_companies' => 'No pending company registrations',
+
+        'messages' => [
+            'activate_success' => 'Account activated successfully',
+            'activate_error' => 'Error occurred while activating account',
+            'deactivate_success' => 'Account deactivated successfully',
+            'deactivate_error' => 'Error occurred while deactivating account',
+            'bulk_activate_success' => ':count accounts activated successfully',
+            'bulk_activate_error' => 'Error occurred while bulk activating',
+            'account_activated' => 'Account Activated',
+            'account_deactivated' => 'Account Deactivated',
+            'account_pending' => 'Account Pending',
+        ],
     ],
 ];

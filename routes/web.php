@@ -5,8 +5,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LanguageController;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,10 +37,22 @@ Route::get('/company/dashboard', [CompanyController::class, 'dashboard'])->middl
 // Employee dashboard route
 Route::get('/employee/dashboard', [DashboardController::class, 'employeeDashboard'])->middleware(['auth', 'verified', 'role:employee', 'user.active'])->name('employee.dashboard');
 
+// Forgot Password Routes
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 Route::middleware(['auth', 'user.active'])->group(function () {
+    // General profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Role-specific profile routes
+    Route::get('/admin/profile', [ProfileController::class, 'adminProfile'])->middleware('role:admin')->name('admin.profile');
+    Route::get('/company/profile', [ProfileController::class, 'companyProfile'])->middleware('role:company')->name('company.profile');
+    Route::get('/employee/profile', [ProfileController::class, 'employeeProfile'])->middleware('role:employee')->name('employee.profile');
 
     // Jobs routes
     Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index');
@@ -93,6 +108,60 @@ Route::middleware(['auth', 'user.active'])->group(function () {
     Route::get('/applications/{application}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
     Route::put('/applications/{application}', [ApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+});
+
+// Test Email Route
+Route::get('/test-email', function () {
+    try {
+        Mail::raw('Test email from Laravel', function ($message) {
+            $message->to('test@example.com')
+                ->subject('Test Email')
+                ->from(config('mail.from.address'), config('mail.from.name'));
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Email sent successfully!',
+            'config' => [
+                'mailer' => config('mail.default'),
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'username' => config('mail.mailers.smtp.username'),
+                'from_address' => config('mail.from.address')
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'config' => [
+                'mailer' => config('mail.default'),
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'username' => config('mail.mailers.smtp.username'),
+                'from_address' => config('mail.from.address')
+            ],
+            'suggestions' => [
+                'try_username_variations' => [
+                    'mail',
+                    'rayansu',
+                    'rayansu.com'
+                ],
+                'try_password_variations' => [
+                    'Mail2468',
+                    'Mail2468!',
+                    'Mail2468@'
+                ],
+                'try_alternative_settings' => [
+                    'host: mail.hostinger.com',
+                    'port: 587',
+                    'encryption: tls'
+                ]
+            ]
+        ], 500);
+    }
 });
 
 require __DIR__ . '/auth.php';

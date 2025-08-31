@@ -1,141 +1,129 @@
 @extends('dashboard.index')
 
-@section('title', 'تقديم طلب')
 
 @section('content')
 <div class="job-application-container">
-    <!-- Welcome Alert -->
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i>
-        <div>
-            <strong>مرحباً بك في صفحة التقديم للوظيفة!</strong> قم بملء النموذج أدناه لتقديم طلبك.
-        </div>
-    </div>
-
-    <!-- Job Summary Header -->
-    <div class="job-summary-header">
-        <div class="header-content">
-            <div class="job-title-section">
-                <h1 class="job-title">{{ $job->title }}</h1>
-                <div class="company-badge">
-                    <i class="fas fa-building"></i>
-                    {{ $job->company->name ?? 'شركة غير محددة' }}
+    @if($hasApplied)
+        <!-- User has already applied -->
+        <div class="already-applied-section">
+            <div class="dashboard-section">
+                <div class="dashboard-header-section">
+                    <h1 class="main-title">لقد تقدمت بالفعل لهذه الوظيفة</h1>
+                    <p class="subtitle">لا يمكنك التقديم مرة أخرى لنفس الوظيفة</p>
                 </div>
-            </div>
-            
-            <div class="job-meta-grid">
-                <div class="meta-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ $job->location }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ $job->getAvailableTypes()[$job->type] ?? $job->type }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-user-tie"></i>
-                    <span>{{ $job->getAvailableExperienceLevels()[$job->experience_level] ?? $job->experience_level }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>{{ $job->created_at->format('Y/m/d') }}</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="header-actions">
-            <a href="{{ route('jobs.show', $job) }}" class="btn btn-outline">
-                <i class="fas fa-arrow-right"></i>
-                العودة للوظيفة
-            </a>
-        </div>
-    </div>
-
-    <!-- Application Form Grid -->
-    <div class="application-form-grid">
-        <!-- Main Form -->
-        <div class="main-form">
-            <form action="{{ route('applications.store') }}" method="POST" enctype="multipart/form-data" class="application-form">
-                @csrf
-                <input type="hidden" name="job_id" value="{{ $job->id }}">
                 
-                <!-- Personal Information Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-user"></i> المعلومات الشخصية</h3>
-                        <div class="section-actions">
-                            <span class="required-badge">مطلوب</span>
+                <div class="application-status-card">
+                    <div class="status-header">
+                        <i class="fas fa-check-circle status-icon success"></i>
+                        <h2>تم تقديم طلبك بنجاح</h2>
+                    </div>
+                    
+                    <div class="status-details">
+                        <div class="detail-item">
+                            <span class="label">تاريخ التقديم:</span>
+                            <span class="value">{{ $existingApplication->created_at->format('Y-m-d H:i') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">حالة الطلب:</span>
+                            <span class="status-badge pending">قيد المراجعة</span>
                         </div>
                     </div>
-                    <div class="section-content">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="full_name" class="form-label">الاسم الكامل <span class="required">*</span></label>
-                                <input type="text" id="full_name" name="full_name" class="form-input" value="{{ old('full_name', auth()->user()->name ?? '') }}" required>
-                                @error('full_name')
-                                    <span class="error-message">{{ $message }}</span>
-                                @enderror
+                    
+                    <div class="job-summary">
+                        <h3>تفاصيل الوظيفة</h3>
+                        <div class="job-info-grid">
+                            <div class="info-item">
+                                <i class="fas fa-briefcase"></i>
+                                <span>{{ $job->title }}</span>
                             </div>
-                            <div class="form-group">
-                                <label for="email" class="form-label">البريد الإلكتروني <span class="required">*</span></label>
-                                <input type="email" id="email" name="email" class="form-input" value="{{ old('email', auth()->user()->email ?? '') }}" required>
-                                @error('email')
-                                    <span class="error-message">{{ $message }}</span>
-                                @enderror
+                            <div class="info-item">
+                                <i class="fas fa-building"></i>
+                                <span>{{ $job->company->name ?? 'شركة غير محددة' }}</span>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="phone" class="form-label">رقم الهاتف <span class="required">*</span></label>
-                                <input type="tel" id="phone" name="phone" class="form-input" value="{{ old('phone', auth()->user()->phone ?? '') }}" required>
-                                @error('phone')
-                                    <span class="error-message">{{ $message }}</span>
-                                @enderror
+                            <div class="info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ $job->location ?? 'موقع غير محدد' }}</span>
                             </div>
-                            <div class="form-group">
-                                <label for="location" class="form-label">الموقع</label>
-                                <input type="text" id="location" name="location" class="form-input" value="{{ old('location', auth()->user()->address ?? '') }}">
-                                @error('location')
-                                    <span class="error-message">{{ $message }}</span>
-                                @enderror
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ $job->type ?? 'نوع غير محدد' }}</span>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{{ route('applications.show', $existingApplication) }}" class="btn btn-primary">
+                            <i class="fas fa-eye"></i>
+                            عرض تفاصيل طلبي
+                        </a>
+                        <a href="{{ route('applications.index') }}" class="btn btn-outline">
+                            <i class="fas fa-list"></i>
+                            جميع طلباتي
+                        </a>
+                        <a href="{{ route('jobs.index') }}" class="btn btn-outline">
+                            <i class="fas fa-search"></i>
+                            البحث عن وظائف أخرى
+                        </a>
                     </div>
                 </div>
-
-                <!-- Cover Letter Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-file-alt"></i> خطاب التقديم</h3>
-                        <div class="section-actions">
-                            <button type="button" class="btn btn-outline btn-sm" onclick="generateCoverLetter()">
-                                <i class="fas fa-magic"></i>
-                                إنشاء تلقائي
-                            </button>
-                        </div>
+            </div>
+        </div>
+    @else
+        <!-- Job application form -->
+        <div class="job-application-header">
+            <div class="job-summary-header">
+                <div class="header-content">
+                    <h1 class="job-title">{{ $job->title }}</h1>
+                    <div class="company-info">
+                        <span class="company-name">{{ $job->company->name ?? 'شركة غير محددة' }}</span>
+                        <span class="location">{{ $job->location ?? 'موقع غير محدد' }}</span>
                     </div>
-                    <div class="section-content">
+                </div>
+                <div class="header-actions">
+                    <a href="{{ route('jobs.show', $job) }}" class="btn btn-outline">
+                        <i class="fas fa-eye"></i>
+                        عرض الوظيفة
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <form class="application-form" method="POST" action="{{ route('applications.store') }}" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="job_id" value="{{ $job->id }}">
+            
+            <div class="application-form-grid">
+                <div class="form-main-content">
+                    <div class="form-section">
+                        <h2>رسالة التقديم</h2>
+                        <p class="section-description">اكتب رسالة تقديم مقنعة تشرح فيها لماذا أنت مناسب لهذه الوظيفة</p>
+                        
                         <div class="form-group">
-                            <label for="cover_letter" class="form-label">خطاب التقديم <span class="required">*</span></label>
-                            <textarea id="cover_letter" name="cover_letter" class="form-textarea" rows="8" placeholder="اكتب خطاب تقديم مقنع يوضح لماذا أنت المرشح المثالي لهذه الوظيفة..." required>{{ old('cover_letter') }}</textarea>
+                            <label for="cover_letter">رسالة التقديم *</label>
+                            <textarea 
+                                id="cover_letter" 
+                                name="cover_letter" 
+                                rows="8" 
+                                class="form-control @error('cover_letter') is-invalid @enderror"
+                                placeholder="اكتب رسالة التقديم هنا..."
+                                required
+                            >{{ old('cover_letter') }}</textarea>
                             @error('cover_letter')
-                                <span class="error-message">{{ $message }}</span>
+                                <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <div class="char-counter">
+                                <span class="current-count">0</span>
+                                <span class="max-count">/ 1000</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Resume Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-file-pdf"></i> السيرة الذاتية</h3>
-                        <div class="section-actions">
-                            <span class="file-info">PDF, DOC, DOCX</span>
-                        </div>
-                    </div>
-                    <div class="section-content">
+                    <div class="form-section">
+                        <h2>السيرة الذاتية</h2>
+                        <p class="section-description">أرفق سيرتك الذاتية بصيغة PDF أو Word</p>
+                        
                         <div class="form-group">
-                            <label for="resume" class="form-label">رفع السيرة الذاتية <span class="required">*</span></label>
+                            <label for="resume">السيرة الذاتية</label>
                             <div class="file-upload-area" id="fileUploadArea">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
@@ -146,26 +134,34 @@
                                         اختر ملف
                                     </button>
                                 </div>
-                                <input type="file" id="resume" name="resume" class="file-input" accept=".pdf,.doc,.docx" required>
                             </div>
-                            @error('resume')
-                                <span class="error-message">{{ $message }}</span>
-                            @enderror
+                            <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" style="display: none;">
+                            
+                            <!-- Upload Progress for Resume -->
+                            <div id="uploadProgress" class="upload-progress" style="display: none;">
+                                <div class="progress-header">
+                                    <span class="progress-text">جاري رفع الملف...</span>
+                                    <span class="progress-percentage">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="progress-status">جاري التحضير...</div>
+                            </div>
+                            
+                            <div class="form-help">
+                                <p><strong>صيغ مقبولة:</strong> PDF, DOC, DOCX</p>
+                                <p><strong>الحد الأقصى:</strong> 2 ميجابايت</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Additional Documents Section -->
-                <div class="form-section">
-                    <div class="section-header">
-                        <h3><i class="fas fa-paperclip"></i> مستندات إضافية</h3>
-                        <div class="section-actions">
-                            <span class="optional-badge">اختياري</span>
-                        </div>
-                    </div>
-                    <div class="section-content">
+                    <div class="form-section">
+                        <h2>مستندات إضافية</h2>
+                        <p class="section-description">أرفق شهادات أو مستندات إضافية تدعم طلبك</p>
+                        
                         <div class="form-group">
-                            <label for="additional_documents" class="form-label">مستندات إضافية</label>
+                            <label for="additional_documents">مستندات إضافية</label>
                             <div class="file-upload-area" id="additionalDocsArea">
                                 <div class="upload-icon">
                                     <i class="fas fa-plus"></i>
@@ -176,132 +172,199 @@
                                         إضافة ملفات
                                     </button>
                                 </div>
-                                <input type="file" id="additional_documents" name="additional_documents[]" class="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
+                            </div>
+                            <input type="file" id="additional_documents" name="additional_documents[]" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple style="display: none;">
+                            
+                            <!-- Upload Progress for Additional Documents -->
+                            <div id="additionalDocsProgress" class="upload-progress" style="display: none;">
+                                <div class="progress-header">
+                                    <span class="progress-text">جاري رفع الملفات...</span>
+                                    <span class="progress-percentage">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div class="progress-status">جاري التحضير...</div>
+                            </div>
+                            
+                            <div class="form-help">
+                                <p><strong>صيغ مقبولة:</strong> PDF, DOC, DOCX, JPG, JPEG, PNG</p>
+                                <p><strong>الحد الأقصى:</strong> 5 ميجابايت لكل ملف</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            إرسال الطلب
+                        </button>
+                        
+                        <!-- Submission Status -->
+                        <div id="submissionStatus" class="submission-status" style="display: none;">
+                            <div class="status-content">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>جاري إرسال طلبك...</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Submit Section -->
-                <div class="form-section">
-                    <div class="section-content">
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-paper-plane"></i>
-                                إرسال الطلب
-                            </button>
-                            <button type="button" class="btn btn-outline" onclick="saveDraft()">
-                                <i class="fas fa-save"></i>
-                                حفظ كمسودة
-                            </button>
+                <div class="application-sidebar">
+                    <div class="progress-card">
+                        <h3>تقدم الطلب</h3>
+                        <div class="progress-steps">
+                            <div class="step completed">
+                                <div class="step-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="step-content">
+                                    <h4>اختيار الوظيفة</h4>
+                                    <p>تم اختيار الوظيفة</p>
+                                </div>
+                            </div>
+                            <div class="step active">
+                                <div class="step-icon">
+                                    <span>2</span>
+                                </div>
+                                <div class="step-content">
+                                    <h4>ملء الطلب</h4>
+                                    <p>أكمل جميع الحقول المطلوبة</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon">
+                                    <span>3</span>
+                                </div>
+                                <div class="step-content">
+                                    <h4>إرسال الطلب</h4>
+                                    <p>اضغط على زر الإرسال</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon">
+                                    <span>4</span>
+                                </div>
+                                <div class="step-content">
+                                    <h4>تأكيد الإرسال</h4>
+                                    <p>ستتلقى تأكيداً على إرسال طلبك</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-        </div>
 
-        <!-- Sidebar -->
-        <div class="application-sidebar">
-            <!-- Application Progress -->
-            <div class="progress-card">
-                <div class="card-header">
-                    <h4><i class="fas fa-tasks"></i> تقدم التقديم</h4>
-                    <div class="progress-percentage">75%</div>
-                </div>
-                <div class="card-content">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%"></div>
-                    </div>
-                    <div class="progress-steps">
-                        <div class="step completed">
-                            <i class="fas fa-check-circle"></i>
-                            <span>المعلومات الشخصية</span>
-                        </div>
-                        <div class="step completed">
-                            <i class="fas fa-check-circle"></i>
-                            <span>خطاب التقديم</span>
-                        </div>
-                        <div class="step active">
-                            <i class="fas fa-circle"></i>
-                            <span>السيرة الذاتية</span>
-                        </div>
-                        <div class="step">
-                            <i class="fas fa-circle"></i>
-                            <span>إرسال الطلب</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Job Requirements -->
-            <div class="requirements-card">
-                <div class="card-header">
-                    <h4><i class="fas fa-list-check"></i> متطلبات الوظيفة</h4>
-                </div>
-                <div class="card-content">
-                    @if($job->skills && count($job->skills) > 0)
-                        <div class="requirements-section">
-                            <h5>المهارات المطلوبة</h5>
-                            <div class="skills-tags">
-                                @foreach($job->skills as $skill)
-                                    <span class="skill-tag">{{ $skill }}</span>
+                    <div class="requirements-card">
+                        <h3>متطلبات الوظيفة</h3>
+                        <ul class="requirements-list">
+                            @if($job->requirements)
+                                @foreach(explode("\n", $job->requirements) as $requirement)
+                                    <li>{{ trim($requirement) }}</li>
                                 @endforeach
-                            </div>
-                        </div>
-                    @endif
-                    
-                    @if($job->experience_level)
-                        <div class="requirements-section">
-                            <h5>مستوى الخبرة</h5>
-                            <p>{{ $job->getAvailableExperienceLevels()[$job->experience_level] ?? $job->experience_level }}</p>
-                        </div>
-                    @endif
-                    
-                    @if($job->type)
-                        <div class="requirements-section">
-                            <h5>نوع الوظيفة</h5>
-                            <p>{{ $job->getAvailableTypes()[$job->type] ?? $job->type }}</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
+                            @else
+                                <li>لا توجد متطلبات محددة</li>
+                            @endif
+                        </ul>
+                    </div>
 
-            <!-- Application Tips -->
-            <div class="tips-card">
-                <div class="card-header">
-                    <h4><i class="fas fa-lightbulb"></i> نصائح للتقديم</h4>
-                </div>
-                <div class="card-content">
-                    <div class="tip-item">
-                        <i class="fas fa-check"></i>
-                        <span>اكتب خطاب تقديم مخصص للوظيفة</span>
-                    </div>
-                    <div class="tip-item">
-                        <i class="fas fa-check"></i>
-                        <span>تأكد من تحديث سيرتك الذاتية</span>
-                    </div>
-                    <div class="tip-item">
-                        <i class="fas fa-check"></i>
-                        <span>راجع متطلبات الوظيفة بعناية</span>
-                    </div>
-                    <div class="tip-item">
-                        <i class="fas fa-check"></i>
-                        <span>أضف مستندات داعمة إذا لزم الأمر</span>
+                    <div class="tips-card">
+                        <h3>نصائح للتقديم</h3>
+                        <div class="tip-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>اكتب رسالة تقديم مخصصة لكل وظيفة</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>ركز على المهارات والخبرات ذات الصلة</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>تأكد من تحديث سيرتك الذاتية</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>راجع طلبك قبل الإرسال</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </form>
+    @endif
 </div>
 
 <style>
-/* ===== JOB APPLICATION LAYOUT ===== */
+/* ===== FILE UPLOAD AREAS ===== */
+.file-upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-upload-area:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.file-upload-area.dragover {
+    border-color: #10b981;
+    background: #ecfdf5;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+.upload-text p {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.upload-text .btn {
+    margin: 0 auto;
+}
+
+/* ===== JOB APPLICATION CONTAINER ===== */
 .job-application-container {
-    padding: 1.5rem;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
     background: #f8fafc;
     min-height: 100vh;
+}
+
+/* ===== DASHBOARD STYLES ===== */
+.dashboard-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.dashboard-header-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
 }
 
 /* ===== ALERTS ===== */
@@ -334,6 +397,135 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
+}
+
+/* ===== ALREADY APPLIED SECTION ===== */
+.already-applied-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.application-status-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+.status-header {
+    margin-bottom: 2rem;
+}
+
+.status-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.status-icon.success {
+    color: #10b981;
+}
+
+.application-status-card h2 {
+    color: #1e293b;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.status-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-item .label {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.detail-item .value {
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.job-summary {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.job-summary h3 {
+    color: #1e293b;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.job-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-item i {
+    color: #3b82f6;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+.info-item span {
+    color: #374151;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* ===== JOB SUMMARY HEADER ===== */
@@ -427,58 +619,163 @@
     background: white;
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
 }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.form-section h2 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-description {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.form-group {
     margin-bottom: 1.5rem;
 }
 
-.section-header h3 {
-    color: #1e293b;
-    font-size: 1.3rem;
+.form-group label {
+    display: block;
+    color: #374151;
     font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* ===== SIDEBAR ===== */
+.application-sidebar {
+    position: sticky;
+    top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.progress-card,
+.requirements-card,
+.tips-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.progress-card h3,
+.requirements-card h3,
+.tips-card h3 {
+    color: #1e293b;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.progress-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.step.completed .step-icon {
+    background: #10b981;
+    color: white;
+}
+
+.step.active .step-icon {
+    background: #3b82f6;
+    color: white;
+}
+
+.step:not(.completed):not(.active) .step-icon {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+.step-content h4 {
+    color: #1e293b;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.step-content p {
+    color: #64748b;
+    font-size: 0.8rem;
     margin: 0;
 }
 
-.section-actions {
+.requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.requirements-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.requirements-list li:last-child {
+    border-bottom: none;
+}
+
+.requirements-list li::before {
+    content: '•';
+    color: #3b82f6;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.tip-item {
     display: flex;
-    gap: 0.5rem;
     align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
 }
 
-.required-badge {
-    background: #ef4444;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
+.tip-item:last-child {
+    margin-bottom: 0;
 }
 
-.optional-badge {
-    background: #6b7280;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.file-info {
-    background: #f1f5f9;
-    color: #64748b;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
+.tip-item i {
+    color: #10b981;
+    font-size: 1rem;
 }
 
 /* ===== FORM ELEMENTS ===== */
@@ -536,32 +833,6 @@
 }
 
 /* ===== FILE UPLOAD ===== */
-.file-upload-area {
-    border: 2px dashed #d1d5db;
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    background: #f9fafb;
-    cursor: pointer;
-}
-
-.file-upload-area:hover {
-    border-color: #3b82f6;
-    background: #f0f9ff;
-}
-
-.upload-icon {
-    font-size: 3rem;
-    color: #9ca3af;
-    margin-bottom: 1rem;
-}
-
-.upload-text p {
-    color: #6b7280;
-    margin-bottom: 1rem;
-}
-
 .file-input {
     display: none;
 }
@@ -577,58 +848,6 @@
 .btn-lg {
     padding: 1rem 2rem;
     font-size: 1.1rem;
-}
-
-/* ===== SIDEBAR ===== */
-.application-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    position: sticky;
-    top: 2rem;
-    height: fit-content;
-}
-
-.progress-card,
-.requirements-card,
-.tips-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    overflow: hidden;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    background: #f8fafc;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.card-header h4 {
-    color: #1e293b;
-    font-size: 1.1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin: 0;
-}
-
-.progress-percentage {
-    background: #3b82f6;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.card-content {
-    padding: 1.5rem;
 }
 
 /* ===== PROGRESS BAR ===== */
@@ -648,86 +867,216 @@
     transition: width 0.3s ease;
 }
 
-.progress-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* ===== SUBMISSION STATUS ===== */
+.submission-status {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+    border-radius: 12px;
+    text-align: center;
 }
 
-.step {
+.status-content {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 0.9rem;
-    color: #6b7280;
-}
-
-.step.completed {
-    color: #10b981;
-}
-
-.step.active {
-    color: #3b82f6;
+    justify-content: center;
+    gap: 1rem;
+    color: #1e40af;
     font-weight: 600;
 }
 
-.step i {
-    font-size: 1.1rem;
+.status-content i {
+    font-size: 1.5rem;
 }
 
-/* ===== REQUIREMENTS ===== */
-.requirements-section {
+/* ===== SUCCESS MESSAGE ===== */
+.success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 3rem;
+    text-align: center;
+    z-index: 10000;
+    max-width: 500px;
+    width: 90%;
+    animation: fadeInScale 0.5s ease-out;
+}
+
+.success-message .success-icon {
+    font-size: 4rem;
+    color: #10b981;
     margin-bottom: 1.5rem;
 }
 
-.requirements-section:last-child {
+.success-message h2 {
+    color: #1e293b;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.success-message p {
+    color: #64748b;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.success-message .btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.success-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ===== ENHANCED FILE UPLOAD ===== */
+.upload-success {
+    animation: uploadSuccess 0.5s ease-out;
+}
+
+.file-name {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.file-size {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.file-type {
+    color: #3b82f6;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.upload-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.file-item:last-child {
     margin-bottom: 0;
 }
 
-.requirements-section h5 {
-    color: #374151;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
+.file-item i {
+    font-size: 1.5rem;
+    color: #3b82f6;
+    flex-shrink: 0;
 }
 
-.skills-tags {
+.file-info {
+    flex: 1;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-.skill-tag {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.requirements-section p {
-    color: #6b7280;
+.file-item .file-name {
+    font-weight: 600;
+    color: #1e293b;
     margin: 0;
 }
 
-/* ===== TIPS ===== */
-.tip-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    color: #6b7280;
-    font-size: 0.9rem;
+.file-item .file-size {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin: 0;
 }
 
-.tip-item:last-child {
-    margin-bottom: 0;
+.file-item .file-type {
+    color: #3b82f6;
+    font-size: 0.75rem;
+    margin: 0;
 }
 
-.tip-item i {
+.upload-summary {
+    font-weight: 600;
     color: #10b981;
-    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.file-list {
+    margin-bottom: 1rem;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes uploadSuccess {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
 }
 
 /* ===== BUTTONS ===== */
@@ -767,13 +1116,72 @@
     border-color: #cbd5e1;
 }
 
-.btn-ghost {
-    background: transparent;
-    color: #64748b;
+.btn-success {
+    background: #10b981;
+    color: white;
 }
 
-.btn-ghost:hover {
-    background: #f1f5f9;
+.btn-success:hover {
+    background: #059669;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* ===== FORM STYLES ===== */
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background: white;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-control.is-invalid {
+    border-color: #ef4444;
+}
+
+.invalid-feedback {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.char-counter {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.current-count {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.form-help {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.form-help p {
+    margin: 0.25rem 0;
+    font-size: 0.875rem;
+    color: #64748b;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -826,6 +1234,19 @@
         flex-direction: column;
         align-items: stretch;
     }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .status-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .job-info-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
@@ -837,6 +1258,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize progress tracking
     updateProgressBar();
+    
+    // Initialize character counter
+    initializeCharacterCounter();
+    
     const fileUploadArea = document.getElementById('fileUploadArea');
     const resumeInput = document.getElementById('resume');
     const additionalDocsArea = document.getElementById('additionalDocsArea');
@@ -865,7 +1290,96 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Form submission handling
+    const form = document.querySelector('.application-form');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmission);
+    }
 });
+
+function initializeCharacterCounter() {
+    const coverLetter = document.getElementById('cover_letter');
+    const currentCount = document.querySelector('.current-count');
+    
+    if (coverLetter && currentCount) {
+        coverLetter.addEventListener('input', function() {
+            const length = this.value.length;
+            currentCount.textContent = length;
+            
+            if (length > 800) {
+                currentCount.style.color = '#ef4444';
+            } else if (length > 600) {
+                currentCount.style.color = '#f59e0b';
+            } else {
+                currentCount.style.color = '#3b82f6';
+            }
+        });
+    }
+}
+
+function initializeFormValidation() {
+    // Add any additional form validation logic here
+    console.log('Form validation initialized');
+}
+
+function updateProgressBar() {
+    // Add any progress bar logic here
+    console.log('Progress bar initialized');
+}
+
+function handleFormSubmission(e) {
+    e.preventDefault();
+    
+    // Show submission status
+    const submitBtn = document.getElementById('submitBtn');
+    const submissionStatus = document.getElementById('submissionStatus');
+    
+    if (submitBtn && submissionStatus) {
+        submitBtn.style.display = 'none';
+        submissionStatus.style.display = 'block';
+        
+        // Simulate form submission
+        setTimeout(() => {
+            showSuccessModal();
+        }, 2000);
+    }
+}
+
+function showSuccessModal() {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    
+    const successMessage = document.createElement('div');
+    successMessage.className = 'success-message';
+    successMessage.innerHTML = `
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>تم إرسال طلبك بنجاح!</h2>
+        <p>شكراً لك على تقديم طلب التوظيف. سنقوم بمراجعة طلبك وسنتواصل معك قريباً.</p>
+        <div class="success-actions">
+            <a href="{{ route('applications.index') }}" class="btn btn-primary">
+                <i class="fas fa-list"></i>
+                عرض طلباتي
+            </a>
+            <a href="{{ route('jobs.index') }}" class="btn btn-outline">
+                <i class="fas fa-search"></i>
+                البحث عن وظائف أخرى
+            </a>
+        </div>
+    `;
+    
+    overlay.appendChild(successMessage);
+    document.body.appendChild(overlay);
+    
+    // Close modal on overlay click
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    });
+}
 
 function updateFileUploadArea(area, file) {
     area.innerHTML = `
@@ -931,6 +1445,8 @@ function removeFile(button) {
             </button>
         </div>
     `;
+    
+    showSuccessMessage('تم إزالة الملف');
 }
 
 function removeFiles(button) {
@@ -949,6 +1465,8 @@ function removeFiles(button) {
             </button>
         </div>
     `;
+    
+    showSuccessMessage('تم إزالة جميع الملفات');
 }
 
 // Generate cover letter

@@ -62,7 +62,7 @@ class DashboardController extends Controller
         return view('dashboard.company', compact('stats', 'jobs', 'recent_applications'));
     }
 
-    private function employeeDashboard()
+    public function employeeDashboard()
     {
         $user = Auth::user();
 
@@ -73,8 +73,23 @@ class DashboardController extends Controller
             'accepted_applications' => $user->applications()->where('status', 'accepted')->count(),
         ];
 
-        $applications = $user->applications()->with('job')->latest()->take(10)->get();
-        $available_jobs = Job::active()->notExpired()->with('company')->latest()->take(10)->get();
+        // Get user's applications with job details
+        $applications = $user->applications()
+            ->with(['job.company'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Get available jobs that user hasn't applied to
+        $available_jobs = Job::active()
+            ->notExpired()
+            ->with('company')
+            ->whereDoesntHave('applications', function($query) use ($user) {
+                $query->where('applicant_id', $user->id);
+            })
+            ->latest()
+            ->take(10)
+            ->get();
 
         return view('dashboard.employee', compact('stats', 'applications', 'available_jobs'));
     }

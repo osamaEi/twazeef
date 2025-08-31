@@ -3,23 +3,21 @@
 @section('title', 'تفاصيل الطلب')
 
 @section('content')
-<div class="application-details-page">
+<div class="admin-dashboard">
     <!-- Header Section -->
-    <div class="page-header">
+    <div class="dashboard-header-section">
         <div class="header-content">
-            <div class="header-main">
-                <h1 class="page-title">
-                    <i class="fas fa-file-alt"></i>
-                    تفاصيل الطلب
-                </h1>
-                <p class="page-subtitle">مراجعة وإدارة معلومات الطلب</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('applications.index') }}" class="btn btn-outline">
-                    <i class="fas fa-arrow-right"></i>
-                    العودة للطلبات
-                </a>
-            </div>
+            <h1 class="main-title">
+                <i class="fas fa-file-alt"></i>
+                تفاصيل الطلب
+            </h1>
+            <p class="subtitle">مراجعة وإدارة معلومات الطلب</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ route('applications.index') }}" class="btn btn-outline">
+                <i class="fas fa-arrow-right"></i>
+                العودة للطلبات
+            </a>
         </div>
     </div>
 
@@ -38,18 +36,18 @@
         </div>
     @endif
 
-    <div class="application-details-grid">
+    <div class="dashboard-sections">
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="dashboard-section main-content-section">
             <!-- Job Information Card -->
-            <div class="info-card">
-                <div class="card-header">
-                    <h2 class="card-title">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
                         <i class="fas fa-briefcase"></i>
                         معلومات الوظيفة
                     </h2>
                 </div>
-                <div class="card-content">
+                <div class="section-content">
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="item-icon">
@@ -87,17 +85,48 @@
                                 <p class="info-value">{{ $application->job->type ?? 'غير محدد' }}</p>
                             </div>
                         </div>
+                        <div class="info-item">
+                            <div class="item-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="item-content">
+                                <label class="info-label">مستوى الخبرة</label>
+                                <p class="info-value">{{ $application->job->experience_level ?? 'غير محدد' }}</p>
+                            </div>
+                        </div>
+                        @if($application->job->salary_min || $application->job->salary_max)
+                        <div class="info-item">
+                            <div class="item-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="item-content">
+                                <label class="info-label">الراتب</label>
+                                <p class="info-value">
+                                    @if($application->job->salary_min && $application->job->salary_max)
+                                        {{ $application->job->salary_min }} - {{ $application->job->salary_max }} {{ $application->job->salary_currency }}
+                                    @elseif($application->job->salary_min)
+                                        من {{ $application->job->salary_min }} {{ $application->job->salary_currency }}
+                                    @else
+                                        حتى {{ $application->job->salary_max }} {{ $application->job->salary_currency }}
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        @endif
                     </div>
+                    
                     @if($application->job->description)
                         <div class="description-section">
                             <div class="section-header">
-                                <i class="fas fa-align-left"></i>
-                                <label class="info-label">وصف الوظيفة</label>
+                                <h3 class="section-title">
+                                    <i class="fas fa-align-left"></i>
+                                    وصف الوظيفة
+                                </h3>
                             </div>
                             <div class="description-content">
                                 <p>{{ Str::limit($application->job->description, 300) }}</p>
                                 <div class="description-more">
-                                    <a href="{{ route('jobs.show', $application->job) }}" class="btn btn-link">
+                                    <a href="{{ route('jobs.show', $application->job) }}" class="btn btn-primary">
                                         <i class="fas fa-external-link-alt"></i>
                                         عرض الوظيفة كاملة
                                     </a>
@@ -105,18 +134,34 @@
                             </div>
                         </div>
                     @endif
+
+                    @if($application->job->skills)
+                        <div class="skills-section">
+                            <div class="section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-tools"></i>
+                                    المهارات المطلوبة
+                                </h3>
+                            </div>
+                            <div class="skills-tags">
+                                @foreach($application->job->skills as $skill)
+                                    <span class="skill-tag">{{ $skill }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
             <!-- Cover Letter Card -->
-            <div class="info-card">
-                <div class="card-header">
-                    <h2 class="card-title">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
                         <i class="fas fa-envelope"></i>
                         خطاب التقديم
                     </h2>
                 </div>
-                <div class="card-content">
+                <div class="section-content">
                     <div class="cover-letter-content">
                         <div class="content-header">
                             <i class="fas fa-quote-left"></i>
@@ -143,14 +188,14 @@
 
             <!-- Resume Card -->
             @if($application->resume_path)
-                <div class="info-card">
-                    <div class="card-header">
-                        <h2 class="card-title">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
                             <i class="fas fa-file-pdf"></i>
                             السيرة الذاتية
                         </h2>
                     </div>
-                    <div class="card-content">
+                    <div class="section-content">
                         <div class="resume-section">
                             <div class="resume-info">
                                 <div class="resume-icon">
@@ -186,16 +231,16 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="dashboard-sidebar">
             <!-- Application Status Card -->
-            <div class="info-card status-card">
-                <div class="card-header">
-                    <h3 class="card-title">
+            <div class="dashboard-section status-card">
+                <div class="section-header">
+                    <h3 class="section-title">
                         <i class="fas fa-info-circle"></i>
                         حالة الطلب
                     </h3>
                 </div>
-                <div class="card-content">
+                <div class="section-content">
                     <div class="status-section">
                         @php
                             $statusColors = [
@@ -244,14 +289,14 @@
             </div>
 
             <!-- Application Details Card -->
-            <div class="info-card details-card">
-                <div class="card-header">
-                    <h3 class="card-title">
+            <div class="dashboard-section details-card">
+                <div class="section-header">
+                    <h3 class="section-title">
                         <i class="fas fa-clipboard-list"></i>
                         تفاصيل الطلب
                     </h3>
                 </div>
-                <div class="card-content">
+                <div class="section-content">
                     <div class="details-list">
                         <div class="detail-item">
                             <div class="item-icon">
@@ -283,14 +328,14 @@
 
             <!-- Applicant Information Card (for companies) -->
             @if(auth()->user()->role === 'company')
-                <div class="info-card applicant-card">
-                    <div class="card-header">
-                        <h3 class="card-title">
+                <div class="dashboard-section applicant-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
                             <i class="fas fa-user"></i>
                             معلومات المتقدم
                         </h3>
                     </div>
-                    <div class="card-content">
+                    <div class="section-content">
                         <div class="applicant-section">
                             <div class="applicant-profile">
                                 <div class="applicant-avatar">
@@ -322,8 +367,8 @@
                                         <div class="item-content">
                                             <label class="info-label">المهارات</label>
                                             <div class="skills-tags">
-                                                @foreach(explode(',', $application->applicant->skills) as $skill)
-                                                    <span class="skill-tag">{{ trim($skill) }}</span>
+                                                @foreach($application->applicant->skills as $skill)
+                                                    <span class="skill-tag">{{ $skill }}</span>
                                                 @endforeach
                                             </div>
                                         </div>
@@ -339,39 +384,45 @@
 </div>
 
 <style>
-/* Simple Enhanced Styles */
-.page-header {
-    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
+/* Dashboard-specific styles */
+.dashboard-sections {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
     margin-bottom: 2rem;
-    box-shadow: var(--shadow-md);
 }
 
-.page-title {
-    color: white;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+.dashboard-sidebar {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.page-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
+.main-content-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
+/* Alert Styles */
 .alert {
     background: linear-gradient(135deg, #10b981, #059669);
     color: white;
-    border-radius: var(--border-radius-md);
+    border-radius: 12px;
     padding: 1rem 1.5rem;
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.alert-icon {
+    margin-left: 0.75rem;
+}
+
+.alert-content {
+    flex: 1;
 }
 
 .alert-close {
@@ -388,44 +439,10 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-.application-details-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.info-card {
-    background: white;
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    border: 1px solid var(--grey-200);
-    margin-bottom: 1.5rem;
-}
-
-.card-header {
-    background: var(--grey-50);
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--grey-200);
-}
-
-.card-title {
-    color: var(--grey-800);
-    font-size: 1.25rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.card-content {
-    padding: 2rem;
-}
-
+/* Info Grid */
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
 }
 
@@ -433,22 +450,31 @@
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    padding: 1rem;
-    background: var(--grey-50);
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--grey-200);
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.info-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .item-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--primary-green);
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 1.1rem;
 }
 
 .item-content {
@@ -458,85 +484,97 @@
 .info-label, .detail-label {
     display: block;
     font-size: 0.875rem;
-    color: var(--grey-600);
+    color: #64748b;
     margin-bottom: 0.5rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .info-value, .detail-value {
-    font-size: 1.1rem;
-    color: var(--grey-800);
+    font-size: 1.125rem;
+    color: #1e293b;
     font-weight: 600;
-    margin-bottom: 0.25rem;
+    margin: 0;
 }
 
+/* Description Section */
 .description-section {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid var(--grey-200);
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    color: var(--grey-600);
-    font-size: 1rem;
+    border-top: 1px solid #e2e8f0;
 }
 
 .description-content {
-    background: var(--grey-50);
+    background: #f8fafc;
     padding: 1.5rem;
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--grey-200);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .description-more {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     text-align: center;
 }
 
-.btn-link {
-    color: var(--primary-green);
-    text-decoration: none;
+/* Skills Section */
+.skills-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.skill-tag {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    border: 1px solid #93c5fd;
     transition: all 0.2s ease;
 }
 
-.btn-link:hover {
-    color: var(--primary-dark);
-    text-decoration: underline;
+.skill-tag:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    transform: translateY(-1px);
 }
 
+/* Cover Letter */
 .cover-letter-content {
-    background: var(--grey-50);
-    padding: 1.5rem;
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--grey-200);
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .content-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1rem;
-    color: var(--grey-600);
+    margin-bottom: 1.5rem;
+    color: #64748b;
     font-size: 1rem;
+    font-weight: 600;
 }
 
 .letter-text {
     line-height: 1.8;
-    color: var(--grey-800);
-    margin-bottom: 1.5rem;
+    color: #334155;
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
 }
 
 .content-footer {
-    border-top: 1px solid var(--grey-200);
-    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.5rem;
 }
 
 .text-stats {
@@ -549,10 +587,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--grey-600);
+    color: #64748b;
     font-size: 0.875rem;
+    font-weight: 500;
 }
 
+/* Resume Section */
 .resume-section {
     display: flex;
     justify-content: space-between;
@@ -567,11 +607,11 @@
 }
 
 .resume-icon {
-    width: 60px;
-    height: 60px;
-    background: var(--error-red);
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
-    border-radius: var(--border-radius-md);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -580,19 +620,21 @@
 
 .resume-details h3 {
     margin-bottom: 0.5rem;
-    color: var(--grey-800);
+    color: #1e293b;
+    font-size: 1.125rem;
 }
 
 .resume-type {
-    color: var(--grey-600);
+    color: #64748b;
     margin-bottom: 0.5rem;
+    font-size: 0.875rem;
 }
 
 .resume-date {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--grey-500);
+    color: #94a3b8;
     font-size: 0.875rem;
 }
 
@@ -602,14 +644,9 @@
     gap: 0.75rem;
 }
 
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
+/* Status Card */
 .status-card {
-    border-left: 4px solid var(--primary-green);
+    border-left: 4px solid #10b981;
 }
 
 .current-status {
@@ -618,12 +655,21 @@
 }
 
 .status-badge {
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 2rem;
     border-radius: 2rem;
     font-size: 1rem;
     font-weight: 600;
+    display: inline-block;
 }
 
+/* Status Colors */
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-shortlisted { background: #dbeafe; color: #1e40af; }
+.status-interviewed { background: #e0e7ff; color: #3730a3; }
+.status-accepted { background: #d1fae5; color: #065f46; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+
+/* Form Styles */
 .status-form {
     margin-top: 1.5rem;
 }
@@ -636,23 +682,25 @@
     display: block;
     margin-bottom: 0.75rem;
     font-weight: 600;
-    color: var(--grey-700);
+    color: #374151;
+    font-size: 0.875rem;
 }
 
 .form-select {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--grey-300);
-    border-radius: var(--border-radius-md);
+    padding: 0.875rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
     background: white;
     font-size: 1rem;
     transition: all 0.2s ease;
+    color: #374151;
 }
 
 .form-select:focus {
     outline: none;
-    border-color: var(--primary-green);
-    box-shadow: 0 0 0 3px rgba(0, 60, 109, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .btn-full {
@@ -660,8 +708,9 @@
     justify-content: center;
 }
 
+/* Details Card */
 .details-card {
-    border-left: 4px solid var(--info-blue);
+    border-left: 4px solid #3b82f6;
 }
 
 .details-list {
@@ -670,8 +719,9 @@
     gap: 1rem;
 }
 
+/* Applicant Card */
 .applicant-card {
-    border-left: 4px solid var(--warning-orange);
+    border-left: 4px solid #f59e0b;
 }
 
 .applicant-profile {
@@ -682,7 +732,7 @@
 .applicant-avatar {
     width: 80px;
     height: 80px;
-    background: var(--primary-green);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-radius: 50%;
     display: flex;
@@ -695,41 +745,19 @@
 
 .applicant-name {
     font-size: 1.25rem;
-    color: var(--grey-800);
+    color: #1e293b;
     margin-bottom: 0.5rem;
+    font-weight: 600;
 }
 
 .applicant-email {
-    color: var(--grey-600);
-}
-
-.skills-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.skill-tag {
-    background: var(--primary-lightest);
-    color: var(--primary-green);
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
+    color: #64748b;
     font-size: 0.875rem;
-    font-weight: 600;
-    border: 1px solid var(--primary-light);
 }
-
-/* Status Colors */
-.status-pending { background: #fef3c7; color: #92400e; }
-.status-shortlisted { background: #dbeafe; color: #1e40af; }
-.status-interviewed { background: #e0e7ff; color: #3730a3; }
-.status-accepted { background: #d1fae5; color: #065f46; }
-.status-rejected { background: #fee2e2; color: #991b1b; }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .application-details-grid {
+    .dashboard-sections {
         grid-template-columns: 1fr;
     }
     
@@ -745,14 +773,6 @@
 }
 
 @media (max-width: 768px) {
-    .page-header {
-        padding: 1.5rem;
-    }
-    
-    .card-content {
-        padding: 1.5rem;
-    }
-    
     .info-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
@@ -761,6 +781,16 @@
     .text-stats {
         flex-direction: column;
         gap: 1rem;
+    }
+    
+    .resume-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .resume-actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 </style>

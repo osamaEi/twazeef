@@ -87,10 +87,22 @@
                 </div>
                 
                 <div class="dropdown-menu">
-                    <a href="{{ route('profile.edit') }}" class="dropdown-item">
-                        <i class="fas fa-user"></i>
-                        <span>{{ __('topnav.profile') }}</span>
-                    </a>
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.profile') }}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>{{ __('topnav.profile') }}</span>
+                        </a>
+                    @elseif(auth()->user()->role === 'company')
+                        <a href="{{ route('company.profile') }}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>{{ __('topnav.profile') }}</span>
+                        </a>
+                    @else
+                        <a href="{{ route('employee.profile') }}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>{{ __('topnav.profile') }}</span>
+                        </a>
+                    @endif
                     <a href="{{ route('dashboard') }}" class="dropdown-item">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>{{ __('topnav.dashboard') }}</span>
@@ -143,7 +155,6 @@
 .language-dropdown {
     position: absolute;
     top: 100%;
-    right: 0;
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
@@ -177,7 +188,6 @@
     border: none;
     background: none;
     width: 100%;
-    text-align: right;
     cursor: pointer;
 }
 
@@ -196,23 +206,24 @@
 }
 
 /* RTL/LTR Specific Styles */
-@if(app()->getLocale() === 'ar')
-    .language-dropdown {
-        right: 0;
-        left: auto;
-    }
-    .language-option {
-        text-align: right;
-    }
-@else
-    .language-dropdown {
-        left: 0;
-        right: auto;
-    }
-    .language-option {
-        text-align: left;
-    }
-@endif
+.language-dropdown {
+    right: 0;
+    left: auto;
+}
+
+.language-option {
+    text-align: right;
+}
+
+/* LTR Override */
+.dashboard-layout[dir="ltr"] .language-dropdown {
+    left: 0;
+    right: auto;
+}
+
+.dashboard-layout[dir="ltr"] .language-option {
+    text-align: left;
+}
 
 /* User Profile Styles */
 .user-profile {

@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
 {
@@ -40,7 +41,31 @@ class ApplicationController extends Controller
      */
     public function create(Job $job)
     {
-        return view('applications.create', compact('job'));
+        $user = Auth::user();
+
+        // Debug: Log the data being passed
+        \Log::info('ApplicationController@create called', [
+            'job_id' => $job->id,
+            'job_title' => $job->title,
+            'user_id' => $user->id,
+            'user_role' => $user->role
+        ]);
+
+        $hasApplied = Application::where('job_id', $job->id)
+            ->where('applicant_id', $user->id)
+            ->exists();
+
+        $existingApplication = null;
+        if ($hasApplied) {
+            $existingApplication = Application::where('job_id', $job->id)
+                ->where('applicant_id', $user->id)
+                ->first();
+        }
+
+        // Load the company relationship to ensure it's available
+        $job->load('company');
+
+        return view('applications.create', compact('job', 'hasApplied', 'existingApplication'));
     }
 
     /**

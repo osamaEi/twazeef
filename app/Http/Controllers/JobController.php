@@ -99,7 +99,27 @@ class JobController extends Controller
     public function show(Job $job)
     {
         $job->load('company', 'applications');
-        return view('jobs.show', compact('job'));
+
+        // Check if current user has already applied
+        $hasApplied = false;
+        $userApplication = null;
+
+        if (auth()->check()) {
+            $hasApplied = $job->hasUserApplied(auth()->id());
+            if ($hasApplied) {
+                $userApplication = $job->getUserApplication(auth()->id());
+            }
+
+            // If user is an employee and hasn't applied, redirect to application form
+            if (auth()->user()->role === 'employee' && !$hasApplied) {
+                return redirect()->route('applications.create', $job);
+            }
+        } else {
+            // If user is not authenticated and tries to view a job, redirect to login
+            return redirect()->route('login')->with('message', 'يجب تسجيل الدخول للتقديم على الوظائف');
+        }
+
+        return view('jobs.show', compact('job', 'hasApplied', 'userApplication'));
     }
 
     /**

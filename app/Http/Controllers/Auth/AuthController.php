@@ -45,6 +45,14 @@ class AuthController extends Controller
     }
 
     /**
+     * Display the company login view.
+     */
+    public function showCompanyLogin(): View
+    {
+        return view('auth.auth');
+    }
+
+    /**
      * Handle employee registration.
      */
     public function registerEmployee(Request $request)
@@ -354,10 +362,17 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle login for both user types.
+     * Handle company login.
      */
-    public function login(Request $request): RedirectResponse
+    public function loginCompany(Request $request): RedirectResponse
     {
+        // Debug: Log company login attempt
+        Log::info('Company login attempt', [
+            'email' => $request->email,
+            'method' => $request->method(),
+            'url' => $request->url()
+        ]);
+
         $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
@@ -368,8 +383,106 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
+            // Debug: Log successful authentication
+            Log::info('Company authenticated successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role,
+                'is_active' => $user->is_active
+            ]);
+
             // Check if user is active
             if (!$user->isActive()) {
+                Log::warning('Company account not active', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'حسابك غير مفعل. يرجى التواصل مع الإدارة لتفعيل حسابك.',
+                ])->onlyInput('email');
+            }
+
+            // Check if user is a company
+            if ($user->role !== 'company') {
+                Log::warning('Non-company user trying to access company login', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'role' => $user->role
+                ]);
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'هذا الحساب ليس حساب شركة.',
+                ])->onlyInput('email');
+            }
+
+            // Check if company is approved
+            if ($user->status === 'pending') {
+                Log::warning('Company account pending approval', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'حسابك قيد المراجعة. سيتم إشعارك عند الموافقة.',
+                ])->onlyInput('email');
+            }
+
+            // Debug: Log redirect decision
+            Log::info('Redirecting company user', [
+                'user_id' => $user->id,
+                'role' => $user->role
+            ]);
+
+            return redirect()->intended(route('company.dashboard'));
+        }
+
+        // Debug: Log failed authentication
+        Log::warning('Company login failed - invalid credentials', [
+            'email' => $request->email
+        ]);
+
+        return back()->withErrors([
+            'email' => 'بيانات الاعتماد المقدمة غير صحيحة.',
+        ])->onlyInput('email');
+    }
+
+    /**
+     * Handle login for both user types.
+     */
+    public function login(Request $request): RedirectResponse
+    {
+        // Debug: Log login attempt
+        Log::info('Login attempt', [
+            'email' => $request->email,
+            'method' => $request->method(),
+            'url' => $request->url()
+        ]);
+
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // Debug: Log successful authentication
+            Log::info('User authenticated successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role,
+                'is_active' => $user->is_active
+            ]);
+
+            // Check if user is active
+            if (!$user->isActive()) {
+                Log::warning('User account not active', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
                 Auth::logout();
                 return back()->withErrors([
                     'email' => 'حسابك غير مفعل. يرجى التواصل مع الإدارة لتفعيل حسابك.',
@@ -378,11 +491,21 @@ class AuthController extends Controller
 
             // Check if user is approved (for companies)
             if ($user->role === 'company' && $user->status === 'pending') {
+                Log::warning('Company account pending approval', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
                 Auth::logout();
                 return back()->withErrors([
                     'email' => 'حسابك قيد المراجعة. سيتم إشعارك عند الموافقة.',
                 ])->onlyInput('email');
             }
+
+            // Debug: Log redirect decision
+            Log::info('Redirecting user based on role', [
+                'user_id' => $user->id,
+                'role' => $user->role
+            ]);
 
             // Redirect based on role
             if ($user->role === 'company') {
@@ -395,6 +518,11 @@ class AuthController extends Controller
                 return redirect()->intended(RouteServiceProvider::HOME);
             }
         }
+
+        // Debug: Log failed authentication
+        Log::warning('Login failed - invalid credentials', [
+            'email' => $request->email
+        ]);
 
         return back()->withErrors([
             'email' => 'بيانات الاعتماد المقدمة غير صحيحة.',

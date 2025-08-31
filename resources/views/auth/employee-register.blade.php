@@ -1002,10 +1002,152 @@
     /* رسالة النجاح النهائية */
     .success-final-message {
         text-align: center;
-        padding: 3rem 2rem;
-        background: var(--primary-lightest);
-        border-radius: var(--border-radius-lg);
-        border: 2px solid var(--primary-lighter);
+        padding: 4rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .success-final-message::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        animation: successGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes successGlow {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+
+    .success-final-icon {
+        width: 140px;
+        height: 140px;
+        background: linear-gradient(135deg, var(--success-green) 0%, #66bb6a 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 3rem;
+        color: var(--pure-white);
+        font-size: 4rem;
+        animation: successBounce 0.8s ease-out;
+        box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    @keyframes successBounce {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .success-final-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary-darker);
+        margin-bottom: 2rem;
+        line-height: 1.2;
+        position: relative;
+        z-index: 2;
+    }
+
+    .success-final-text {
+        font-size: 1.4rem;
+        color: var(--grey-600);
+        line-height: 1.8;
+        max-width: 600px;
+        margin: 0 auto 3rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .success-final-details {
+        background: var(--pure-white);
+        border-radius: var(--border-radius-md);
+        padding: 2.5rem;
+        margin: 3rem 0;
+        border: 1px solid rgba(76, 175, 80, 0.2);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        position: relative;
+        z-index: 2;
+    }
+
+    .success-final-details h4 {
+        color: var(--primary-darker);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .success-final-details h4::before {
+        content: '✨';
+        font-size: 1.6rem;
+    }
+
+    .success-final-details ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .success-final-details li {
+        padding: 1rem 0;
+        color: var(--grey-600);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--grey-200);
+    }
+
+    .success-final-details li:last-child {
+        border-bottom: none;
+    }
+
+    .success-final-details li i {
+        color: var(--primary-darker);
+        width: 24px;
+        font-size: 1.2rem;
+    }
+
+    .success-reference-number {
+        background: var(--primary-darker);
+        color: var(--pure-white);
+        font-weight: 700;
+        font-size: 1.3rem;
+        padding: 1.5rem 2rem;
+        border-radius: var(--border-radius-md);
+        margin: 2rem 0;
+        display: inline-block;
+        position: relative;
+        z-index: 2;
+    }
+
+    .success-final-actions {
+        margin-top: 3rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-success {
+        background: var(--primary-darker);
+        color: var(--pure-white);
+        padding: 1.5rem 3rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: var(--border-radius-md);
+        text-decoration: none;
+        transition: var(--transition-medium);
+    }
+
+    .btn-success:hover {
+        transform: translateY(-3px);
     }
 
     /* رسائل النجاح والخطأ */
@@ -1044,75 +1186,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-    }
-
-    .success-final-icon {
-        width: 120px;
-        height: 120px;
-        background: var(--primary-green);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem;
-        color: var(--pure-white);
-        font-size: 3.5rem;
-        animation: successPop 0.6s ease-out;
-    }
-
-    @keyframes successPop {
-        0% { transform: scale(0); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-
-    .success-final-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--primary-darker);
-        margin-bottom: 1.5rem;
-        line-height: 1.2;
-    }
-
-    .success-final-text {
-        font-size: 1.3rem;
-        color: var(--grey-600);
-        line-height: 1.7;
-        max-width: 500px;
-        margin: 0 auto 2rem;
-    }
-
-    .success-final-details {
-        background: var(--pure-white);
-        border-radius: var(--border-radius-sm);
-        padding: 2rem;
-        margin: 2rem 0;
-        border: 1px solid var(--primary-lighter);
-    }
-
-    .success-final-details h4 {
-        color: var(--primary-darker);
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .success-final-details ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    .success-final-details li {
-        padding: 0.5rem 0;
-        color: var(--grey-600);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .success-final-details li i {
-        color: var(--primary-green);
-        width: 20px;
     }
 
     /* شاشة التحميل */
@@ -1220,6 +1293,16 @@
             flex-direction: column;
             gap: 0.5rem;
         }
+
+        .success-final-title {
+            font-size: 2.2rem;
+        }
+
+        .success-final-icon {
+            width: 100px;
+            height: 100px;
+            font-size: 3rem;
+        }
     }
 
     @media (max-width: 480px) {
@@ -1238,6 +1321,10 @@
         
         .terms-content {
             max-height: 150px;
+        }
+
+        .success-final-message {
+            padding: 2rem 1rem;
         }
     }
     </style>
@@ -1393,9 +1480,9 @@
             </div>
 
                          <div class="form-actions">
-                 <button type="button" class="btn btn-secondary" id="testFormData">
+                                              <button type="button" class="btn btn-secondary" id="testFormData">
                      <i class="fas fa-info-circle"></i>
-                     اختبار البيانات
+                     يجب الموافقة للمتابعة
                  </button>
                  <button type="button" class="btn btn-primary" id="nextStep1" disabled>
                      <span class="btn-text">
@@ -1875,17 +1962,19 @@
                     </ul>
                 </div>
                 
-                <p style="color: var(--primary-green); font-weight: 600; font-size: 1.1rem;">
+                <div class="success-reference-number">
                     رقم الطلب الخاص بك : SA-EMP-0000-12345
-                </p>
+                </div>
+
+                <div class="success-final-actions">
+                    <a href="{{ route('login') }}" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i>
+                        حسناً
+                    </a>
+                </div>
             </div>
         </div>
     </form>
-
-    <div class="auth-footer">
-        <p>لديك حساب بالفعل؟ <a href="{{ route('login') }}">تسجيل الدخول</a></p>
-        <p>أو <a href="{{ route('company.register') }}">تسجيل كشركة</a></p>
-    </div>
         </div>
     </div>
 <script>
@@ -2433,11 +2522,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (submitButton) submitButton.classList.add('loading');
             
             try {
-                                 // التحقق من وجود جميع البيانات المطلوبة
-                 const requiredFields = ['first_name_ar', 'last_name_ar', 'first_name_en', 'last_name_en', 
-                                       'email', 'phone', 'password', 'password_confirmation', 
-                                       'national_id', 'birth_date', 'gender', 'marital_status', 
-                                       'education', 'specialization', 'address'];
+                // التحقق من وجود جميع البيانات المطلوبة
+                const requiredFields = ['first_name_ar', 'last_name_ar', 'first_name_en', 'last_name_en', 
+                                      'email', 'phone', 'password', 'password_confirmation', 
+                                      'national_id', 'birth_date', 'gender', 'marital_status', 
+                                      'education', 'specialization', 'address'];
                 
                 let missingFields = [];
                 requiredFields.forEach(fieldName => {
@@ -2463,9 +2552,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // إرسال النموذج
-                console.log('Submitting form to:', form.action);
-                form.submit();
+                // محاكاة إرسال النموذج - في التطبيق الحقيقي سيتم إرسال النموذج للخادم
+                setTimeout(() => {
+                    if (submitButton) submitButton.classList.remove('loading');
+                    showStep(7); // إظهار شاشة النجاح
+                }, 2000);
                 
             } catch (error) {
                 console.error('Error during submission:', error);

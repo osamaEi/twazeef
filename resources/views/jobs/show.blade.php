@@ -1,210 +1,185 @@
 @extends('dashboard.index')
 
-@section('title', $job->title)
+@section('title', $job->title . ' | شركة توافق للتوظيف')
 
 @section('content')
-<div class="job-details-container">
-    <!-- Welcome Alert -->
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i>
-        <div>
-            <strong>مرحباً بك في صفحة تفاصيل الوظيفة!</strong> يمكنك مراجعة جميع المعلومات والتفاصيل المتعلقة بهذه الوظيفة.
-        </div>
-    </div>
-
-    <!-- Job Header -->
-    <div class="job-header">
-        <div class="header-content">
-            <div class="job-title-section">
-                <h1 class="job-title">{{ $job->title }}</h1>
-                <div class="company-badge">
-                    <i class="fas fa-building"></i>
-                    {{ $job->company->name ?? 'شركة غير محددة' }}
-                </div>
-            </div>
-            
-            <div class="job-meta-grid">
-                <div class="meta-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ $job->location }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ $job->getAvailableTypes()[$job->type] ?? $job->type }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-user-tie"></i>
-                    <span>{{ $job->getAvailableExperienceLevels()[$job->experience_level] ?? $job->experience_level }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>{{ $job->created_at->format('Y/m/d') }}</span>
+<div class="dashboard-content">
+    <!-- Page Header -->
+    <div class="dashboard-header">
+        <div class="header-left">
+            <div>
+                <h1 class="page-title">{{ $job->title }}</h1>
+                <p class="page-subtitle">{{ $job->company->company_name ?? $job->company->name }}</p>
+                <div class="breadcrumb">
+                    <a href="{{ route('jobs.index') }}" class="breadcrumb-link">
+                        <i class="fas fa-arrow-right"></i>
+                        الوظائف المتاحة
+                    </a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span class="breadcrumb-current">{{ $job->title }}</span>
                 </div>
             </div>
         </div>
         
         <div class="header-actions">
-            @if(auth()->check() && auth()->id() === $job->company_id)
-                <a href="{{ route('jobs.edit', $job) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i>
-                    تعديل الوظيفة
-                </a>
-                <button class="btn btn-danger" onclick="deleteJob()">
-                    <i class="fas fa-trash"></i>
-                    حذف الوظيفة
-                </button>
-            @else
-                <a href="{{ route('applications.create', $job) }}" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i>
-                    تقدم للوظيفة
-                </a>
-            @endif
+            @auth
+                @if(auth()->user()->role === 'employee' && !$hasApplied)
+                    <a href="{{ route('applications.create', $job) }}" class="header-btn primary-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>تقدم الآن</span>
+                    </a>
+                @elseif(auth()->user()->role === 'employee' && $hasApplied)
+                    <div class="application-status">
+                        <span class="status-badge status-applied">
+                            <i class="fas fa-check-circle"></i>
+                            تم التقديم
+                        </span>
+                        <small class="application-date">
+                            {{ $userApplication->created_at->format('Y/m/d') }}
+                        </small>
+                    </div>
+                @endif
+                
+                @if(auth()->user()->id === $job->company_id)
+                    <a href="{{ route('jobs.edit', $job) }}" class="header-btn secondary-btn">
+                        <i class="fas fa-edit"></i>
+                        <span>تعديل الوظيفة</span>
+                    </a>
+                @endif
+            @endauth
+            
+            <a href="{{ route('jobs.index') }}" class="header-btn outline-btn">
+                <i class="fas fa-arrow-right"></i>
+                <span>العودة للوظائف</span>
+            </a>
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-        <div class="stat-card animate-slide-in">
-            <div class="stat-header">
-                <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
-                <div class="stat-trend"><i class="fas fa-arrow-up"></i><span>+1</span></div>
+    <!-- Job Details Container -->
+    <div class="job-details-container">
+        <!-- Main Job Content -->
+        <div class="job-main-content">
+            <!-- Job Header Card -->
+            <div class="stat-card job-header-card">
+                <div class="job-header-content">
+                    <div class="job-title-section">
+                        <h2 class="job-title">{{ $job->title }}</h2>
+                        <div class="job-meta">
+                            <span class="job-company">
+                                <i class="fas fa-building"></i>
+                                {{ $job->company->company_name ?? $job->company->name }}
+                            </span>
+                            <span class="job-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ $job->location ?? 'غير محدد' }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="job-status-section">
+                        <div class="job-status">
+                            @if($job->isActive())
+                                <span class="status-badge status-active">
+                                    <i class="fas fa-play-circle"></i>
+                                    نشطة
+                                </span>
+                            @elseif($job->isPaused())
+                                <span class="status-badge status-paused">
+                                    <i class="fas fa-pause-circle"></i>
+                                    معلقة
+                                </span>
+                            @elseif($job->isClosed())
+                                <span class="status-badge status-closed">
+                                    <i class="fas fa-times-circle"></i>
+                                    مغلقة
+                                </span>
+                            @elseif($job->isDraft())
+                                <span class="status-badge status-draft">
+                                    <i class="fas fa-edit"></i>
+                                    مسودة
+                                </span>
+                            @endif
+                        </div>
+                        
+                        @if($job->expires_at)
+                            <div class="job-expiry">
+                                <i class="fas fa-clock"></i>
+                                تنتهي في: {{ $job->expires_at->format('Y/m/d') }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
-            <div class="stat-value">1</div>
-            <div class="stat-label">وظيفة متاحة</div>
-            <div class="stat-description">وظيفة نشطة ومتاحة للتقديم</div>
-        </div>
-        
-        <div class="stat-card animate-slide-in">
-            <div class="stat-header">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-trend"><i class="fas fa-arrow-up"></i><span>+{{ $job->applications->count() }}</span></div>
-            </div>
-            <div class="stat-value">{{ $job->applications->count() }}</div>
-            <div class="stat-label">مقدم</div>
-            <div class="stat-description">عدد المتقدمين للوظيفة</div>
-        </div>
-        
-        <div class="stat-card animate-slide-in">
-            <div class="stat-header">
-                <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                <div class="stat-trend"><i class="fas fa-arrow-up"></i><span>+{{ $job->views ?? 0 }}</span></div>
-            </div>
-            <div class="stat-value">{{ $job->views ?? 0 }}</div>
-            <div class="stat-label">مشاهدات</div>
-            <div class="stat-description">عدد مرات مشاهدة الوظيفة</div>
-        </div>
-        
-        <div class="stat-card animate-slide-in">
-            <div class="stat-header">
-                <div class="stat-icon"><i class="fas fa-calendar"></i></div>
-                <div class="stat-trend"><i class="fas fa-clock"></i><span>{{ $job->expires_at ? $job->expires_at->diffForHumans() : 'غير محدد' }}</span></div>
-            </div>
-            <div class="stat-value">{{ $job->expires_at ? $job->expires_at->format('d/m') : '∞' }}</div>
-            <div class="stat-label">تاريخ الانتهاء</div>
-            <div class="stat-description">آخر موعد للتقديم</div>
-        </div>
-    </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-opportunities">
-        @if(auth()->check() && auth()->id() === $job->company_id)
-            <div class="opportunity-card primary" onclick="editJob()">
-                <div class="opportunity-icon"><i class="fas fa-edit"></i></div>
-                <div class="opportunity-content">
-                    <h4>تعديل الوظيفة</h4>
-                    <p>قم بتعديل تفاصيل ومتطلبات الوظيفة</p>
+            <!-- Job Quick Info Grid -->
+            <div class="stats-grid job-info-grid">
+                <div class="stat-card info-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="stat-trend">نوع الوظيفة</div>
+                    </div>
+                    <div class="stat-value">{{ $job->formatted_type }}</div>
+                </div>
+                
+                <div class="stat-card info-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-trend">مستوى الخبرة</div>
+                    </div>
+                    <div class="stat-value">{{ $job->formatted_experience }}</div>
+                </div>
+                
+                <div class="stat-card info-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-trend">الراتب</div>
+                    </div>
+                    <div class="stat-value">{{ $job->formatted_salary }}</div>
+                </div>
+                
+                <div class="stat-card info-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-trend">تاريخ النشر</div>
+                    </div>
+                    <div class="stat-value">{{ $job->created_at->format('Y/m/d') }}</div>
                 </div>
             </div>
-            
-            <div class="opportunity-card secondary" onclick="viewApplications()">
-                <div class="opportunity-icon"><i class="fas fa-users"></i></div>
-                <div class="opportunity-content">
-                    <h4>عرض التقديمات</h4>
-                    <p>راجع جميع التقديمات المقدمة للوظيفة</p>
-                </div>
-            </div>
-            
-            <div class="opportunity-card tertiary" onclick="manageJob()">
-                <div class="opportunity-icon"><i class="fas fa-cog"></i></div>
-                <div class="opportunity-content">
-                    <h4>إدارة الوظيفة</h4>
-                    <p>أوقف أو أعد تفعيل الوظيفة</p>
-                </div>
-            </div>
-            
-            <div class="opportunity-card quaternary" onclick="shareJob()">
-                <div class="opportunity-icon"><i class="fas fa-share-alt"></i></div>
-                <div class="opportunity-content">
-                    <h4>مشاركة الوظيفة</h4>
-                    <p>شارك الوظيفة على وسائل التواصل</p>
-                </div>
-            </div>
-        @else
-            <div class="opportunity-card primary" onclick="applyForJob()">
-                <div class="opportunity-icon"><i class="fas fa-paper-plane"></i></div>
-                <div class="opportunity-content">
-                    <h4>تقدم للوظيفة</h4>
-                    <p>أرسل طلب التقديم لهذه الوظيفة</p>
-                </div>
-            </div>
-            
-            <div class="opportunity-card secondary" onclick="saveJob()">
-                <div class="opportunity-icon"><i class="fas fa-bookmark"></i></div>
-                <div class="opportunity-content">
-                    <h4>حفظ الوظيفة</h4>
-                    <p>احفظ الوظيفة للمراجعة لاحقاً</p>
-                </div>
-            </div>
-            
-            <div class="opportunity-card tertiary" onclick="contactCompany()">
-                <div class="opportunity-icon"><i class="fas fa-envelope"></i></div>
-                <div class="opportunity-content">
-                    <h4>تواصل مع الشركة</h4>
-                    <p>أرسل رسالة مباشرة للشركة</p>
-                </div>
-            </div>
-            
-            <div class="opportunity-card quaternary" onclick="shareJob()">
-                <div class="opportunity-icon"><i class="fas fa-share-alt"></i></div>
-                <div class="opportunity-content">
-                    <h4>مشاركة الوظيفة</h4>
-                    <p>شارك الوظيفة مع أصدقائك</p>
-                </div>
-            </div>
-        @endif
-    </div>
 
-    <!-- Job Content Grid -->
-    <div class="content-grid">
-        <!-- Main Content -->
-        <div class="main-content">
             <!-- Job Description Section -->
-            <div class="content-section">
+            <div class="section-container">
                 <div class="section-header">
-                    <h3><i class="fas fa-file-alt"></i> وصف الوظيفة</h3>
-                    <div class="section-actions">
-                        <button class="btn btn-outline btn-sm" onclick="copyDescription()">
-                            <i class="fas fa-copy"></i>
-                            نسخ
-                        </button>
-                    </div>
+                    <h3 class="section-title">
+                        <i class="fas fa-align-right"></i>
+                        وصف الوظيفة
+                    </h3>
                 </div>
-                <div class="section-content">
-                    {!! nl2br(e($job->description)) !!}
+                <div class="content-card">
+                    <div class="job-description">
+                        {!! nl2br(e($job->description)) !!}
+                    </div>
                 </div>
             </div>
 
-            <!-- Skills Section -->
+            <!-- Required Skills Section -->
             @if($job->skills && count($job->skills) > 0)
-            <div class="content-section">
+            <div class="section-container">
                 <div class="section-header">
-                    <h3><i class="fas fa-tools"></i> المهارات المطلوبة</h3>
-                    <div class="section-actions">
-                        <span class="skills-count">{{ count($job->skills) }} مهارة</span>
-                    </div>
+                    <h3 class="section-title">
+                        <i class="fas fa-tools"></i>
+                        المهارات المطلوبة
+                    </h3>
                 </div>
-                <div class="section-content">
-                    <div class="skills-tags">
+                <div class="content-card">
+                    <div class="skills-container">
                         @foreach($job->skills as $skill)
                             <span class="skill-tag">{{ $skill }}</span>
                         @endforeach
@@ -215,185 +190,171 @@
 
             <!-- Benefits Section -->
             @if($job->benefits && count($job->benefits) > 0)
-            <div class="content-section">
+            <div class="section-container">
                 <div class="section-header">
-                    <h3><i class="fas fa-gift"></i> المزايا والعوائد</h3>
-                    <div class="section-actions">
-                        <span class="benefits-count">{{ count($job->benefits) }} ميزة</span>
-                    </div>
+                    <h3 class="section-title">
+                        <i class="fas fa-gift"></i>
+                        المزايا والعوائد
+                    </h3>
                 </div>
-                <div class="section-content">
+                <div class="content-card">
                     <div class="benefits-list">
                         @foreach($job->benefits as $benefit)
                             <div class="benefit-item">
                                 <i class="fas fa-check-circle"></i>
-                                {{ $benefit }}
+                                <span>{{ $benefit }}</span>
                             </div>
                         @endforeach
                     </div>
                 </div>
             </div>
             @endif
+
+            <!-- Company Information Section -->
+            <div class="section-container">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-building"></i>
+                        معلومات الشركة
+                    </h3>
+                </div>
+                <div class="content-card company-info-card">
+                    <div class="company-header">
+                        @if($job->company->logo)
+                            <img src="{{ asset('storage/' . $job->company->logo) }}" alt="Company Logo" class="company-logo">
+                        @else
+                            <div class="company-logo-placeholder">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        @endif
+                        <div class="company-details">
+                            <h4>{{ $job->company->company_name ?? $job->company->name }}</h4>
+                            @if($job->company->company_description)
+                                <p>{{ $job->company->company_description }}</p>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    @if($job->company->company_website || $job->company->company_phone || $job->company->address)
+                    <div class="company-contact">
+                        @if($job->company->company_website)
+                            <div class="contact-item">
+                                <i class="fas fa-globe"></i>
+                                <a href="{{ $job->company->company_website }}" target="_blank" rel="noopener">
+                                    {{ $job->company->company_website }}
+                                </a>
+                            </div>
+                        @endif
+                        
+                        @if($job->company->company_phone)
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ $job->company->company_phone }}</span>
+                            </div>
+                        @endif
+                        
+                        @if($job->company->address)
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ $job->company->address }}</span>
+                            </div>
+                        @endif
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
 
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <!-- Job Status Banner -->
-            <div class="status-banner status-{{ $job->status }}">
-                <div class="banner-icon">
-                    @switch($job->status)
-                        @case('active')
-                            <i class="fas fa-check-circle"></i>
-                            @break
-                        @case('paused')
-                            <i class="fas fa-pause-circle"></i>
-                            @break
-                        @case('closed')
-                            <i class="fas fa-times-circle"></i>
-                            @break
-                        @case('draft')
-                            <i class="fas fa-edit"></i>
-                            @break
-                        @default
-                            <i class="fas fa-info-circle"></i>
-                    @endswitch
-                </div>
-                <div class="banner-content">
-                    <div class="banner-title">
-                        {{ $job->getAvailableStatuses()[$job->status] ?? $job->status }}
-                    </div>
-                    <div class="banner-subtitle">
-                        @switch($job->status)
-                            @case('active')
-                                الوظيفة متاحة للتقديم
-                                @break
-                            @case('paused')
-                                الوظيفة متوقفة مؤقتاً
-                                @break
-                            @case('closed')
-                                الوظيفة مغلقة
-                                @break
-                            @case('draft')
-                                مسودة قيد التطوير
-                                @break
-                            @default
-                                حالة غير محددة
-                        @endswitch
-                    </div>
-                </div>
-            </div>
-
-            <!-- Job Details Card -->
-            <div class="info-card">
-                <div class="card-header">
-                    <h4><i class="fas fa-info-circle"></i> تفاصيل الوظيفة</h4>
-                    <button class="btn btn-outline btn-sm" onclick="toggleDetails()">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
-                <div class="card-content" id="detailsContent">
-                    <div class="info-list">
-                        <div class="info-item">
-                            <span class="label">نوع الوظيفة:</span>
-                            <span class="value">{{ $job->getAvailableTypes()[$job->type] ?? $job->type }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">مستوى الخبرة:</span>
-                            <span class="value">{{ $job->getAvailableExperienceLevels()[$job->experience_level] ?? $job->experience_level }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">الموقع:</span>
-                            <span class="value">{{ $job->location }}</span>
-                        </div>
-                        @if($job->salary_min || $job->salary_max)
-                        <div class="info-item">
-                            <span class="label">الراتب:</span>
-                            <span class="value">
-                                @if($job->salary_min && $job->salary_max)
-                                    {{ number_format($job->salary_min) }} - {{ number_format($job->salary_max) }} {{ $job->salary_currency }}
-                                @elseif($job->salary_min)
-                                    {{ number_format($job->salary_min) }} {{ $job->salary_currency }} فأكثر
-                                @elseif($job->salary_max)
-                                    حتى {{ number_format($job->salary_max) }} {{ $job->salary_currency }}
-                                @endif
-                            </span>
-                        </div>
-                        @endif
-                        @if($job->expires_at)
-                        <div class="info-item">
-                            <span class="label">تاريخ انتهاء الصلاحية:</span>
-                            <span class="value">{{ $job->expires_at->format('Y/m/d') }}</span>
-                        </div>
-                        @endif
-                        <div class="info-item">
-                            <span class="label">تاريخ النشر:</span>
-                            <span class="value">{{ $job->created_at->format('Y/m/d') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Company Info Card -->
-            <div class="info-card">
-                <div class="card-header">
-                    <h4><i class="fas fa-building"></i> معلومات الشركة</h4>
-                    <button class="btn btn-outline btn-sm" onclick="viewCompany()">
-                        <i class="fas fa-external-link-alt"></i>
-                    </button>
-                </div>
-                <div class="card-content">
-                    <div class="company-info">
-                        <div class="company-avatar">
-                            @if($job->company->logo)
-                                <img src="{{ $job->company->logo }}" alt="{{ $job->company->name }}" class="company-logo">
-                            @else
-                                <div class="company-initials">{{ substr($job->company->name ?? 'ش', 0, 1) }}</div>
-                            @endif
-                        </div>
-                        <div class="company-details">
-                            <div class="company-name">{{ $job->company->name ?? 'شركة غير محددة' }}</div>
-                            @if($job->company->email)
-                            <div class="company-email">
-                                <i class="fas fa-envelope"></i>
-                                {{ $job->company->email }}
+        <!-- Job Sidebar -->
+        <div class="job-sidebar">
+            <!-- Application Status -->
+            @auth
+                @if(auth()->user()->role === 'employee')
+                    <div class="stat-card sidebar-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-clipboard-check"></i>
                             </div>
-                            @endif
-                            @if($job->company->phone)
-                            <div class="company-phone">
-                                <i class="fas fa-phone"></i>
-                                {{ $job->company->phone }}
+                            <h4 class="card-title">حالة التقديم</h4>
+                        </div>
+                        
+                        @if($hasApplied)
+                            <div class="application-status-card">
+                                <div class="status-success">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>تم التقديم بنجاح</span>
+                                </div>
+                                <div class="application-details">
+                                    <p><strong>تاريخ التقديم:</strong> {{ $userApplication->created_at->format('Y/m/d H:i') }}</p>
+                                    @if($userApplication->status)
+                                        <p><strong>الحالة:</strong> 
+                                            <span class="status-badge status-{{ $userApplication->status }}">
+                                                {{ $userApplication->getStatusText() }}
+                                            </span>
+                                        </p>
+                                    @endif
+                                </div>
+                                <a href="{{ route('applications.show', $userApplication) }}" class="header-btn outline-btn">
+                                    <i class="fas fa-eye"></i>
+                                    <span>عرض الطلب</span>
+                                </a>
                             </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Applications Count (for company users) -->
-            @if(auth()->check() && auth()->id() === $job->company_id)
-            <div class="info-card">
-                <div class="card-header">
-                    <h4><i class="fas fa-users"></i> التقديمات</h4>
-                    <div class="applications-badge">{{ $job->applications->count() }}</div>
-                </div>
-                <div class="card-content">
-                    <div class="applications-info">
-                        <div class="applications-count">
-                            <span class="count">{{ $job->applications->count() }}</span>
-                            <span class="label">مقدم</span>
-                        </div>
-                        @if($job->applications->count() > 0)
-                            <a href="{{ route('jobs.applications.index', $job) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-eye"></i>
-                                عرض التقديمات
-                            </a>
                         @else
-                            <div class="no-applications">
-                                <i class="fas fa-inbox"></i>
-                                <p>لا توجد تقديمات بعد</p>
+                            <div class="application-prompt">
+                                <p>لم تتقدم لهذه الوظيفة بعد</p>
+                                <a href="{{ route('applications.create', $job) }}" class="header-btn primary-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span>تقدم الآن</span>
+                                </a>
                             </div>
                         @endif
                     </div>
+                @endif
+            @endauth
+
+            <!-- Job Actions -->
+            <div class="stat-card sidebar-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h4 class="card-title">مشاركة الوظيفة</h4>
+                </div>
+                <div class="share-buttons">
+                    <button class="share-btn share-whatsapp" onclick="shareToWhatsApp()">
+                        <i class="fab fa-whatsapp"></i>
+                        واتساب
+                    </button>
+                    <button class="share-btn share-telegram" onclick="shareToTelegram()">
+                        <i class="fab fa-telegram"></i>
+                        تيليجرام
+                    </button>
+                    <button class="share-btn share-copy" onclick="copyJobLink()">
+                        <i class="fas fa-link"></i>
+                        نسخ الرابط
+                    </button>
+                </div>
+            </div>
+
+            <!-- Similar Jobs -->
+            @if(isset($similarJobs) && count($similarJobs) > 0)
+            <div class="stat-card sidebar-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h4 class="card-title">وظائف مشابهة</h4>
+                </div>
+                <div class="similar-jobs">
+                    @foreach($similarJobs->take(3) as $similarJob)
+                        <div class="similar-job-item">
+                            <h5>
+                                <a href="{{ route('jobs.show', $similarJob) }}">{{ $similarJob->title }}</a>
+                            </h5>
+                            <p class="similar-job-company">{{ $similarJob->company->company_name ?? $similarJob->company->name }}</p>
+                            <p class="similar-job-location">{{ $similarJob->location }}</p>
+                        </div>
+                    @endforeach
                 </div>
             </div>
             @endif
@@ -401,373 +362,202 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal">
+<!-- Application Form Modal (for non-authenticated users) -->
+@guest
+<div class="auth-prompt-modal" id="authPromptModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>تأكيد الحذف</h3>
-            <button class="modal-close" onclick="closeModal('deleteModal')">
-                <i class="fas fa-times"></i>
-            </button>
+            <h3>تسجيل الدخول مطلوب</h3>
+            <button class="modal-close" onclick="closeAuthModal()">×</button>
         </div>
         <div class="modal-body">
-            <p>هل أنت متأكد من حذف هذه الوظيفة؟ لا يمكن التراجع عن هذا الإجراء.</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal('deleteModal')">إلغاء</button>
-            <form action="{{ route('jobs.destroy', $job) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger">حذف الوظيفة</button>
-            </form>
+            <p>يجب تسجيل الدخول للتقديم على الوظائف</p>
+            <div class="modal-actions">
+                <a href="{{ route('login') }}" class="header-btn primary-btn">تسجيل الدخول</a>
+                <a href="{{ route('register') }}" class="header-btn secondary-btn">إنشاء حساب</a>
+            </div>
         </div>
     </div>
 </div>
+@endguest
 
+@endsection
+
+@push('scripts')
+<script>
+function shareToWhatsApp() {
+    const text = `وظيفة: ${@json($job->title)}\nشركة: ${@json($job->company->company_name ?? $job->company->name)}\nالرابط: ${window.location.href}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+}
+
+function shareToTelegram() {
+    const text = `وظيفة: ${@json($job->title)}\nشركة: ${@json($job->company->company_name ?? $job->company->name)}\nالرابط: ${window.location.href}`;
+    const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+}
+
+function copyJobLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        // Show success message
+        const btn = event.target.closest('.share-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function closeAuthModal() {
+    document.getElementById('authPromptModal').style.display = 'none';
+}
+
+// Show auth modal for non-authenticated users when they try to apply
+document.addEventListener('DOMContentLoaded', function() {
+    @guest
+    // Auto-show modal after a delay
+    setTimeout(() => {
+        document.getElementById('authPromptModal').style.display = 'flex';
+    }, 3000);
+    @endguest
+});
+</script>
+@endpush
+
+@push('styles')
 <style>
-/* ===== JOB DETAILS LAYOUT ===== */
+/* Job Show Page Dashboard Integration Styles */
 .job-details-container {
-    padding: 1.5rem;
-    max-width: 100%;
-    margin: 0;
-    background: #f8fafc;
-    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    margin-top: 2rem;
 }
 
-/* ===== ALERTS ===== */
-.alert {
+.job-main-content {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    gap: 2rem;
 }
 
-.alert-info {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border: 1px solid #93c5fd;
-    color: #1e40af;
+/* Job Header Card */
+.job-header-card {
+    background: var(--gradient-primary);
+    color: var(--pure-white);
+    border-top: none;
+    position: relative;
+    overflow: hidden;
 }
 
-.alert i {
-    font-size: 1.5rem;
-    margin-top: 0.25rem;
+.job-header-card::before {
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
 }
 
-.alert div {
-    flex: 1;
-}
-
-.alert strong {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-/* ===== JOB HEADER ===== */
-.job-header {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
+.job-header-content {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 2rem;
 }
 
-.header-content {
-    flex: 1;
-}
-
-.job-title-section {
-    margin-bottom: 1.5rem;
-}
-
-.job-title {
-    font-size: 2.5rem;
+.job-title-section .job-title {
+    font-size: 2.2rem;
     font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    line-height: 1.2;
+    margin: 0 0 1rem 0;
+    line-height: 1.3;
+    color: var(--pure-white);
 }
 
-.company-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-    color: #475569;
-    font-weight: 500;
-    font-size: 1.1rem;
-}
-
-.job-meta-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.meta-item {
+.job-meta {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem;
-    color: #475569;
-    font-weight: 500;
-}
-
-.meta-item i {
-    color: #3b82f6;
-    font-size: 1.1rem;
-}
-
-.header-actions {
-    display: flex;
-    gap: 1rem;
-    flex-shrink: 0;
-}
-
-/* ===== STATS GRID ===== */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    flex-wrap: wrap;
 }
 
-.stat-card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.stat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-}
-
-.stat-trend {
+.job-meta span {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #10b981;
-    font-weight: 500;
+    font-size: 1rem;
+    opacity: 0.9;
+    color: var(--pure-white);
 }
 
-.stat-value {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-    line-height: 1;
+.job-status-section {
+    text-align: center;
+    min-width: 150px;
 }
 
-.stat-label {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 0.5rem;
-}
-
-.stat-description {
-    font-size: 0.9rem;
-    color: #64748b;
-    line-height: 1.5;
-}
-
-/* ===== QUICK OPPORTUNITIES ===== */
-.quick-opportunities {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.opportunity-card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.opportunity-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.opportunity-card.primary {
-    border-left: 4px solid #3b82f6;
-}
-
-.opportunity-card.secondary {
-    border-left: 4px solid #8b5cf6;
-}
-
-.opportunity-card.tertiary {
-    border-left: 4px solid #10b981;
-}
-
-.opportunity-card.quaternary {
-    border-left: 4px solid #f59e0b;
-}
-
-.opportunity-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.opportunity-content h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-}
-
-.opportunity-content p {
-    color: #64748b;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* ===== CONTENT GRID ===== */
-.content-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-.main-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    min-width: 0; /* Prevents overflow */
-    margin: 0;
-    padding: 0;
-    width: 100%;
-}
-
-.content-section {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 0;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.section-header h3 {
-    color: #1e293b;
-    font-size: 1.3rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin: 0;
-}
-
-.section-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.skills-count,
-.benefits-count {
-    background: #f1f5f9;
-    color: #64748b;
+.job-status .status-badge {
+    display: inline-block;
     padding: 0.5rem 1rem;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--pure-white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.section-content {
-    line-height: 1.6;
-    color: #475569;
+.job-expiry {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    color: var(--pure-white);
 }
 
-/* ===== SKILLS & BENEFITS ===== */
-.skills-tags {
+/* Job Info Grid */
+.job-info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.info-card {
+    text-align: center;
+    border-top: 4px solid var(--primary-green);
+}
+
+.info-card .stat-value {
+    font-size: 1.5rem;
+    color: var(--primary-green);
+}
+
+/* Section Containers */
+.section-container {
+    margin-bottom: 2rem;
+}
+
+.content-card {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--grey-100);
+}
+
+.job-description {
+    line-height: 1.8;
+    color: var(--grey-700);
+    font-size: 1rem;
+}
+
+.skills-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.8rem;
 }
 
 .skill-tag {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
+    background: var(--primary-lightest);
+    color: var(--primary-green);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
     font-size: 0.9rem;
+    border: 1px solid var(--primary-lighter);
     font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.skill-tag:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .benefits-list {
@@ -780,289 +570,268 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    color: #475569;
-    font-size: 1rem;
+    color: var(--grey-700);
+    padding: 0.5rem 0;
 }
 
 .benefit-item i {
-    color: #10b981;
-    font-size: 1.2rem;
+    color: var(--success-green);
+    font-size: 1.1rem;
+    width: 20px;
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
+/* Company Info Card */
+.company-info-card {
+    background: var(--primary-lightest);
+    border: 1px solid var(--primary-lighter);
+}
+
+.company-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.company-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--border-radius-sm);
+    object-fit: cover;
+    border: 3px solid var(--pure-white);
+    box-shadow: var(--shadow-sm);
+}
+
+.company-logo-placeholder {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-lighter);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-green);
+    border: 3px solid var(--pure-white);
+}
+
+.company-details h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-darker);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.company-details p {
+    margin: 0;
+    color: var(--grey-600);
+    line-height: 1.6;
+}
+
+.company-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--primary-lighter);
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--grey-600);
+}
+
+.contact-item i {
+    color: var(--primary-green);
+    width: 16px;
+}
+
+.contact-item a {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contact-item a:hover {
+    text-decoration: underline;
+}
+
+/* Sidebar Styles */
+.job-sidebar {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    position: sticky;
-    top: 2rem;
-    height: fit-content;
-    min-width: 0; /* Prevents overflow */
-    margin: 0;
-    padding: 0;
-    width: 100%;
 }
 
-/* ===== STATUS BANNER ===== */
-.status-banner {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-radius: 16px;
-    color: white;
-    font-weight: 500;
-    width: 100%;
-    box-sizing: border-box;
+.sidebar-card {
+    border-top: 4px solid var(--primary-green);
 }
 
-.status-banner.status-active {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.status-banner.status-paused {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.status-banner.status-closed {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-.status-banner.status-draft {
-    background: linear-gradient(135deg, #6b7280, #4b5563);
-}
-
-.banner-icon {
-    font-size: 2rem;
-}
-
-.banner-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.banner-subtitle {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
-.info-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    overflow: hidden;
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 0;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    background: #f8fafc;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.card-header h4 {
-    color: #1e293b;
+.card-title {
+    color: var(--primary-darker);
     font-size: 1.1rem;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
     margin: 0;
 }
 
-.applications-badge {
-    background: #3b82f6;
-    color: white;
+.application-status-card {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.status-success {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--success-green);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.status-success i {
+    font-size: 1.3rem;
+}
+
+.application-details {
+    margin-bottom: 1.5rem;
+    text-align: right;
+}
+
+.application-details p {
+    margin: 0.5rem 0;
+    color: var(--grey-600);
+    font-size: 0.9rem;
+}
+
+.application-prompt {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.application-prompt p {
+    margin-bottom: 1.5rem;
+    color: var(--grey-600);
+}
+
+.share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: var(--pure-white);
+}
+
+.share-whatsapp {
+    background: #25d366;
+}
+
+.share-telegram {
+    background: #0088cc;
+}
+
+.share-copy {
+    background: var(--grey-500);
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.share-btn.copied {
+    background: var(--success-green);
+}
+
+.similar-jobs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.similar-job-item {
+    padding: 1rem;
+    background: var(--grey-50);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-100);
+    transition: var(--transition-fast);
+}
+
+.similar-job-item:hover {
+    background: var(--primary-lightest);
+    border-color: var(--primary-lighter);
+}
+
+.similar-job-item h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.similar-job-item h5 a {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.similar-job-item h5 a:hover {
+    text-decoration: underline;
+}
+
+.similar-job-company {
+    margin: 0 0 0.3rem 0;
+    font-size: 0.9rem;
+    color: var(--grey-600);
+    font-weight: 500;
+}
+
+.similar-job-location {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--grey-500);
+}
+
+/* Application Status Badge */
+.application-status {
+    text-align: center;
+}
+
+.status-applied {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success-green);
+    border: 1px solid rgba(16, 185, 129, 0.3);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 600;
-}
-
-.card-content {
-    padding: 1.5rem;
-}
-
-.info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-item .label {
-    color: #64748b;
-    font-weight: 500;
-}
-
-.info-item .value {
-    color: #1e293b;
-    font-weight: 600;
-    text-align: left;
-}
-
-.company-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.company-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.company-logo {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.company-initials {
-    color: white;
-    font-weight: 600;
-}
-
-.company-details {
-    flex: 1;
-}
-
-.company-name {
-    font-weight: 600;
-    color: #1e293b;
-    font-size: 1.1rem;
+    display: inline-block;
     margin-bottom: 0.5rem;
 }
 
-.company-email,
-.company-phone {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #64748b;
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-}
-
-.applications-info {
-    text-align: center;
-}
-
-.applications-count {
-    margin-bottom: 1.5rem;
-}
-
-.applications-count .count {
+.application-date {
     display: block;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #3b82f6;
-    line-height: 1;
+    color: var(--grey-500);
+    font-size: 0.85rem;
 }
 
-.applications-count .label {
-    color: #64748b;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.no-applications {
-    text-align: center;
-    color: #94a3b8;
-}
-
-.no-applications i {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.no-applications p {
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-/* Buttons */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 12px;
-    font-weight: 500;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    font-size: 1rem;
-    justify-content: center;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    transform: translateY(-2px);
-}
-
-.btn-danger {
-    background: #ef4444;
-    color: white;
-}
-
-.btn-danger:hover {
-    background: #dc2626;
-    transform: translateY(-2px);
-}
-
-.btn-outline {
-    background: transparent;
-    color: #64748b;
-    border: 2px solid #e2e8f0;
-}
-
-.btn-outline:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-}
-
-.btn-sm {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-}
-
-/* Modal */
-.modal {
+/* Modal Styles */
+.auth-prompt-modal {
     display: none;
     position: fixed;
     top: 0;
@@ -1070,360 +839,136 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    min-width: 400px;
-    max-width: 500px;
+    background: var(--pure-white);
+    border-radius: var(--border-radius-md);
+    max-width: 450px;
+    width: 90%;
+    box-shadow: var(--shadow-xl);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-100);
 }
 
 .modal-header h3 {
     margin: 0;
-    color: #1e293b;
+    color: var(--primary-darker);
+    font-size: 1.3rem;
+    font-weight: 700;
 }
 
 .modal-close {
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: #94a3b8;
+    color: var(--grey-500);
     cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition-fast);
 }
 
 .modal-close:hover {
-    background: #f1f5f9;
-    color: #64748b;
+    background: var(--grey-100);
+    color: var(--grey-700);
 }
 
 .modal-body {
-    margin-bottom: 2rem;
+    padding: 2rem;
+    text-align: center;
 }
 
 .modal-body p {
-    color: #64748b;
+    margin: 0 0 2rem 0;
+    color: var(--grey-600);
     line-height: 1.6;
-    margin: 0;
+    font-size: 1rem;
 }
 
-.modal-footer {
+.modal-actions {
     display: flex;
     gap: 1rem;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
-.btn-secondary {
-    background: #64748b;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #475569;
-}
-
-/* Animations */
-.animate-slide-in {
-    animation: slideInUp 0.6s ease-out;
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-    .content-grid {
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .job-details-container {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
     }
     
-    .sidebar {
+    .job-sidebar {
         order: -1;
-        position: static;
-        top: auto;
-        margin: 0;
-    }
-    
-    .main-content {
-        order: 1;
-        margin: 0;
     }
 }
 
 @media (max-width: 768px) {
-    .job-details-container {
-        padding: 1rem;
-    }
-    
-    .job-header {
+    .job-header-content {
         flex-direction: column;
-        align-items: stretch;
         gap: 1rem;
-    }
-    
-    .header-actions {
-        justify-content: center;
     }
     
     .job-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
-    .job-meta-grid {
-        grid-template-columns: 1fr;
+    .job-status-section {
+        text-align: center;
+        min-width: auto;
     }
     
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .quick-opportunities {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .section-header {
+    .job-meta {
         flex-direction: column;
-        gap: 0.75rem;
-        align-items: stretch;
+        gap: 0.8rem;
     }
     
-    .content-section {
-        padding: 1rem;
-        margin-bottom: 0;
+    .company-header {
+        flex-direction: column;
+        text-align: center;
     }
     
-    .info-card {
-        margin: 0;
-        margin-bottom: 0;
+    .modal-actions {
+        flex-direction: column;
     }
     
-    .content-grid {
+    .header-actions {
+        flex-direction: column;
         gap: 0.5rem;
-        margin-left: 0;
-        padding-left: 0;
+    }
+}
+
+/* RTL Specific Adjustments */
+[dir="rtl"] .job-header-content {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .company-header {
+    flex-direction: row-reverse;
+}
+
+@media (max-width: 768px) {
+    [dir="rtl"] .job-header-content {
+        flex-direction: column;
+    }
+    
+    [dir="rtl"] .company-header {
+        flex-direction: column;
     }
 }
 </style>
-
-<script>
-// Utility functions
-function editJob() {
-    window.location.href = "{{ route('jobs.edit', $job) }}";
-}
-
-function viewApplications() {
-    window.location.href = "{{ route('jobs.applications.index', $job) }}";
-}
-
-function manageJob() {
-    // Implementation for job management
-    showSuccessMessage('سيتم إضافة إدارة الوظيفة قريباً');
-}
-
-function shareJob() {
-    // Implementation for sharing job
-    if (navigator.share) {
-        navigator.share({
-            title: '{{ $job->title }}',
-            text: '{{ $job->company->name ?? "شركة" }} تبحث عن {{ $job->title }}',
-            url: window.location.href
-        });
-    } else {
-        // Fallback for browsers that don't support Web Share API
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            showSuccessMessage('تم نسخ رابط الوظيفة');
-        });
-    }
-}
-
-function applyForJob() {
-    window.location.href = "{{ route('applications.create', $job) }}";
-}
-
-function saveJob() {
-    // Implementation for saving job
-    showSuccessMessage('تم حفظ الوظيفة بنجاح');
-}
-
-function contactCompany() {
-    // Implementation for contacting company
-    showSuccessMessage('سيتم إضافة التواصل مع الشركة قريباً');
-}
-
-function copyDescription() {
-    const description = `{{ $job->description }}`;
-    navigator.clipboard.writeText(description).then(() => {
-        showSuccessMessage('تم نسخ وصف الوظيفة');
-    });
-}
-
-function viewCompany() {
-    // Implementation for viewing company profile
-    showSuccessMessage('سيتم إضافة عرض ملف الشركة قريباً');
-}
-
-function toggleDetails() {
-    const content = document.getElementById('detailsContent');
-    const button = event.target;
-    const icon = button.querySelector('i');
-    
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        icon.className = 'fas fa-chevron-up';
-    } else {
-        content.style.display = 'none';
-        icon.className = 'fas fa-chevron-down';
-    }
-}
-
-function deleteJob() {
-    showModal('deleteModal');
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
-
-function showModal(modalId) {
-    document.getElementById(modalId).style.display = 'block';
-}
-
-function showSuccessMessage(message) {
-    showNotification(message, 'success');
-}
-
-function showErrorMessage(message) {
-    showNotification(message, 'error');
-}
-
-function showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-            <span>${message}</span>
-        </div>
-        <button class="notification-close" onclick="this.parentElement.remove()">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.remove();
-        }
-    }, 5000);
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-    }
-}
-
-// Add notification styles
-const notificationStyles = document.createElement('style');
-notificationStyles.textContent = `
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    min-width: 300px;
-    max-width: 400px;
-    animation: slideInRight 0.3s ease-out;
-}
-
-.notification-success {
-    border-left: 4px solid #10b981;
-}
-
-.notification-error {
-    border-left: 4px solid #ef4444;
-}
-
-.notification-content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1;
-}
-
-.notification-content i {
-    font-size: 1.2rem;
-}
-
-.notification-success .notification-content i {
-    color: #10b981;
-}
-
-.notification-error .notification-content i {
-    color: #ef4444;
-}
-
-.notification-close {
-    background: none;
-    border: none;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.notification-close:hover {
-    background: #f3f4f6;
-    color: #374151;
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-`;
-document.head.appendChild(notificationStyles);
-</script>
-@endsection
+@endpush

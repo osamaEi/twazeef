@@ -42,4 +42,12 @@ return [
     // Job Search
     'job_search' => 'Job Search',
     'search_jobs' => 'Search Jobs',
+    'my_applications' => 'My Applications',
+
+    // Profile Management
+    'profile_management' => 'Profile Management',
+    'profile' => 'Profile',
+
+    // Employee Dashboard
+    'dashboard' => 'Dashboard',
 ];

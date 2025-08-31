@@ -47,6 +47,7 @@
         --border-radius-lg: 28px;
         --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --transition-slow: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
     *, *::before, *::after { 
@@ -62,12 +63,11 @@
         direction: rtl;
     }
 
-    body { 
+    body {
+        background: #f4faff;
         font-family: var(--font-main); 
-        background: var(--gradient-background);
         color: var(--grey-700); 
         line-height: 1.6; 
-        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -76,41 +76,69 @@
         -moz-osx-font-smoothing: grayscale;
         direction: rtl;
         position: relative;
+        opacity: 0;
+        animation: pageLoad 1.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
     }
 
-    /* Background patterns */
-    body::before,
-    body::after {
-        content: '';
-        position: fixed;
-        width: 300px;
-        height: 300px;
-        opacity: 0.03;
-        z-index: -1;
+    @keyframes pageLoad {
+        0% {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
 
-    body::before {
-        top: -150px;
-        left: -150px;
-        background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
-    }
-
-    body::after {
-        bottom: -150px;
-        right: -150px;
-        background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
+    @keyframes floating {
+        0%, 100% {
+            transform: translateY(0px) scale(1);
+            opacity: 0.04;
+        }
+        50% {
+            transform: translateY(-30px) scale(1.1);
+            opacity: 0.06;
+        }
     }
 
     .main-container {
         width: 100%;
-        max-width: 1200px;
         text-align: center;
         padding: 2rem;
+        opacity: 0;
+        transform: translateY(50px);
+        animation: containerSlideIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) 0.3s forwards;
     }
 
-    /* Logo and Header */
+    @keyframes containerSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Logo and Header with enhanced animations */
     .logo-section {
         margin-bottom: 4rem;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: logoSlideIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) 0.6s forwards;
+    }
+
+    @keyframes logoSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .logo {
@@ -131,6 +159,44 @@
         color: var(--pure-white);
         font-size: 2rem;
         box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+        animation: logoIconPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes logoIconPulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: var(--shadow-md);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+    }
+
+    .logo-icon::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+        transform: rotate(45deg);
+        animation: logoShine 3s ease-in-out infinite;
+    }
+
+    @keyframes logoShine {
+        0% {
+            transform: rotate(45deg) translateX(-100%);
+        }
+        50% {
+            transform: rotate(45deg) translateX(0%);
+        }
+        100% {
+            transform: rotate(45deg) translateX(100%);
+        }
     }
 
     .logo-text {
@@ -138,6 +204,20 @@
         font-weight: 700;
         color: var(--primary-blue);
         line-height: 1.2;
+        background: linear-gradient(45deg, var(--primary-blue), var(--primary-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: textShimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes textShimmer {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
     }
 
     .platform-subtitle {
@@ -145,6 +225,20 @@
         color: var(--primary-light);
         margin-bottom: 1rem;
         font-weight: 600;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: subtitleSlideIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) 0.9s forwards;
+    }
+
+    @keyframes subtitleSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .platform-description {
@@ -153,9 +247,23 @@
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: descriptionSlideIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) 1.1s forwards;
     }
 
-    /* Selection Cards */
+    @keyframes descriptionSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Selection Cards with staggered animations */
     .selection-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -165,15 +273,37 @@
     }
 
     .selection-card {
-        background: var(--pure-white);
+        background: #fff;
         border-radius: var(--border-radius-md);
         padding: 3rem 2rem;
         text-align: center;
         box-shadow: var(--shadow-lg);
         border-top: 4px solid var(--primary-blue);
-        transition: var(--transition-medium);
+        transition: var(--transition-slow);
         position: relative;
         overflow: hidden;
+        opacity: 0;
+        transform: translateY(60px) scale(0.9);
+        animation-fill-mode: forwards;
+    }
+
+    .selection-card:nth-child(1) {
+        animation: cardSlideIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) 1.3s forwards;
+    }
+
+    .selection-card:nth-child(2) {
+        animation: cardSlideIn 1s cubic-bezier(0.25, 0.8, 0.25, 1) 1.5s forwards;
+    }
+
+    @keyframes cardSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateY(60px) scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
 
     .selection-card::before {
@@ -185,16 +315,34 @@
         height: 100%;
         background: linear-gradient(135deg, transparent 0%, rgba(0, 60, 109, 0.02) 100%);
         pointer-events: none;
-        transition: var(--transition-medium);
+        transition: var(--transition-slow);
+    }
+
+    .selection-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+        transform: rotate(45deg) translateX(-100%);
+        transition: var(--transition-slow);
+        pointer-events: none;
     }
 
     .selection-card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-12px) scale(1.02);
         box-shadow: var(--shadow-xl);
+        border-top-color: var(--primary-light);
     }
 
     .selection-card:hover::before {
-        background: linear-gradient(135deg, transparent 0%, rgba(0, 60, 109, 0.05) 100%);
+        background: linear-gradient(135deg, transparent 0%, rgba(0, 60, 109, 0.08) 100%);
+    }
+
+    .selection-card:hover::after {
+        transform: rotate(45deg) translateX(100%);
     }
 
     .card-icon {
@@ -206,17 +354,35 @@
         align-items: center;
         justify-content: center;
         margin: 0 auto 1.5rem auto;
-        transition: var(--transition-medium);
+        transition: var(--transition-slow);
+        position: relative;
+        animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
     }
 
     .selection-card:hover .card-icon {
         background: var(--primary-lighter);
-        transform: scale(1.1);
+        transform: scale(1.15) translateY(-5px);
+        box-shadow: var(--shadow-md);
     }
 
     .card-icon i {
         font-size: 2.5rem;
         color: var(--primary-blue);
+        transition: var(--transition-medium);
+    }
+
+    .selection-card:hover .card-icon i {
+        color: var(--primary-dark);
+        transform: scale(1.1);
     }
 
     .card-title {
@@ -224,6 +390,12 @@
         font-weight: 700;
         color: var(--primary-blue);
         margin-bottom: 1rem;
+        transition: var(--transition-medium);
+    }
+
+    .selection-card:hover .card-title {
+        color: var(--primary-dark);
+        transform: translateY(-2px);
     }
 
     .card-description {
@@ -234,6 +406,11 @@
         max-width: 300px;
         margin-left: auto;
         margin-right: auto;
+        transition: var(--transition-medium);
+    }
+
+    .selection-card:hover .card-description {
+        color: var(--grey-700);
     }
 
     .card-button {
@@ -249,48 +426,49 @@
         font-weight: 600;
         font-size: 1rem;
         text-decoration: none;
-        transition: var(--transition-medium);
+        transition: var(--transition-slow);
         cursor: pointer;
         min-width: 160px;
         justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: var(--transition-medium);
     }
 
     .card-button:hover {
         background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .card-button:active {
+        transform: translateY(-1px);
     }
 
     .card-button i {
         font-size: 1.1rem;
+        transition: var(--transition-medium);
     }
 
-    /* Login Section */
-    .login-section {
-        text-align: center;
-        padding-top: 2rem;
-        border-top: 1px solid var(--grey-200);
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    .login-text {
-        color: var(--grey-600);
-        margin-bottom: 1rem;
-        font-size: 1rem;
-    }
-
-    .login-link {
-        color: var(--primary-blue);
-        text-decoration: none;
-        font-weight: 600;
-        transition: var(--transition-fast);
-        font-size: 1.1rem;
-    }
-
-    .login-link:hover {
-        text-decoration: underline;
-        color: var(--primary-dark);
+    .card-button:hover i {
+        transform: translateX(-3px);
     }
 
     /* Responsive Design */
@@ -323,6 +501,14 @@
         .card-title {
             font-size: 1.6rem;
         }
+
+        .selection-card:nth-child(1) {
+            animation-delay: 1.3s;
+        }
+
+        .selection-card:nth-child(2) {
+            animation-delay: 1.6s;
+        }
     }
 
     @media (max-width: 480px) {
@@ -348,9 +534,49 @@
             padding: 0.875rem 1.5rem;
         }
     }
+
+    /* Loading animation for page transitions */
+    .page-transition {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+
+    .page-transition.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
     </style>
 </head>
 <body>
+    <div class="page-transition" id="pageTransition">
+        <div class="loading-spinner"></div>
+    </div>
+
     <div class="main-container">
         <!-- Logo and Header Section -->
         <div class="logo-section">
@@ -363,7 +589,7 @@
             
             <h1 class="platform-subtitle">الشراكة الاستراتيجية</h1>
             <p class="platform-description">
-                المنصة الرسمية للتوظيف الاستراتيجية بين الشركات والأفراد
+                المنصة الرسمية للتوظيف الاستراتيجي بين الشركات والأفراد
             </p>
         </div>
 
@@ -378,7 +604,7 @@
                 <p class="card-description">
                     منصة خاصة بالشركات والجهات لنشر الوظائف والفرص المتاحة للكوادر المتميزة
                 </p>
-                <a href="{{ route('company.register') }}" class="card-button">
+                <a href="{{ route('company.login') }}" class="card-button">
                     <i class="fas fa-arrow-left"></i>
                     دخول الشركات
                 </a>
@@ -393,18 +619,125 @@
                 <p class="card-description">
                     منصة مخصصة للأفراد والباحثين عن عمل للتقديم على أفضل الفرص الوظيفية المتاحة
                 </p>
-                <a href="{{ route('employee.register') }}" class="card-button">
+                <a href="{{ route('login') }}" class="card-button">
                     <i class="fas fa-arrow-left"></i>
                     دخول الأفراد
                 </a>
             </div>
         </div>
-
-        <!-- Login Section -->
-        <div class="login-section">
-            <p class="login-text">لديك حساب بالفعل؟</p>
-            <a href="{{ route('login') }}" class="login-link">تسجيل الدخول</a>
-        </div>
     </div>
+
+    <script>
+        // Handle smooth page transitions
+        function handleNavigation(event) {
+            event.preventDefault();
+            const link = event.currentTarget;
+            const href = link.getAttribute('href');
+            
+            // Show transition overlay
+            const transition = document.getElementById('pageTransition');
+            transition.classList.add('active');
+            
+            // Navigate after animation
+            setTimeout(() => {
+                window.location.href = href;
+            }, 800);
+        }
+
+        // Add enhanced interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.selection-card');
+            
+            cards.forEach((card, index) => {
+                // Add mouse move effect
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 10;
+                    const rotateY = -(x - centerX) / 10;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-12px) scale(1.02)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)';
+                });
+
+                // Add click ripple effect
+                card.addEventListener('click', function(e) {
+                    const ripple = document.createElement('div');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        background: rgba(0, 60, 109, 0.1);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                    `;
+                    
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        if (this.contains(ripple)) {
+                            this.removeChild(ripple);
+                        }
+                    }, 600);
+                });
+            });
+
+            // Add CSS for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Parallax effect for background elements
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            const bgBefore = document.querySelector('body::before');
+            const bgAfter = document.querySelector('body::after');
+            
+            document.documentElement.style.setProperty('--mouse-x', mouseX);
+            document.documentElement.style.setProperty('--mouse-y', mouseY);
+        });
+
+        // Add scroll-triggered animations for mobile
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        document.querySelectorAll('.selection-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
 </body>
 </html>

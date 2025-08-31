@@ -99,7 +99,7 @@ class PendingRegistrationsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'تم تفعيل الحساب بنجاح'
+                'message' => __('admin.pending_registrations.messages.activate_success')
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to activate user account', [
@@ -109,7 +109,7 @@ class PendingRegistrationsController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'حدث خطأ أثناء تفعيل الحساب'
+                'message' => __('admin.pending_registrations.messages.activate_error')
             ], 500);
         }
     }
@@ -131,7 +131,7 @@ class PendingRegistrationsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'تم إلغاء تفعيل الحساب بنجاح'
+                'message' => __('admin.pending_registrations.messages.deactivate_success')
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to deactivate user account', [
@@ -141,7 +141,7 @@ class PendingRegistrationsController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'حدث خطأ أثناء إلغاء تفعيل الحساب'
+                'message' => __('admin.pending_registrations.messages.deactivate_error')
             ], 500);
         }
     }
@@ -169,7 +169,7 @@ class PendingRegistrationsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "تم تفعيل {$activatedCount} حساب بنجاح"
+                'message' => __('admin.pending_registrations.messages.bulk_activate_success', ['count' => $activatedCount])
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to bulk activate users', [

@@ -57,4 +57,31 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Display the admin profile.
+     */
+    public function adminProfile(Request $request): View
+    {
+        $user = $request->user();
+        return view('profile.admin', compact('user'));
+    }
+
+    /**
+     * Display the company profile.
+     */
+    public function companyProfile(Request $request): View
+    {
+        $user = $request->user();
+        return view('profile.company', compact('user'));
+    }
+
+    /**
+     * Display the employee profile.
+     */
+    public function employeeProfile(Request $request): View
+    {
+        $user = $request->user();
+        return view('profile.employee', compact('user'));
+    }
 }
