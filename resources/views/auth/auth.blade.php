@@ -650,7 +650,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('company.login') }}" novalidate>
+            <form method="POST" action="{{ route('company.login.post') }}" novalidate>
                 @csrf
                 
                 <div class="form-group">

@@ -242,6 +242,19 @@
             
             @endif
 
+            <!-- Chat Section - Available for all roles -->
+            <div class="nav-section">
+                <div class="nav-section-title">{{ __('sidebar.communication') }}</div>
+                <ul>
+                    <li class="nav-item">
+                        <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                            <i class="fas fa-comments"></i>
+                            <span>{{ __('sidebar.chat') }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
            
         </nav>
     </aside>

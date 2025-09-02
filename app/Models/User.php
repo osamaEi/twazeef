@@ -146,4 +146,46 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->is_active;
     }
+
+    /**
+     * Get user's chats
+     */
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class, 'chat_participants')
+            ->withPivot('joined_at', 'last_read_at', 'status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get user's messages
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    /**
+     * Get user's initials
+     */
+    public function getInitialsAttribute()
+    {
+        $names = explode(' ', $this->name);
+        $initials = '';
+        foreach ($names as $name) {
+            $initials .= mb_substr($name, 0, 1);
+        }
+        return mb_strtoupper($initials);
+    }
+
+    /**
+     * Get user's online status
+     */
+    public function getOnlineStatusAttribute()
+    {
+        // You can implement online status logic here
+        // For now, return random status for demo
+        $statuses = ['online', 'away', 'offline'];
+        return $statuses[array_rand($statuses)];
+    }
 }

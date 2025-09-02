@@ -26,7 +26,7 @@ Route::middleware('guest')->group(function () {
     // Company login routes
     Route::get('company/login', [AuthController::class, 'showCompanyLogin'])
         ->name('company.login');
-    Route::post('company/login', [AuthController::class, 'loginCompany']);
+    Route::post('company/login', [AuthController::class, 'loginCompany'])->name('company.login.post');
 
     // Registration selection route
     Route::get('register', function () {

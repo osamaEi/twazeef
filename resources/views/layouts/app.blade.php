@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="لوحة إدارة الوظائف - شركة توافق للتوظيف">
     <meta name="author" content="شركة توافق للتوظيف">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <title>لوحة إدارة الوظائف | شركة توافق للتوظيف</title>
     

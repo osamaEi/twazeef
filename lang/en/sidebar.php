@@ -50,4 +50,8 @@ return [
 
     // Employee Dashboard
     'dashboard' => 'Dashboard',
+
+    // Communication
+    'communication' => 'Communication',
+    'chat' => 'Chat',
 ];

@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Mail;
@@ -114,6 +115,16 @@ Route::middleware(['auth', 'user.active'])->group(function () {
     Route::get('/applications/{application}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
     Route::put('/applications/{application}', [ApplicationController::class, 'update'])->name('applications.update');
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
+
+    // Chat routes
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{chat}', [ChatController::class, 'show'])->name('chat.show');
+    Route::get('/chat/{chat}/messages/new', [ChatController::class, 'getNewMessages'])->name('chat.newMessages');
+    Route::post('/chat/{chat}/messages', [ChatController::class, 'sendMessage'])->name('chat.sendMessage');
+    Route::post('/chat/{chat}/read', [ChatController::class, 'markAsRead'])->name('chat.markAsRead');
+    Route::post('/chat/create-private', [ChatController::class, 'createOrFindPrivateChat'])->name('chat.createPrivate');
+    Route::get('/api/chat/search', [ChatController::class, 'searchChats'])->name('chat.search');
+    Route::get('/api/users/search', [ChatController::class, 'getUsers'])->name('users.search');
 });
 
 // Test Email Route
