@@ -130,6 +130,30 @@
                 </div>
                 
                 <div class="nav-section">
+                    <div class="nav-section-title">{{ __('sidebar.communication') }}</div>
+                    <ul>
+                        <li class="nav-item">
+                            <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                                <i class="fas fa-comments"></i>
+                                <span>{{ __('sidebar.chat') }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('calendar.index') }}" class="nav-link {{ request()->routeIs('calendar.*') ? 'active' : '' }}">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>{{ __('sidebar.calendar') }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('meetings.index') }}" class="nav-link {{ request()->routeIs('meetings.*') ? 'active' : '' }}">
+                                <i class="fas fa-video"></i>
+                                <span>{{ __('sidebar.meetings') }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
                     <div class="nav-section-title">{{ __('sidebar.profile_management') }}</div>
                     <ul>
                         <li class="nav-item">

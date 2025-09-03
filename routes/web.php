@@ -126,6 +126,28 @@ Route::middleware(['auth', 'user.active'])->group(function () {
     Route::post('/chat/create-private', [ChatController::class, 'createOrFindPrivateChat'])->name('chat.createPrivate');
     Route::get('/api/chat/search', [ChatController::class, 'searchChats'])->name('chat.search');
     Route::get('/api/users/search', [ChatController::class, 'getUsers'])->name('users.search');
+
+    // Calendar routes
+    Route::get('/calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/calendar/create', [App\Http\Controllers\CalendarController::class, 'create'])->name('calendar.create');
+    Route::post('/calendar', [App\Http\Controllers\CalendarController::class, 'store'])->name('calendar.store');
+    Route::get('/calendar/{calendar}', [App\Http\Controllers\CalendarController::class, 'show'])->name('calendar.show');
+    Route::get('/calendar/{calendar}/edit', [App\Http\Controllers\CalendarController::class, 'edit'])->name('calendar.edit');
+    Route::put('/calendar/{calendar}', [App\Http\Controllers\CalendarController::class, 'update'])->name('calendar.update');
+    Route::delete('/calendar/{calendar}', [App\Http\Controllers\CalendarController::class, 'destroy'])->name('calendar.destroy');
+    Route::get('/api/calendar/events', [App\Http\Controllers\CalendarController::class, 'getEvents'])->name('calendar.events');
+
+    // Meeting routes
+    Route::get('/meetings', [App\Http\Controllers\MeetingController::class, 'index'])->name('meetings.index');
+    Route::get('/meetings/create', [App\Http\Controllers\MeetingController::class, 'create'])->name('meetings.create');
+    Route::post('/meetings', [App\Http\Controllers\MeetingController::class, 'store'])->name('meetings.store');
+    Route::get('/meetings/{meeting}', [App\Http\Controllers\MeetingController::class, 'show'])->name('meetings.show');
+    Route::get('/meetings/{meeting}/edit', [App\Http\Controllers\MeetingController::class, 'edit'])->name('meetings.edit');
+    Route::put('/meetings/{meeting}', [App\Http\Controllers\MeetingController::class, 'update'])->name('meetings.update');
+    Route::delete('/meetings/{meeting}', [App\Http\Controllers\MeetingController::class, 'destroy'])->name('meetings.destroy');
+    Route::post('/meetings/{meeting}/join', [App\Http\Controllers\MeetingController::class, 'join'])->name('meetings.join');
+    Route::post('/meetings/{meeting}/start', [App\Http\Controllers\MeetingController::class, 'start'])->name('meetings.start');
+    Route::post('/meetings/{meeting}/end', [App\Http\Controllers\MeetingController::class, 'end'])->name('meetings.end');
 });
 
 // Test Email Route

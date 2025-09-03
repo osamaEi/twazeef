@@ -54,4 +54,6 @@ return [
     // Communication
     'communication' => 'Communication',
     'chat' => 'Chat',
+    'calendar' => 'Calendar',
+    'meetings' => 'Meetings',
 ];

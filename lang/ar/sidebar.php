@@ -54,4 +54,6 @@ return [
     // التواصل
     'communication' => 'التواصل',
     'chat' => 'الدردشة',
+    'calendar' => 'التقويم',
+    'meetings' => 'الاجتماعات',
 ];

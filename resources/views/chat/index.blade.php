@@ -842,16 +842,7 @@ class ChatSystem {
 
 // Initialize chat system when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const chatSystem = new ChatSystem();
-    
-    // Check if there's a selected chat from the session
-    @if(session('selected_chat'))
-        const selectedChatId = {{ session('selected_chat') }};
-        const chatItem = document.querySelector(`[data-chat-id="${selectedChatId}"]`);
-        if (chatItem) {
-            chatSystem.selectChat(selectedChatId, chatItem);
-        }
-    @endif
+    new ChatSystem();
 });
 </script>
 
