@@ -40,6 +40,39 @@ class ChatController extends Controller
         return view('chat.index', compact('chats'));
     }
 
+    public function startChat($applicantId, $applicationId = null)
+    {
+        $currentUserId = Auth::id();
+
+        // Validate applicant exists
+        $applicant = User::findOrFail($applicantId);
+
+        // Try to find existing private chat between company and applicant
+        $chat = Chat::where('type', 'private')
+            ->whereJsonContains('participants', $currentUserId)
+            ->whereJsonContains('participants', $applicantId)
+            ->first();
+
+        if (!$chat) {
+            // Create new private chat
+            $chat = Chat::create([
+                'name' => 'Private Chat',
+                'type' => 'private',
+                'participants' => [$currentUserId, $applicantId],
+                'last_activity' => now()
+            ]);
+
+            // Add participants
+            $chat->participants()->attach([
+                $currentUserId => ['joined_at' => now(), 'status' => 'active'],
+                $applicantId => ['joined_at' => now(), 'status' => 'active']
+            ]);
+        }
+
+        // Redirect to chat page
+        return redirect()->route('chat.index')->with('selected_chat', $chat->id);
+    }
+
     public function show(Chat $chat)
     {
         // Check if user is participant

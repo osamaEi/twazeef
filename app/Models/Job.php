@@ -121,14 +121,32 @@ class Job extends Model
      */
     public function getFormattedSalaryAttribute()
     {
+        $currencySymbol = $this->getCurrencySymbol();
+
         if ($this->salary_min && $this->salary_max) {
-            return "{$this->salary_min} - {$this->salary_max} {$this->salary_currency}";
+            return "{$this->salary_min} - {$this->salary_max} {$currencySymbol}";
         } elseif ($this->salary_min) {
-            return "من {$this->salary_min} {$this->salary_currency}";
+            return "من {$this->salary_min} {$currencySymbol}";
         } elseif ($this->salary_max) {
-            return "حتى {$this->salary_max} {$this->salary_currency}";
+            return "حتى {$this->salary_max} {$currencySymbol}";
         }
         return 'غير محدد';
+    }
+
+    /**
+     * Get currency symbol based on currency code
+     */
+    public function getCurrencySymbol()
+    {
+        $symbols = [
+            'SAR' => '﷼',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'AED' => 'د.إ',
+        ];
+
+        return $symbols[$this->salary_currency] ?? $this->salary_currency;
     }
 
     /**
@@ -236,5 +254,15 @@ class Job extends Model
     public function hasImage()
     {
         return !empty($this->image);
+    }
+
+    /**
+     * Get formatted job ID in PRJ-YYYY-XXX format
+     */
+    public function getFormattedIdAttribute()
+    {
+        $year = $this->created_at->format('Y');
+        $paddedId = str_pad($this->id, 3, '0', STR_PAD_LEFT);
+        return "PRJ-{$year}-{$paddedId}";
     }
 }

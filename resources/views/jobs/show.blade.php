@@ -13,7 +13,7 @@
                             <i class="fas fa-briefcase"></i>
                             {{ $job->getFormattedTypeAttribute() }}
                         </span>
-                        <span class="project-id">رقم الوظيفة: {{ $job->id }}</span>
+                        <span class="project-id">رقم الوظيفة: {{ $job->formatted_id }}</span>
                     </div>
                     
                     <h1 class="project-title">{{ $job->title }}</h1>
@@ -56,9 +56,9 @@
             <div class="tabs-section">
                 <div class="tabs-nav">
                     <button class="tab-btn active" data-tab="description"><span>وصف الوظيفة</span></button>
-                    <button class="tab-btn" data-tab="requirements"><span>المتطلبات</span></button>
-                    <button class="tab-btn" data-tab="benefits"><span>المزايا</span></button>
-                    <button class="tab-btn" data-tab="company"><span>معلومات الشركة</span></button>
+                    <button class="tab-btn" data-tab="requirements"><span>الخطوات</span></button>
+                    <button class="tab-btn" data-tab="benefits"><span>المتطلبات</span></button>
+                    <button class="tab-btn" data-tab="company"><span>المستندات</span></button>
                 </div>
                 
                 <div id="description" class="tab-content active">
@@ -67,14 +67,7 @@
                         {!! nl2br(e($job->description)) !!}
                     </p>
                     
-                    @if($job->skills && count($job->skills) > 0)
-                        <h3>المهارات المطلوبة</h3>
-                        <ul>
-                            @foreach($job->skills as $skill)
-                                <li>{{ $skill }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
+
                 </div>
                 
                 <div id="requirements" class="tab-content">
@@ -110,9 +103,15 @@
                 </div>
                 
                 <div id="benefits" class="tab-content">
-                    <h3>المزايا والفوائد</h3>
-                    
-                    @if($job->benefits && count($job->benefits) > 0)
+                    @if($job->skills && count($job->skills) > 0)
+                        <h3>المهارات المطلوبة</h3>
+                        <ul>
+                            @foreach($job->skills as $skill)
+                                <li>{{ $skill }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    {{-- @if($job->benefits && count($job->benefits) > 0)
                         <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">المزايا المقدمة</h4>
                         <ul>
                             @foreach($job->benefits as $benefit)
@@ -137,34 +136,34 @@
                         <li>فرص الترقية والتقدم الوظيفي</li>
                         <li>مشاركة في مشاريع متنوعة ومتطورة</li>
                         <li>شبكة علاقات مهنية واسعة</li>
-                    </ul>
+                    </ul> --}}
                 </div>
                 
+                   
                 <div id="company" class="tab-content">
-                    <h3>معلومات الشركة</h3>
+                    <h3>المستندات والوثائق المطلوبة</h3>
                     
-                    @if($job->company)
-                        <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">الشركة المعلنة</h4>
-                        <p>
-                            <strong>اسم الشركة:</strong> {{ $job->company->company_name ?? $job->company->name ?? 'غير محدد' }}<br>
-                            <strong>المجال:</strong> {{ $job->company->company_field ?? 'غير محدد' }}<br>
-                            <strong>حجم الشركة:</strong> {{ $job->company->company_size ?? 'غير محدد' }}
-                        </p>
-                        
-                        @if($job->company->company_description)
-                            <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">نبذة عن الشركة</h4>
-                            <p>{{ $job->company->company_description }}</p>
-                        @endif
-                    @else
-                        <p>معلومات الشركة غير متاحة حالياً.</p>
-                    @endif
-                    
-                    <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">ثقافة الشركة</h4>
+                    <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">وثائق الوظيفة</h4>
                     <ul>
-                        <li>بيئة عمل ديناميكية ومحفزة</li>
-                        <li>تركيز على الابتكار والتطوير المستمر</li>
-                        <li>قيم الشركة: الشفافية، النزاهة، التميز</li>
-                        <li>دعم العمل الجماعي والتعاون</li>
+                        <li>شهادة العمل والهوية ساري المفعول</li>
+                        <li>النظام الأساسي للعمل والتعديلات إن وجدت</li>
+                        <li>شهادة عدم ممانعة من الجهات الحكومية ذات العلاقة</li>
+                    </ul>
+                    
+                    <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">المؤهلات التقنية</h4>
+                    <ul>
+                        <li>ملف تعريفي شامل بالمشاريع السابقة</li>
+                        <li>شهادات الخبرة والمؤهلات للفريق التقني</li>
+                        <li>اتفاقيات الشراكة مع الشركات التقنية العالمية</li>
+                        <li>شهادات الجودة والاعتمادات البيئية</li>
+                    </ul>
+                    
+                    <h4 style="color: var(--primary-green); margin: 2rem 0 1rem;">الدراسات المطلوبة</h4>
+                    <ul>
+                        <li>دراسة الجدوى الاقتصادية التفصيلية</li>
+                        <li>دراسة الأثر البيئي والاجتماعي</li>
+                        <li>خطة إدارة المشروع والجدول الزمني</li>
+                        <li>استراتيجية نقل التكنولوجيا وبناء القدرات</li>
                     </ul>
                 </div>
             </div>
@@ -179,7 +178,7 @@
                     </h3>
                     <div class="info-item">
                         <span class="info-label">
-                            <i class="fas fa-dollar-sign"></i>
+                            <i class="fas fa-coins"></i>
                             الراتب
                         </span>
                         <span class="info-value">{{ $job->getFormattedSalaryAttribute() }}</span>

@@ -384,6 +384,60 @@
 </div>
 
 <style>
+/* CSS Variables */
+:root {
+    /* الألوان الأساسية */
+    --primary-green: #003c6d;
+    --primary-light: #005085;
+    --primary-lighter: #e8eff5;
+    --primary-lightest: #f4f9fa;
+    --primary-dark: #003655;
+    --primary-darker: #003858;
+    --primary-darkest: #00182b;
+
+    /* تدرجات رمادية */
+    --grey-900: #1a1a1a;
+    --grey-800: #2c2c2c;
+    --grey-700: #424242;
+    --grey-500: #757575;
+    --grey-300: #e0e0e0;
+    --grey-100: #f5f5f5;
+    --grey-50: #fafafa;
+    --pure-white: #FFFFFF;
+
+    /* ألوان إضافية */
+    --success-green: #10b981;
+    --warning-orange: #f59e0b;
+    --error-red: #ef4444;
+    --info-blue: #3b82f6;
+
+    /* التدرجات */
+    --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+    --gradient-light: linear-gradient(135deg, var(--primary-light) 0%, #0067a3 100%);
+    --gradient-dark: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+
+    /* الظلال */
+    --shadow-sm: 0 2px 8px rgba(0, 69, 109, 0.08);
+    --shadow-md: 0 6px 20px rgba(0, 60, 109, 0.12);
+    --shadow-lg: 0 12px 40px rgba(0, 65, 109, 0.15);
+    --shadow-xl: 0 25px 65px rgba(0, 74, 109, 0.18);
+
+    /* الخطوط */
+    --font-main: 'Neo Sans Arabic', sans-serif;
+
+    /* المتغيرات التقنية */
+    --sidebar-width: 340px;
+    --header-height: 90px;
+    --border-radius-sm: 12px;
+    --border-radius-md: 20px;
+    --border-radius-lg: 28px;
+
+    /* الانتقالات */
+    --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-slow: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Dashboard-specific styles */
 .dashboard-sections {
     display: grid;
@@ -406,15 +460,16 @@
 
 /* Alert Styles */
 .alert {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    border-radius: 12px;
+    background: var(--gradient-primary);
+    color: var(--pure-white);
+    border-radius: var(--border-radius-sm);
     padding: 1rem 1.5rem;
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-main);
 }
 
 .alert-icon {
@@ -428,11 +483,11 @@
 .alert-close {
     background: none;
     border: none;
-    color: white;
+    color: var(--pure-white);
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .alert-close:hover {
@@ -451,24 +506,24 @@
     align-items: flex-start;
     gap: 1rem;
     padding: 1.5rem;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s ease;
+    background: var(--grey-50);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-300);
+    transition: var(--transition-fast);
 }
 
 .info-item:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
+    background: var(--primary-lightest);
+    border-color: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
 }
 
 .item-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: var(--gradient-primary);
+    color: var(--pure-white);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -484,32 +539,34 @@
 .info-label, .detail-label {
     display: block;
     font-size: 0.875rem;
-    color: #64748b;
+    color: var(--grey-700);
     margin-bottom: 0.5rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-family: var(--font-main);
 }
 
 .info-value, .detail-value {
     font-size: 1.125rem;
-    color: #1e293b;
+    color: var(--grey-800);
     font-weight: 600;
     margin: 0;
+    font-family: var(--font-main);
 }
 
 /* Description Section */
 .description-section {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--grey-300);
 }
 
 .description-content {
-    background: #f8fafc;
+    background: var(--grey-50);
     padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-300);
 }
 
 .description-more {
@@ -521,7 +578,7 @@
 .skills-section {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--grey-300);
 }
 
 .skills-tags {
@@ -532,27 +589,29 @@
 }
 
 .skill-tag {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    color: #1e40af;
+    background: var(--primary-lighter);
+    color: var(--primary-green);
     padding: 0.5rem 1rem;
     border-radius: 2rem;
     font-size: 0.875rem;
     font-weight: 600;
-    border: 1px solid #93c5fd;
-    transition: all 0.2s ease;
+    border: 1px solid var(--primary-light);
+    transition: var(--transition-fast);
+    font-family: var(--font-main);
 }
 
 .skill-tag:hover {
-    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+    background: var(--primary-lightest);
     transform: translateY(-1px);
+    border-color: var(--primary-green);
 }
 
 /* Cover Letter */
 .cover-letter-content {
-    background: #f8fafc;
+    background: var(--grey-50);
     padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--grey-300);
 }
 
 .content-header {
@@ -560,20 +619,22 @@
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
-    color: #64748b;
+    color: var(--grey-700);
     font-size: 1rem;
     font-weight: 600;
+    font-family: var(--font-main);
 }
 
 .letter-text {
     line-height: 1.8;
-    color: #334155;
+    color: var(--grey-800);
     margin-bottom: 2rem;
     font-size: 1.05rem;
+    font-family: var(--font-main);
 }
 
 .content-footer {
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--grey-300);
     padding-top: 1.5rem;
 }
 
@@ -587,9 +648,10 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #64748b;
+    color: var(--grey-700);
     font-size: 0.875rem;
     font-weight: 500;
+    font-family: var(--font-main);
 }
 
 /* Resume Section */
@@ -609,9 +671,9 @@
 .resume-icon {
     width: 64px;
     height: 64px;
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: white;
-    border-radius: 12px;
+    background: var(--gradient-primary);
+    color: var(--pure-white);
+    border-radius: var(--border-radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -620,22 +682,25 @@
 
 .resume-details h3 {
     margin-bottom: 0.5rem;
-    color: #1e293b;
+    color: var(--grey-800);
     font-size: 1.125rem;
+    font-family: var(--font-main);
 }
 
 .resume-type {
-    color: #64748b;
+    color: var(--grey-700);
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
+    font-family: var(--font-main);
 }
 
 .resume-date {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #94a3b8;
+    color: var(--grey-500);
     font-size: 0.875rem;
+    font-family: var(--font-main);
 }
 
 .resume-actions {
@@ -646,7 +711,7 @@
 
 /* Status Card */
 .status-card {
-    border-left: 4px solid #10b981;
+    border-left: 4px solid var(--success-green);
 }
 
 .current-status {
@@ -660,14 +725,35 @@
     font-size: 1rem;
     font-weight: 600;
     display: inline-block;
+    font-family: var(--font-main);
 }
 
 /* Status Colors */
-.status-pending { background: #fef3c7; color: #92400e; }
-.status-shortlisted { background: #dbeafe; color: #1e40af; }
-.status-interviewed { background: #e0e7ff; color: #3730a3; }
-.status-accepted { background: #d1fae5; color: #065f46; }
-.status-rejected { background: #fee2e2; color: #991b1b; }
+.status-pending { 
+    background: rgba(245, 158, 11, 0.1); 
+    color: var(--warning-orange); 
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.status-shortlisted { 
+    background: rgba(59, 130, 246, 0.1); 
+    color: var(--info-blue); 
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+.status-interviewed { 
+    background: var(--primary-lightest); 
+    color: var(--primary-green); 
+    border: 1px solid var(--primary-light);
+}
+.status-accepted { 
+    background: rgba(16, 185, 129, 0.1); 
+    color: var(--success-green); 
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.status-rejected { 
+    background: rgba(239, 68, 68, 0.1); 
+    color: var(--error-red); 
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
 
 /* Form Styles */
 .status-form {
@@ -682,25 +768,27 @@
     display: block;
     margin-bottom: 0.75rem;
     font-weight: 600;
-    color: #374151;
+    color: var(--grey-800);
     font-size: 0.875rem;
+    font-family: var(--font-main);
 }
 
 .form-select {
     width: 100%;
     padding: 0.875rem 1rem;
-    border: 2px solid #d1d5db;
-    border-radius: 8px;
-    background: white;
+    border: 2px solid var(--grey-300);
+    border-radius: var(--border-radius-sm);
+    background: var(--pure-white);
     font-size: 1rem;
-    transition: all 0.2s ease;
-    color: #374151;
+    transition: var(--transition-fast);
+    color: var(--grey-800);
+    font-family: var(--font-main);
 }
 
 .form-select:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(0, 80, 133, 0.1);
 }
 
 .btn-full {
@@ -710,7 +798,7 @@
 
 /* Details Card */
 .details-card {
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid var(--info-blue);
 }
 
 .details-list {
@@ -721,7 +809,7 @@
 
 /* Applicant Card */
 .applicant-card {
-    border-left: 4px solid #f59e0b;
+    border-left: 4px solid var(--warning-orange);
 }
 
 .applicant-profile {
@@ -732,8 +820,8 @@
 .applicant-avatar {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: var(--gradient-primary);
+    color: var(--pure-white);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -745,14 +833,16 @@
 
 .applicant-name {
     font-size: 1.25rem;
-    color: #1e293b;
+    color: var(--grey-800);
     margin-bottom: 0.5rem;
     font-weight: 600;
+    font-family: var(--font-main);
 }
 
 .applicant-email {
-    color: #64748b;
+    color: var(--grey-700);
     font-size: 0.875rem;
+    font-family: var(--font-main);
 }
 
 /* Responsive Design */

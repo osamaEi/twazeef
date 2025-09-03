@@ -118,6 +118,7 @@ Route::middleware(['auth', 'user.active'])->group(function () {
 
     // Chat routes
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/start/{applicant_id}/{application_id?}', [ChatController::class, 'startChat'])->name('chat.start');
     Route::get('/chat/{chat}', [ChatController::class, 'show'])->name('chat.show');
     Route::get('/chat/{chat}/messages/new', [ChatController::class, 'getNewMessages'])->name('chat.newMessages');
     Route::post('/chat/{chat}/messages', [ChatController::class, 'sendMessage'])->name('chat.sendMessage');

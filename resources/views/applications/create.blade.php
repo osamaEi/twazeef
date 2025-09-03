@@ -990,6 +990,12 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.file-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
 }
 
 .file-item:last-child {
@@ -1013,6 +1019,7 @@
     font-weight: 600;
     color: #1e293b;
     margin: 0;
+    font-size: 0.9rem;
 }
 
 .file-item .file-size {
@@ -1025,6 +1032,20 @@
     color: #3b82f6;
     font-size: 0.75rem;
     margin: 0;
+}
+
+.file-item .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: auto;
+    background: #ef4444;
+    color: white;
+    border: none;
+}
+
+.file-item .btn-sm:hover {
+    background: #dc2626;
+    transform: none;
 }
 
 .upload-summary {
@@ -1411,11 +1432,16 @@ function updateFileUploadArea(area, file) {
 }
 
 function updateMultipleFileUploadArea(area, files) {
-    const fileList = files.map(file => `
+    const fileList = files.map((file, index) => `
         <div class="file-item">
             <i class="fas fa-file-alt"></i>
-            <span>${file.name}</span>
-            <span class="file-size">${formatFileSize(file.size)}</span>
+            <div class="file-info">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${formatFileSize(file.size)}</div>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="removeSingleFile(this, ${index})" title="إزالة هذا الملف">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     `).join('');
     
@@ -1444,43 +1470,131 @@ function formatFileSize(bytes) {
 }
 
 function removeFile(button) {
-    const area = button.closest('.file-upload-area');
-    const input = area.querySelector('input[type="file"]');
-    input.value = '';
-    
-    area.innerHTML = `
-        <div class="upload-icon">
-            <i class="fas fa-cloud-upload-alt"></i>
-        </div>
-        <div class="upload-text">
-            <p>اسحب وأفلت الملف هنا أو</p>
-            <button type="button" class="btn btn-outline" onclick="document.getElementById('${input.id}').click()">
-                اختر ملف
-            </button>
-        </div>
-    `;
-    
-    showSuccessMessage('تم إزالة الملف');
+    try {
+        const area = button.closest('.file-upload-area');
+        if (!area) {
+            console.error('Upload area not found');
+            return;
+        }
+        
+        // Find the file input - it should be the next sibling element
+        const input = area.nextElementSibling;
+        if (!input || input.type !== 'file') {
+            console.error('File input not found');
+            return;
+        }
+        
+        // Clear the input value
+        input.value = '';
+        
+        // Restore the original upload area content
+        area.innerHTML = `
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">
+                <p>اسحب وأفلت الملف هنا أو</p>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('${input.id}').click()">
+                    اختر ملف
+                </button>
+            </div>
+        `;
+        
+        showSuccessMessage('تم إزالة الملف');
+    } catch (error) {
+        console.error('Error removing file:', error);
+        showSuccessMessage('حدث خطأ أثناء إزالة الملف');
+    }
+}
+
+function removeSingleFile(button, fileIndex) {
+    try {
+        const area = button.closest('.file-upload-area');
+        if (!area) {
+            console.error('Upload area not found');
+            return;
+        }
+        
+        // Find the file input
+        const input = area.nextElementSibling;
+        if (!input || input.type !== 'file') {
+            console.error('File input not found');
+            return;
+        }
+        
+        // Get current files
+        const currentFiles = Array.from(input.files);
+        
+        // Remove the file at the specified index
+        currentFiles.splice(fileIndex, 1);
+        
+        // Create a new FileList-like object
+        const dt = new DataTransfer();
+        currentFiles.forEach(file => dt.items.add(file));
+        input.files = dt.files;
+        
+        // Update the display
+        if (currentFiles.length === 0) {
+            // No files left, restore original state
+            area.innerHTML = `
+                <div class="upload-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="upload-text">
+                    <p>أضف شهادات أو مستندات إضافية</p>
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('${input.id}').click()">
+                        إضافة ملفات
+                    </button>
+                </div>
+            `;
+        } else {
+            // Update with remaining files
+            updateMultipleFileUploadArea(area, currentFiles);
+        }
+        
+        showSuccessMessage('تم إزالة الملف');
+    } catch (error) {
+        console.error('Error removing single file:', error);
+        showSuccessMessage('حدث خطأ أثناء إزالة الملف');
+    }
 }
 
 function removeFiles(button) {
-    const area = button.closest('.file-upload-area');
-    const input = area.querySelector('input[type="file"]');
-    input.value = '';
-    
-    area.innerHTML = `
-        <div class="upload-icon">
-            <i class="fas fa-plus"></i>
-        </div>
-        <div class="upload-text">
-            <p>أضف شهادات أو مستندات إضافية</p>
-            <button type="button" class="btn btn-outline" onclick="document.getElementById('${input.id}').click()">
-                إضافة ملفات
-            </button>
-        </div>
-    `;
-    
-    showSuccessMessage('تم إزالة جميع الملفات');
+    try {
+        const area = button.closest('.file-upload-area');
+        if (!area) {
+            console.error('Upload area not found');
+            return;
+        }
+        
+        // Find the file input - it should be the next sibling element
+        const input = area.nextElementSibling;
+        if (!input || input.type !== 'file') {
+            console.error('File input not found');
+            return;
+        }
+        
+        // Clear the input value
+        input.value = '';
+        
+        // Restore the original upload area content
+        area.innerHTML = `
+            <div class="upload-icon">
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="upload-text">
+                <p>أضف شهادات أو مستندات إضافية</p>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('${input.id}').click()">
+                    إضافة ملفات
+                </button>
+            </div>
+        `;
+        
+        showSuccessMessage('تم إزالة جميع الملفات');
+    } catch (error) {
+        console.error('Error removing files:', error);
+        showSuccessMessage('حدث خطأ أثناء إزالة الملفات');
+    }
 }
 
 // Generate cover letter

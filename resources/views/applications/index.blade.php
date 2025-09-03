@@ -1,15 +1,34 @@
 @extends('dashboard.index')
 
-
 @section('content')
 <div class="applications-page">
     <!-- Enhanced Header Section -->
- 
+    <div class="enhanced-header">
+        <div class="header-content">
+            <div>
+                <h1 class="page-title">
+                    <i class="fas fa-list-alt header-icon"></i>
+                    طلبات التقديم
+                </h1>
+                <p class="page-subtitle">
+                    @if(auth()->user()->role === 'company')
+                        إدارة طلبات التقديم للوظائف المنشورة
+                    @else
+                        متابعة طلبات التقديم المرسلة
+                    @endif
+                </p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-with-icon" onclick="exportTable()">
+                    <i class="fas fa-download"></i>
+                    <span>تصدير البيانات</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Stats Overview -->
     <div class="stats-overview enhanced-stats">
- 
-        
         @if(auth()->user()->role === 'company')
             <div class="stat-card warning enhanced-stat">
                 <div class="stat-icon-wrapper">
@@ -61,238 +80,168 @@
         @endif
     </div>
 
-    <!-- Tabbed Applications Section -->
-    <div class="applications-section enhanced-section">
-        <div class="section-header">
-            <div class="section-title-wrapper">
-                <h2 class="section-title">
+    <!-- Data Table Section -->
+    <div class="data-table">
+        <div class="table-header">
+            <h3 class="table-title">
                     <i class="fas fa-list-alt"></i>
                     طلبات التقديم
-                </h2>
-            </div>
-            <div class="section-actions">
-                <div class="view-toggle">
-                    <button class="toggle-btn active" data-view="grid" title="عرض الشبكة">
-                        <i class="fas fa-th-large"></i>
+            </h3>
+            <div class="table-actions">
+                <button class="btn btn-primary" onclick="exportTable()">
+                    <i class="fas fa-download"></i>
+                    تصدير Excel
                     </button>
-                    <button class="toggle-btn" data-view="list" title="عرض القائمة">
-                        <i class="fas fa-list"></i>
+                <button class="btn btn-secondary" onclick="refreshTable()">
+                    <i class="fas fa-sync-alt"></i>
+                    تحديث
                     </button>
                 </div>
             </div>
-        </div>
-
-        <!-- Tab Navigation -->
-        <div class="tabs-container">
-            <nav class="tabs-nav">
-                <button class="tab-btn active" data-status="all">
-                    <i class="fas fa-layer-group"></i>
-                    <span>جميع الطلبات</span>
-                    <span class="tab-count">{{ $applications->count() }}</span>
-                </button>
-                
+        <div class="table-content">
+            <table class="main-table">
+                <thead>
+                    <tr>
                 @if(auth()->user()->role === 'company')
-                    <button class="tab-btn" data-status="pending">
-                        <i class="fas fa-clock"></i>
-                        <span>قيد المراجعة</span>
-                        <span class="tab-count">{{ $applications->where('status', 'pending')->count() }}</span>
-                    </button>
-                    
-                    <button class="tab-btn" data-status="shortlisted">
-                        <i class="fas fa-star"></i>
-                        <span>القائمة المختصرة</span>
-                        <span class="tab-count">{{ $applications->where('status', 'shortlisted')->count() }}</span>
-                    </button>
-                    
-                    <button class="tab-btn" data-status="interviewed">
-                        <i class="fas fa-user-tie"></i>
-                        <span>تمت المقابلة</span>
-                        <span class="tab-count">{{ $applications->where('status', 'interviewed')->count() }}</span>
-                    </button>
-                    
-                    <button class="tab-btn" data-status="accepted">
-                        <i class="fas fa-check-circle"></i>
-                        <span>مقبول</span>
-                        <span class="tab-count">{{ $applications->where('status', 'accepted')->count() }}</span>
-                    </button>
-                    
-                    <button class="tab-btn" data-status="rejected">
-                        <i class="fas fa-times-circle"></i>
-                        <span>مرفوض</span>
-                        <span class="tab-count">{{ $applications->where('status', 'rejected')->count() }}</span>
-                    </button>
-                @else
-                    <button class="tab-btn" data-status="pending">
-                        <i class="fas fa-hourglass-half"></i>
-                        <span>قيد المراجعة</span>
-                        <span class="tab-count">{{ $applications->where('status', 'pending')->count() }}</span>
-                    </button>
-                    
-                    <button class="tab-btn" data-status="accepted">
-                        <i class="fas fa-check-circle"></i>
-                        <span>مقبولة</span>
-                        <span class="tab-count">{{ $applications->where('status', 'accepted')->count() }}</span>
-                    </button>
-                    
-                    <button class="tab-btn" data-status="rejected">
-                        <i class="fas fa-times-circle"></i>
-                        <span>مرفوضة</span>
-                        <span class="tab-count">{{ $applications->where('status', 'rejected')->count() }}</span>
-                    </button>
+                            <th>المتقدم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الهاتف</th>
                 @endif
-            </nav>
-        </div>
-
-        <!-- Tab Content -->
-        <div class="tabs-content">
-            @if($applications->count() > 0)
-                <div class="applications-grid enhanced-grid" id="applications-view">
+                        <th>الوظيفة</th>
+                        <th>الشركة</th>
+                        <th>الموقع</th>
+                        <th>الحالة</th>
+                        <th>تاريخ التقديم</th>
+                        <th>خطاب التقديم</th>
+                        <th>السيرة الذاتية</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @foreach($applications as $application)
-                        <div class="application-card enhanced-card" data-status="{{ $application->status ?? 'pending' }}">
-                            <div class="card-header">
-                                <div class="status-indicator {{ $application->status ?? 'pending' }}"></div>
-                                <div class="card-title-section">
-                                    <h3 class="application-title">{{ $application->job->title }}</h3>
+                        <tr>
+                            @if(auth()->user()->role === 'company')
+                                <td>
+                                    <div class="applicant-info">
+                                        <div class="applicant-avatar">
+                                            {{ strtoupper(substr($application->applicant->name, 0, 1)) }}
+                                        </div>
+                                        <span class="font-semibold">{{ $application->applicant->name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $application->applicant->email }}</td>
+                                <td>{{ $application->applicant->phone ?? 'غير محدد' }}</td>
+                            @endif
+                            <td class="font-semibold">{{ $application->job->title }}</td>
+                            <td>{{ $application->job->company->name ?? 'غير محدد' }}</td>
+                            <td>{{ $application->job->location ?? 'غير محدد' }}</td>
+                            <td>
                                     @php
                                         $statusConfig = [
-                                            'pending' => ['class' => 'status-pending', 'text' => 'قيد المراجعة', 'icon' => 'fas fa-clock'],
-                                            'shortlisted' => ['class' => 'status-shortlisted', 'text' => 'القائمة المختصرة', 'icon' => 'fas fa-star'],
-                                            'interviewed' => ['class' => 'status-interviewed', 'text' => 'تمت المقابلة', 'icon' => 'fas fa-user-tie'],
-                                            'accepted' => ['class' => 'status-accepted', 'text' => 'مقبول', 'icon' => 'fas fa-check-circle'],
-                                            'rejected' => ['class' => 'status-rejected', 'text' => 'مرفوض', 'icon' => 'fas fa-times-circle']
+                                        'pending' => ['class' => 'pending', 'text' => 'قيد المراجعة'],
+                                        'shortlisted' => ['class' => 'review', 'text' => 'القائمة المختصرة'],
+                                        'interviewed' => ['class' => 'active', 'text' => 'تمت المقابلة'],
+                                        'accepted' => ['class' => 'active', 'text' => 'مقبول'],
+                                        'rejected' => ['class' => 'inactive', 'text' => 'مرفوض']
                                         ];
                                         $status = $statusConfig[$application->status ?? 'pending'] ?? $statusConfig['pending'];
                                     @endphp
-                                    <span class="status-badge {{ $status['class'] }} enhanced-badge">
-                                        <i class="{{ $status['icon'] }}"></i>
-                                        {{ $status['text'] }}
+                                <span class="status-badge {{ $status['class'] }}">{{ $status['text'] }}</span>
+                            </td>
+                            <td>{{ $application->applied_at ? $application->applied_at->format('Y/m/d') : $application->created_at->format('Y/m/d') }}</td>
+                            <td>
+                                @if($application->cover_letter)
+                                    <span class="text-sm" title="{{ $application->cover_letter }}">
+                                        {{ Str::limit($application->cover_letter, 30) }}
                                     </span>
-                                </div>
-                            </div>
-                            
-                            @if(auth()->user()->role === 'company')
-                                <div class="applicant-info enhanced-info">
-                                    <div class="applicant-avatar enhanced-avatar">
-                                        <span>{{ strtoupper(substr($application->applicant->name, 0, 1)) }}</span>
-                                    </div>
-                                    <div class="applicant-details">
-                                        <h4 class="applicant-name">{{ $application->applicant->name }}</h4>
-                                        <p class="applicant-email">
-                                            <i class="fas fa-envelope"></i>
-                                            {{ $application->applicant->email }}
-                                        </p>
-                                        @if($application->applicant->phone)
-                                            <p class="applicant-phone">
-                                                <i class="fas fa-phone"></i>
-                                                {{ $application->applicant->phone }}
-                                            </p>
+                                @else
+                                    <span class="text-muted">لا يوجد</span>
                                         @endif
-                                    </div>
-                                </div>
-                            @endif
-                            
-                            <div class="application-meta enhanced-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-building meta-icon"></i>
-                                    <span class="meta-text">{{ $application->job->company->name ?? 'غير محدد' }}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-map-marker-alt meta-icon"></i>
-                                    <span class="meta-text">{{ $application->job->location ?? 'غير محدد' }}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar-alt meta-icon"></i>
-                                    <span class="meta-text">{{ $application->applied_at ? $application->applied_at->format('Y/m/d') : $application->created_at->format('Y/m/d') }}</span>
-                                </div>
-                            </div>
-
-                            @if($application->cover_letter)
-                                <div class="application-content enhanced-content">
-                                    <div class="content-header">
-                                        <i class="fas fa-envelope-open content-icon"></i>
-                                        <span class="content-label">خطاب التقديم</span>
-                                    </div>
-                                    <p class="cover-letter-preview">{{ Str::limit($application->cover_letter, 120) }}</p>
-                                </div>
-                            @endif
-
+                            </td>
+                            <td>
                             @if($application->resume_path)
-                                <div class="resume-info enhanced-resume">
-                                    <div class="resume-icon">
+                                    <a href="{{ Storage::url($application->resume_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800">
                                         <i class="fas fa-file-pdf"></i>
-                                    </div>
-                                    <div class="resume-details">
-                                        <span class="resume-label">السيرة الذاتية مرفقة</span>
-                                        <span class="resume-date">{{ $application->created_at->format('Y/m/d') }}</span>
-                                    </div>
-                                    <a href="{{ Storage::url($application->resume_path) }}" target="_blank" class="resume-download">
-                                        <i class="fas fa-download"></i>
+                                        عرض السيرة
                                     </a>
-                                </div>
+                                @else
+                                    <span class="text-muted">لا يوجد</span>
                             @endif
-
-                            <div class="application-footer enhanced-footer">
-                                <div class="application-actions">
-                                    <a href="{{ route('applications.show', $application) }}" class="btn btn-primary btn-sm enhanced-btn">
-                                        <i class="fas fa-eye"></i>
-                                        <span>عرض التفاصيل</span>
-                                    </a>
+                            </td>
+                            <td>
+                                <div class="flex gap-1">
+                                    <a href="{{ route('applications.show', $application) }}" class="btn btn-outline">عرض</a>
                                     @if(auth()->user()->role === 'company')
-                                        <a href="{{ route('jobs.applications.show', ['job' => $application->job, 'application' => $application]) }}" class="btn btn-outline btn-sm enhanced-btn">
-                                            <i class="fas fa-cog"></i>
-                                            <span>إدارة</span>
-                                        </a>
+                                        <a href="{{ route('jobs.applications.show', ['job' => $application->job, 'application' => $application]) }}" class="btn btn-secondary">إدارة</a>
                                     @endif
                                 </div>
-                                <div class="application-timestamp">
-                                    <i class="fas fa-clock"></i>
-                                    <span>{{ $application->created_at->diffForHumans() }}</span>
-                                </div>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     @endforeach
+                </tbody>
+            </table>
                 </div>
-
-                <!-- Pagination -->
-                @if($applications->hasPages())
-                    <div class="pagination-wrapper enhanced-pagination">
-                        {{ $applications->links() }}
-                    </div>
-                @endif
-            @else
-                <!-- Empty State -->
-                <div class="empty-state enhanced-empty">
-                    <div class="empty-icon-wrapper">
-                        <i class="fas fa-inbox empty-icon"></i>
-                        <div class="empty-ripple"></div>
-                    </div>
-                    <h3 class="empty-title">لا توجد طلبات في هذا التصنيف</h3>
-                    <p class="empty-description">
-                        @if(auth()->user()->role === 'company')
-                            لا توجد طلبات تقديم في هذا التصنيف حالياً.
-                        @else
-                            لم تقم بتقديم طلبات في هذا التصنيف بعد.
-                        @endif
-                    </p>
-                    @if(auth()->user()->role === 'employee')
-                        <div class="empty-actions">
-                            <a href="{{ route('jobs.index') }}" class="btn btn-primary btn-large">
-                                <i class="fas fa-search"></i>
-                                <span>تصفح الوظائف المتاحة</span>
-                            </a>
-                        </div>
-                    @endif
-                </div>
-            @endif
-        </div>
     </div>
 </div>
 
 <style>
+/* CSS Variables */
+:root {
+    /* الألوان الأساسية */
+    --primary-green: #003c6d;
+    --primary-light: #005085;
+    --primary-lighter: #e8eff5;
+    --primary-lightest: #f4f9fa;
+    --primary-dark: #003655;
+    --primary-darker: #003858;
+    --primary-darkest: #00182b;
+
+    /* تدرجات رمادية */
+    --grey-900: #1a1a1a;
+    --grey-800: #2c2c2c;
+    --grey-700: #424242;
+    --grey-500: #757575;
+    --grey-300: #e0e0e0;
+    --grey-100: #f5f5f5;
+    --grey-50: #fafafa;
+    --pure-white: #FFFFFF;
+
+    /* ألوان إضافية */
+    --success-green: #10b981;
+    --warning-orange: #f59e0b;
+    --error-red: #ef4444;
+    --info-blue: #3b82f6;
+
+    /* التدرجات */
+    --gradient-primary: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+    --gradient-light: linear-gradient(135deg, var(--primary-light) 0%, #0067a3 100%);
+    --gradient-dark: linear-gradient(135deg, var(--primary-darker) 0%, var(--primary-dark) 100%);
+
+    /* الظلال */
+    --shadow-sm: 0 2px 8px rgba(0, 69, 109, 0.08);
+    --shadow-md: 0 6px 20px rgba(0, 60, 109, 0.12);
+    --shadow-lg: 0 12px 40px rgba(0, 65, 109, 0.15);
+    --shadow-xl: 0 25px 65px rgba(0, 74, 109, 0.18);
+
+    /* الخطوط */
+    --font-main: 'Neo Sans Arabic', sans-serif;
+
+    /* المتغيرات التقنية */
+    --sidebar-width: 340px;
+    --header-height: 90px;
+    --border-radius-sm: 12px;
+    --border-radius-md: 20px;
+    --border-radius-lg: 28px;
+
+    /* الانتقالات */
+    --transition-fast: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-slow: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* Enhanced Header */
 .enhanced-header {
-    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     border-radius: var(--border-radius-lg);
     padding: 2rem;
     margin-bottom: 2rem;
@@ -300,16 +249,18 @@
 }
 
 .enhanced-header .page-title {
-    color: white;
+    color: var(--pure-white);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
     font-weight: 700;
+    font-family: var(--font-main);
 }
 
 .enhanced-header .page-subtitle {
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.1rem;
     line-height: 1.6;
+    font-family: var(--font-main);
 }
 
 .header-icon {
@@ -330,10 +281,12 @@
     gap: 0.5rem;
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
+    color: var(--pure-white);
     padding: 0.75rem 1.5rem;
     border-radius: var(--border-radius-md);
-    transition: all 0.3s ease;
+    transition: var(--transition-fast);
+    cursor: pointer;
+    font-family: var(--font-main);
 }
 
 .btn-with-icon:hover {
@@ -350,12 +303,12 @@
 }
 
 .enhanced-stat {
-    background: white;
+    background: var(--pure-white);
     border-radius: var(--border-radius-lg);
     padding: 1.5rem;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--grey-100);
-    transition: all 0.3s ease;
+    transition: var(--transition-fast);
     position: relative;
     overflow: hidden;
 }
@@ -365,10 +318,10 @@
     box-shadow: var(--shadow-lg);
 }
 
-.enhanced-stat.primary::before { background: linear-gradient(135deg, var(--primary-green), var(--primary-light)); }
-.enhanced-stat.warning::before { background: linear-gradient(135deg, var(--warning-orange), #ff8c42); }
-.enhanced-stat.success::before { background: linear-gradient(135deg, var(--success-green), #34ce57); }
-.enhanced-stat.info::before { background: linear-gradient(135deg, var(--info-blue), #20c997); }
+.enhanced-stat.primary::before { background: var(--gradient-primary); }
+.enhanced-stat.warning::before { background: linear-gradient(135deg, var(--warning-orange), #fbbf24); }
+.enhanced-stat.success::before { background: linear-gradient(135deg, var(--success-green), #34d399); }
+.enhanced-stat.info::before { background: linear-gradient(135deg, var(--info-blue), #60a5fa); }
 
 .enhanced-stat::before {
     content: '';
@@ -421,12 +374,14 @@
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--grey-800);
+    font-family: var(--font-main);
 }
 
 .stat-label {
-    color: var(--grey-600);
+    color: var(--grey-700);
     font-weight: 600;
     margin-bottom: 0.5rem;
+    font-family: var(--font-main);
 }
 
 .stat-change {
@@ -435,10 +390,267 @@
     gap: 0.25rem;
     font-size: 0.875rem;
     font-weight: 600;
+    font-family: var(--font-main);
 }
 
 .stat-change.positive { color: var(--success-green); }
 .stat-change.neutral { color: var(--warning-orange); }
+
+/* Data Table Styles */
+.data-table {
+    background: var(--pure-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.table-header {
+    background: var(--gradient-light);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-300);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--pure-white);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    font-family: var(--font-main);
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.table-content {
+    overflow-x: auto;
+}
+
+.main-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.main-table thead th {
+    background: var(--primary-lighter);
+    color: var(--grey-800);
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    text-align: right;
+    border-bottom: 2px solid var(--primary-light);
+    font-size: 0.875rem;
+    white-space: nowrap;
+    font-family: var(--font-main);
+}
+
+.main-table tbody td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--grey-100);
+    vertical-align: middle;
+    font-size: 0.875rem;
+    font-family: var(--font-main);
+}
+
+.main-table tbody tr:hover {
+    background: var(--primary-lightest);
+    transition: var(--transition-fast);
+}
+
+/* Table Cell Styles */
+.applicant-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.applicant-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: var(--pure-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: bold;
+    flex-shrink: 0;
+    font-family: var(--font-main);
+}
+
+.font-semibold {
+    font-weight: 600;
+    color: var(--grey-800);
+    font-family: var(--font-main);
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    color: var(--grey-700);
+    font-family: var(--font-main);
+}
+
+.text-muted {
+    color: var(--grey-500);
+    font-style: italic;
+    font-family: var(--font-main);
+}
+
+.text-blue-600 {
+    color: var(--info-blue);
+}
+
+.text-blue-600:hover {
+    color: var(--primary-light);
+}
+
+/* Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: 0.5rem;
+    font-family: var(--font-main);
+}
+
+.btn-primary {
+    background: var(--primary-green);
+    color: var(--pure-white);
+    border: 1px solid var(--primary-green);
+}
+
+.btn-primary:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--grey-700);
+    color: var(--pure-white);
+    border: 1px solid var(--grey-700);
+}
+
+.btn-secondary:hover {
+    background: var(--grey-800);
+    border-color: var(--grey-800);
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--grey-700);
+    border: 1px solid var(--grey-300);
+}
+
+.btn-outline:hover {
+    background: var(--grey-100);
+    border-color: var(--primary-light);
+    color: var(--primary-green);
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    font-family: var(--font-main);
+}
+
+.status-badge.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-green);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-orange);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-badge.review {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info-blue);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.status-badge.inactive {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error-red);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Flex Utilities */
+.flex {
+    display: flex;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .table-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .main-table {
+        font-size: 0.75rem;
+    }
+    
+    .main-table thead th,
+    .main-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .applicant-info {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .flex.gap-1 {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+    }
+}
 
 /* Enhanced Section */
 .enhanced-section {
@@ -1027,167 +1239,211 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab functionality
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const applicationsGrid = document.getElementById('applications-view');
-    const applicationCards = document.querySelectorAll('.application-card');
+    const table = document.querySelector('.main-table');
+    const tableBody = table.querySelector('tbody');
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
     
-    // View toggle functionality
-    const toggleBtns = document.querySelectorAll('.toggle-btn');
-    
-    toggleBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            toggleBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            const view = this.dataset.view;
-            if (view === 'list') {
-                applicationsGrid.classList.add('list-view');
-            } else {
-                applicationsGrid.classList.remove('list-view');
+    // Custom functions
+    window.refreshTable = function() {
+        // Reload the page to refresh data
+        window.location.reload();
+    };
+
+    window.exportTable = function() {
+        // Export functionality
+        const headers = [];
+        const headerCells = table.querySelectorAll('thead th');
+        
+        // Get headers from table
+        headerCells.forEach(cell => {
+            if (cell.textContent.trim() !== '') {
+                headers.push(cell.textContent.trim());
             }
         });
-    });
-    
-    // Tab switching functionality
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove active class from all tabs
-            tabBtns.forEach(tab => tab.classList.remove('active'));
-            // Add active class to clicked tab
-            this.classList.add('active');
-            
-            const status = this.dataset.status;
-            
-            // Add loading state
-            applicationsGrid.classList.add('loading');
-            
-            setTimeout(() => {
-                // Filter cards based on status
-                applicationCards.forEach(card => {
-                    if (status === 'all' || card.dataset.status === status) {
-                        card.style.display = 'block';
-                        card.classList.add('fade-in');
-                    } else {
-                        card.style.display = 'none';
-                        card.classList.remove('fade-in');
-                    }
-                });
-                
-                // Remove loading state
-                applicationsGrid.classList.remove('loading');
-                
-                // Update empty state visibility
-                const visibleCards = Array.from(applicationCards).filter(card => card.style.display !== 'none');
-                const emptyState = document.querySelector('.enhanced-empty');
-                
-                if (visibleCards.length === 0 && emptyState) {
-                    emptyState.style.display = 'block';
-                } else if (emptyState) {
-                    emptyState.style.display = 'none';
+        
+        // Prepare data for export
+        const exportData = [headers];
+        rows.forEach(row => {
+            const rowData = [];
+            const cells = row.querySelectorAll('td');
+            cells.forEach((cell, index) => {
+                // Skip action column (last column)
+                if (index !== cells.length - 1) {
+                    const cellText = cell.textContent.trim();
+                    rowData.push(cellText);
                 }
-            }, 300);
-        });
-    });
-    
-    // Enhanced card hover effects
-    applicationCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-            this.style.boxShadow = 'var(--shadow-lg)';
+            });
+            exportData.push(rowData);
         });
         
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-            this.style.boxShadow = 'var(--shadow-sm)';
-        });
-    });
-    
-    // Smooth scrolling for pagination
-    const paginationLinks = document.querySelectorAll('.pagination a');
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const href = this.getAttribute('href');
-            
-            // Add loading state
-            applicationsGrid.classList.add('loading');
-            
-            // Simulate loading delay (replace with actual AJAX call)
-            setTimeout(() => {
-                window.location.href = href;
-            }, 500);
-        });
-    });
-    
-    // Search functionality (if search input exists)
-    const searchInput = document.querySelector('#applications-search');
-    if (searchInput) {
-        let searchTimeout;
+        // Convert to CSV
+        const csvContent = exportData.map(row => 
+            row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
         
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const searchTerm = this.value.toLowerCase().trim();
-            
-            searchTimeout = setTimeout(() => {
-                applicationCards.forEach(card => {
-                    const title = card.querySelector('.application-title').textContent.toLowerCase();
-                    const company = card.querySelector('.meta-text').textContent.toLowerCase();
-                    const applicantName = card.querySelector('.applicant-name')?.textContent.toLowerCase() || '';
-                    
-                    if (title.includes(searchTerm) || company.includes(searchTerm) || applicantName.includes(searchTerm)) {
-                        card.style.display = 'block';
-                        card.classList.add('fade-in');
-                    } else {
-                        card.style.display = 'none';
-                        card.classList.remove('fade-in');
-                    }
-                });
-            }, 300);
+        // Add BOM for proper Arabic text encoding
+        const BOM = '\uFEFF';
+        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'applications_' + new Date().toISOString().split('T')[0] + '.csv');
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('تم تصدير البيانات بنجاح', 'success');
+    };
+
+    // Enhanced row hover effects
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'var(--primary-lightest)';
+            this.style.transform = 'scale(1.01)';
+            this.style.transition = 'all 0.2s ease';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.transform = '';
+        });
+    });
+    
+    // Status badge click to filter
+    const statusBadges = document.querySelectorAll('.status-badge');
+    statusBadges.forEach(badge => {
+        badge.addEventListener('click', function() {
+            const statusText = this.textContent.trim();
+            filterTableByStatus(statusText);
+            showNotification('تم تصفية البيانات حسب الحالة: ' + statusText, 'info');
+        });
+    });
+
+    // Applicant name click to filter (for companies)
+    @if(auth()->user()->role === 'company')
+    const applicantNames = document.querySelectorAll('.applicant-info span');
+    applicantNames.forEach(name => {
+        name.addEventListener('click', function() {
+            const applicantName = this.textContent.trim();
+            filterTableByApplicant(applicantName);
+            showNotification('تم تصفية البيانات حسب المتقدم: ' + applicantName, 'info');
+        });
+    });
+    @endif
+
+    // Job title click to filter
+    const jobTitles = document.querySelectorAll('td.font-semibold');
+    jobTitles.forEach(title => {
+        title.addEventListener('click', function() {
+            const jobTitle = this.textContent.trim();
+            filterTableByJob(jobTitle);
+            showNotification('تم تصفية البيانات حسب الوظيفة: ' + jobTitle, 'info');
+        });
+    });
+    
+    // Filter functions
+    function filterTableByStatus(status) {
+        rows.forEach(row => {
+            const statusCell = row.querySelector('.status-badge');
+            if (statusCell && statusCell.textContent.trim() === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
         });
     }
-    
-    // Auto-refresh functionality (optional)
-    const autoRefresh = () => {
-        const tabCounts = document.querySelectorAll('.tab-count');
-        
-        // Simulate count updates (replace with actual AJAX call)
-        tabCounts.forEach(count => {
-            const currentCount = parseInt(count.textContent);
-            // Update logic here
-        });
-    };
-    
-    // Refresh every 30 seconds (optional)
-    // setInterval(autoRefresh, 30000);
-    
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-        if (e.altKey) {
-            const activeTabIndex = Array.from(tabBtns).findIndex(tab => tab.classList.contains('active'));
-            
-            switch(e.key) {
-                case 'ArrowLeft':
-                case 'ArrowRight':
-                    e.preventDefault();
-                    const direction = e.key === 'ArrowLeft' ? -1 : 1;
-                    const nextIndex = (activeTabIndex + direction + tabBtns.length) % tabBtns.length;
-                    tabBtns[nextIndex].click();
-                    tabBtns[nextIndex].focus();
-                    break;
+
+    function filterTableByApplicant(applicantName) {
+        rows.forEach(row => {
+            const applicantCell = row.querySelector('.applicant-info span');
+            if (applicantCell && applicantCell.textContent.trim() === applicantName) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
             }
+        });
+    }
+
+    function filterTableByJob(jobTitle) {
+        rows.forEach(row => {
+            const jobCell = row.querySelector('td.font-semibold');
+            if (jobCell && jobCell.textContent.trim() === jobTitle) {
+                row.style.display = '';
+                    } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function clearAllFilters() {
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+        showNotification('تم مسح جميع المرشحات', 'info');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + R to refresh
+        if (e.ctrlKey && e.keyCode === 82) {
+                    e.preventDefault();
+            refreshTable();
+        }
+        
+        // Escape to clear all filters
+        if (e.keyCode === 27) {
+            clearAllFilters();
         }
     });
-    
-    // Initialize tooltips (if using a tooltip library)
-    const initTooltips = () => {
+
+    // Auto-refresh every 5 minutes (optional)
+    // setInterval(refreshTable, 300000);
+
+    // Initialize tooltips
         const tooltipElements = document.querySelectorAll('[title]');
         tooltipElements.forEach(element => {
-            // Initialize tooltip library here if needed
+        element.addEventListener('mouseenter', function() {
+            // Simple tooltip implementation
+            const tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            tooltip.textContent = this.getAttribute('title');
+            tooltip.style.cssText = `
+                position: absolute;
+                background: var(--grey-800);
+                color: var(--pure-white);
+                padding: 0.5rem;
+                border-radius: var(--border-radius-sm);
+                font-size: 0.75rem;
+                z-index: 1000;
+                pointer-events: none;
+                opacity: 0;
+                transition: var(--transition-fast);
+                font-family: var(--font-main);
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = this.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
+            
+            setTimeout(() => {
+                tooltip.style.opacity = '1';
+            }, 10);
+            
+            this.addEventListener('mouseleave', function() {
+                tooltip.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(tooltip)) {
+                        document.body.removeChild(tooltip);
+                    }
+                }, 200);
+            }, { once: true });
         });
-    };
-    
-    initTooltips();
+    });
 });
 
 // Utility functions
@@ -1200,36 +1456,46 @@ const utils = {
         };
     },
     
-    animateCount: (element, target, duration = 1000) => {
-        const start = parseInt(element.textContent) || 0;
-        const increment = (target - start) / (duration / 16);
-        let current = start;
-        
-        const timer = setInterval(() => {
-            current += increment;
-            if ((increment > 0 && current >= target) || (increment < 0 && current <= target)) {
-                current = target;
-                clearInterval(timer);
-            }
-            element.textContent = Math.floor(current);
-        }, 16);
-    },
-    
     showNotification: (message, type = 'info') => {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
-        notification.textContent = message;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        // Add notification styles
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? 'var(--success-green)' : type === 'error' ? 'var(--error-red)' : 'var(--info-blue)'};
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateX(100%);
+            transition: var(--transition-fast);
+            font-family: var(--font-main);
+            font-weight: 500;
+        `;
         
         document.body.appendChild(notification);
         
         setTimeout(() => {
-            notification.classList.add('show');
+            notification.style.transform = 'translateX(0)';
         }, 100);
         
         setTimeout(() => {
-            notification.classList.remove('show');
+            notification.style.transform = 'translateX(100%)';
             setTimeout(() => {
+                if (document.body.contains(notification)) {
                 document.body.removeChild(notification);
+                }
             }, 300);
         }, 3000);
     }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('experience_level'); // entry, mid, senior, executive
             $table->decimal('salary_min', 10, 2)->nullable();
             $table->decimal('salary_max', 10, 2)->nullable();
-            $table->string('salary_currency', 3)->default('USD');
+            $table->string('salary_currency', 3)->default('SAR');
             $table->json('skills')->nullable();
             $table->json('benefits')->nullable();
             $table->enum('status', ['active', 'paused', 'closed'])->default('active');

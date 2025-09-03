@@ -39,16 +39,6 @@
         
         <div class="stat-card animate-slide-in">
             <div class="stat-header">
-                <div class="stat-icon"><i class="fas fa-star"></i></div>
-                <div class="stat-trend"><i class="fas fa-arrow-up"></i><span>+{{ $applications->where('status', 'shortlisted')->count() }}</span></div>
-            </div>
-            <div class="stat-value">{{ $applications->where('status', 'shortlisted')->count() }}</div>
-            <div class="stat-label">قائمة مختصرة</div>
-            <div class="stat-description">مرشحين مختارين للمقابلة</div>
-        </div>
-        
-        <div class="stat-card animate-slide-in">
-            <div class="stat-header">
                 <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                 <div class="stat-trend"><i class="fas fa-arrow-up"></i><span>+{{ $applications->where('status', 'accepted')->count() }}</span></div>
             </div>
@@ -70,11 +60,7 @@
             في الانتظار
             <span class="tab-count">{{ $applications->where('status', 'pending')->count() }}</span>
         </button>
-        <button class="filter-tab" data-status="shortlisted">
-            <i class="fas fa-star"></i>
-            قائمة مختصرة
-            <span class="tab-count">{{ $applications->where('status', 'shortlisted')->count() }}</span>
-        </button>
+
         <button class="filter-tab" data-status="accepted">
             <i class="fas fa-check-circle"></i>
             مقبولين
@@ -93,7 +79,6 @@
                 <option value="">جميع الحالات</option>
                 <option value="pending">في الانتظار</option>
                 <option value="reviewed">تمت المراجعة</option>
-                <option value="shortlisted">قائمة مختصرة</option>
                 <option value="interviewed">تمت المقابلة</option>
                 <option value="accepted">مقبول</option>
                 <option value="rejected">مرفوض</option>
@@ -157,9 +142,6 @@
                                     @case('reviewed')
                                         تمت المراجعة
                                         @break
-                                    @case('shortlisted')
-                                        قائمة مختصرة
-                                        @break
                                     @case('interviewed')
                                         تمت المقابلة
                                         @break
@@ -181,31 +163,45 @@
                                 عرض التفاصيل
                             </button>
                             
+                            <a href="{{ route('chat.start', ['applicant_id' => $application->applicant->id, 'application_id' => $application->id]) }}" class="btn btn-chat btn-sm">
+                                <i class="fas fa-comments"></i>
+                                دردشة
+                            </a>
+                            
                             <div class="status-actions">
-                                @if($application->status === 'pending')
-                                    <button class="btn btn-success btn-sm" onclick="updateStatus('{{ $application->id }}', 'shortlisted')">
-                                        <i class="fas fa-star"></i>
-                                        مختصر
+                                <div class="status-dropdown">
+                                    <button class="status-dropdown-btn" onclick="toggleStatusDropdown('{{ $application->id }}')">
+                                        <i class="fas fa-edit"></i>
+                                        تغيير الحالة
+                                        <i class="fas fa-chevron-down"></i>
                                     </button>
-                                    <button class="btn btn-danger btn-sm" onclick="updateStatus('{{ $application->id }}', 'rejected')">
-                                        <i class="fas fa-times"></i>
-                                        رفض
+                                    <div class="status-dropdown-menu" id="dropdown-{{ $application->id }}" style="display: none;">
+                                        @if($application->status !== 'pending')
+                                            <button class="dropdown-item" onclick="updateStatus('{{ $application->id }}', 'pending')">
+                                                <i class="fas fa-clock"></i>
+                                                في الانتظار
                                     </button>
-                                @elseif($application->status === 'shortlisted')
-                                    <button class="btn btn-info btn-sm" onclick="updateStatus('{{ $application->id }}', 'interviewed')">
+                                        @endif
+                                        @if($application->status !== 'interviewed')
+                                            <button class="dropdown-item" onclick="updateStatus('{{ $application->id }}', 'interviewed')">
                                         <i class="fas fa-handshake"></i>
                                         مقابلة
                                     </button>
-                                @elseif($application->status === 'interviewed')
-                                    <button class="btn btn-success btn-sm" onclick="updateStatus('{{ $application->id }}', 'accepted')">
+                                        @endif
+                                        @if($application->status !== 'accepted')
+                                            <button class="dropdown-item" onclick="updateStatus('{{ $application->id }}', 'accepted')">
                                         <i class="fas fa-check"></i>
                                         قبول
                                     </button>
-                                    <button class="btn btn-danger btn-sm" onclick="updateStatus('{{ $application->id }}', 'rejected')">
+                                        @endif
+                                        @if($application->status !== 'rejected')
+                                            <button class="dropdown-item" onclick="updateStatus('{{ $application->id }}', 'rejected')">
                                         <i class="fas fa-times"></i>
                                         رفض
                                     </button>
                                 @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -350,22 +346,6 @@
     @endif
 
 
-    <!-- Confirmation Modal -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>تأكيد الإجراء</h3>
-                <span class="close" onclick="closeModal('confirmModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p id="confirmMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('confirmModal')">إلغاء</button>
-                <button id="confirmButton" class="btn btn-primary">تأكيد</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Status Update Modal -->
     <div id="statusModal" class="modal">
@@ -382,7 +362,6 @@
                         <label for="newStatus">الحالة الجديدة:</label>
                         <select id="newStatus" name="status" class="form-select" required>
                             <option value="pending">في الانتظار</option>
-                            <option value="shortlisted">قائمة مختصرة</option>
                             <option value="interviewed">تمت المقابلة</option>
                             <option value="accepted">مقبول</option>
                             <option value="rejected">مرفوض</option>
@@ -400,6 +379,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 
 <style>
@@ -512,73 +493,6 @@
     font-size: 0.9rem;
     color: #757575;
     line-height: 1.5;
-}
-
-/* Quick Opportunities */
-.quick-opportunities {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.opportunity-card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f1f5f9;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.opportunity-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.opportunity-card.primary {
-    border-left: 4px solid #3b82f6;
-}
-
-.opportunity-card.secondary {
-    border-left: 4px solid #8b5cf6;
-}
-
-.opportunity-card.tertiary {
-    border-left: 4px solid #10b981;
-}
-
-.opportunity-card.quaternary {
-    border-left: 4px solid #f59e0b;
-}
-
-.opportunity-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.opportunity-content h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-}
-
-.opportunity-content p {
-    color: #64748b;
-    line-height: 1.5;
-    margin: 0;
 }
 
 /* Filter Tabs */
@@ -725,6 +639,21 @@
     font-size: 0.9rem;
 }
 
+.btn-chat {
+    background: #10b981;
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-chat:hover {
+    background: #059669;
+    color: white;
+    text-decoration: none;
+}
+
 /* Data Table */
 .data-table {
     background: white;
@@ -869,7 +798,6 @@
 
 .status-pending { background: #fef3c7; color: #92400e; }
 .status-reviewed { background: #e0e7ff; color: #3730a3; }
-.status-shortlisted { background: #dbeafe; color: #1e40af; }
 .status-interviewed { background: #d1fae5; color: #065f46; }
 .status-accepted { background: #d1fae5; color: #065f46; }
 .status-rejected { background: #fee2e2; color: #991b1b; }
@@ -877,6 +805,139 @@
 .status-actions {
     display: flex;
     gap: 0.5rem;
+}
+
+/* Status Dropdown Styles */
+.status-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.status-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #003c6d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+    justify-content: space-between;
+}
+
+.status-dropdown-btn:hover {
+    background: #005085;
+    transform: translateY(-1px);
+}
+
+.status-dropdown-btn i:last-child {
+    transition: transform 0.3s ease;
+}
+
+.status-dropdown-btn.active i:last-child {
+    transform: rotate(180deg);
+}
+
+.status-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+    margin-top: 0.25rem;
+    animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: none;
+    color: #424242;
+    font-size: 0.9rem;
+    text-align: right;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    color: #003c6d;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.dropdown-item[onclick*="pending"] i {
+    color: #f59e0b;
+}
+
+.dropdown-item[onclick*="interviewed"] i {
+    color: #3b82f6;
+}
+
+.dropdown-item[onclick*="accepted"] i {
+    color: #10b981;
+}
+
+.dropdown-item[onclick*="rejected"] i {
+    color: #ef4444;
+}
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    color: #6c757d;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 140px;
+    border: 1px solid #e9ecef;
+}
+
+.loading-state i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Enhanced Row Details */
@@ -1054,7 +1115,7 @@
     margin-top: 3rem;
 }
 
-/* Modal */
+/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -1064,6 +1125,12 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 9999;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal-content {
@@ -1076,6 +1143,19 @@
     padding: 2rem;
     min-width: 400px;
     max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
 }
 
 .modal-header {
@@ -1083,14 +1163,18 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e8eff5;
 }
 
 .modal-header h3 {
     margin: 0;
     color: #1a1a1a;
+    font-size: 1.3rem;
+    font-weight: 600;
 }
 
-.modal-close {
+.close {
     background: none;
     border: none;
     font-size: 1.5rem;
@@ -1099,9 +1183,10 @@
     padding: 0.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
+    line-height: 1;
 }
 
-.modal-close:hover {
+.close:hover {
     background: #f5f5f5;
     color: #424242;
 }
@@ -1111,15 +1196,109 @@
 }
 
 .modal-body p {
-    color: #757575;
+    color: #424242;
     line-height: 1.6;
     margin: 0;
+    font-size: 1.1rem;
 }
 
 .modal-footer {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid #e8eff5;
+}
+
+.modal-footer .btn {
+    min-width: 100px;
+}
+
+
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 300px;
+    max-width: 500px;
+    animation: slideInRight 0.3s ease-out;
+    border-left: 4px solid #10b981;
+}
+
+.notification-error {
+    border-left-color: #ef4444;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.notification-content i {
+    font-size: 1.2rem;
+}
+
+.notification-success .notification-content i {
+    color: #10b981;
+}
+
+.notification-error .notification-content i {
+    color: #ef4444;
+}
+
+.notification-content span {
+    color: #1a1a1a;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: #757575;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+    background: #f5f5f5;
+    color: #424242;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
 }
 
 /* Animations */
@@ -1203,6 +1382,27 @@
     
     .cv-actions {
         flex-direction: column;
+    }
+    
+    .status-dropdown {
+        width: 100%;
+    }
+    
+    .status-dropdown-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .status-dropdown-menu {
+        left: 0;
+        right: 0;
+    }
+    
+    .modal-content {
+        min-width: 90%;
+        max-width: 90%;
+        margin: 1rem;
+        padding: 1.5rem;
     }
 }
 </style>
@@ -1290,28 +1490,24 @@ function toggleApplicationDetails(applicationId) {
 }
 
 function updateStatus(applicationId, status) {
-    const message = `هل أنت متأكد من تغيير حالة التقديم إلى "${getStatusText(status)}"؟`;
-    showConfirmModal(message, () => {
+    // Close the dropdown first
+    closeStatusDropdown(applicationId);
+    
+    // Update status directly without confirmation
         updateApplicationStatus(applicationId, status);
-    });
 }
 
-function getStatusText(status) {
-    const statusTexts = {
-        'pending': 'في الانتظار',
-        'shortlisted': 'قائمة مختصرة',
-        'interviewed': 'تمت المقابلة',
-        'accepted': 'مقبول',
-        'rejected': 'مرفوض'
-    };
-    return statusTexts[status] || status;
-}
+
 
 function updateApplicationStatus(applicationId, status) {
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...';
-    button.disabled = true;
+    // Show loading state
+    const applicationCard = document.querySelector(`[data-application-id="${applicationId}"]`);
+    if (applicationCard) {
+        const statusActions = applicationCard.querySelector('.status-actions');
+        if (statusActions) {
+            statusActions.innerHTML = '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> جاري التحديث...</div>';
+        }
+    }
 
     fetch(`/applications/${applicationId}/status`, {
         method: 'PATCH',
@@ -1324,23 +1520,35 @@ function updateApplicationStatus(applicationId, status) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Update the application card data attribute
+            const applicationCard = document.querySelector(`[data-application-id="${applicationId}"]`);
+            if (applicationCard) {
+                applicationCard.setAttribute('data-status', data.new_status);
+            }
+            
+            // Update status badge
             updateStatusBadge(applicationId, data.new_status, data.status_text);
+            
+            // Update status actions with new dropdown
             updateStatusActions(applicationId, data.new_status);
-            showSuccessMessage(data.message);
-            // Update the counts in the filter tabs
+            
+            // Update filter counts
             updateFilterCounts();
-            // Don't reload the page, just update the UI
+            
+            // Show success message
+            showSuccessMessage(data.message);
+            
         } else {
             showErrorMessage(data.message || 'حدث خطأ أثناء تحديث الحالة');
+            // Restore original dropdown on error
+            updateStatusActions(applicationId, status);
         }
     })
     .catch(error => {
         console.error('Error:', error);
         showErrorMessage('حدث خطأ أثناء تحديث الحالة');
-    })
-    .finally(() => {
-        button.innerHTML = originalText;
-        button.disabled = false;
+        // Restore original dropdown on error
+        updateStatusActions(applicationId, status);
     });
 }
 
@@ -1350,7 +1558,6 @@ function updateFilterCounts() {
     const counts = {
         all: rows.length,
         pending: 0,
-        shortlisted: 0,
         interviewed: 0,
         accepted: 0,
         rejected: 0
@@ -1371,25 +1578,20 @@ function updateFilterCounts() {
         }
     });
     
-    // Update stats grid
-    const totalApplications = document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-value');
-    if (totalApplications) {
-        totalApplications.textContent = counts.all;
-    }
-    
-    const pendingApplications = document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value');
-    if (pendingApplications) {
-        pendingApplications.textContent = counts.pending;
-    }
-    
-    const shortlistedApplications = document.querySelector('.stats-grid .stat-card:nth-child(3) .stat-value');
-    if (shortlistedApplications) {
-        shortlistedApplications.textContent = counts.shortlisted;
-    }
-    
-    const acceptedApplications = document.querySelector('.stats-grid .stat-card:nth-child(4) .stat-value');
-    if (acceptedApplications) {
-        acceptedApplications.textContent = counts.accepted;
+    // Update stats grid - more reliable selectors
+    const statCards = document.querySelectorAll('.stats-grid .stat-card');
+    if (statCards.length >= 3) {
+        // Total applications
+        const totalValue = statCards[0].querySelector('.stat-value');
+        if (totalValue) totalValue.textContent = counts.all;
+        
+        // Pending applications
+        const pendingValue = statCards[1].querySelector('.stat-value');
+        if (pendingValue) pendingValue.textContent = counts.pending;
+        
+        // Accepted applications
+        const acceptedValue = statCards[2].querySelector('.stat-value');
+        if (acceptedValue) acceptedValue.textContent = counts.accepted;
     }
 }
 
@@ -1415,59 +1617,110 @@ function updateStatusActions(applicationId, newStatus) {
 }
 
 function generateStatusButtons(applicationId, status) {
-    let buttons = '';
+    let dropdownItems = '';
     
-    switch(status) {
-        case 'pending':
-            buttons = `
-                <button class="btn btn-success btn-sm" onclick="updateStatus('${applicationId}', 'shortlisted')">
-                    <i class="fas fa-star"></i>
-                    مختصر
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="updateStatus('${applicationId}', 'rejected')">
-                    <i class="fas fa-times"></i>
-                    رفض
+    if (status !== 'pending') {
+        dropdownItems += `
+            <button class="dropdown-item" onclick="updateStatus('${applicationId}', 'pending')">
+                <i class="fas fa-clock"></i>
+                في الانتظار
                 </button>
             `;
-            break;
-        case 'shortlisted':
-            buttons = `
-                <button class="btn btn-info btn-sm" onclick="updateStatus('${applicationId}', 'interviewed')">
+    }
+    
+    if (status !== 'interviewed') {
+        dropdownItems += `
+            <button class="dropdown-item" onclick="updateStatus('${applicationId}', 'interviewed')">
                     <i class="fas fa-handshake"></i>
                     مقابلة
                 </button>
             `;
-            break;
-        case 'interviewed':
-            buttons = `
-                <button class="btn btn-success btn-sm" onclick="updateStatus('${applicationId}', 'accepted')">
+    }
+    
+    if (status !== 'accepted') {
+        dropdownItems += `
+            <button class="dropdown-item" onclick="updateStatus('${applicationId}', 'accepted')">
                     <i class="fas fa-check"></i>
                     قبول
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="updateStatus('${applicationId}', 'rejected')">
+        `;
+    }
+    
+    if (status !== 'rejected') {
+        dropdownItems += `
+            <button class="dropdown-item" onclick="updateStatus('${applicationId}', 'rejected')">
                     <i class="fas fa-times"></i>
                     رفض
                 </button>
             `;
-            break;
     }
     
-    return buttons;
+    return `
+        <div class="status-dropdown">
+            <button class="status-dropdown-btn" onclick="toggleStatusDropdown('${applicationId}')">
+                <i class="fas fa-edit"></i>
+                تغيير الحالة
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="status-dropdown-menu" id="dropdown-${applicationId}" style="display: none;">
+                ${dropdownItems}
+            </div>
+        </div>
+    `;
 }
 
-function showConfirmModal(message, onConfirm) {
-    const modal = document.getElementById('confirmModal');
-    const confirmMessage = document.getElementById('confirmMessage');
-    const confirmButton = document.getElementById('confirmButton');
+// Toggle status dropdown
+function toggleStatusDropdown(applicationId) {
+    // Close all other dropdowns first
+    document.querySelectorAll('.status-dropdown-menu').forEach(menu => {
+        if (menu.id !== `dropdown-${applicationId}`) {
+            menu.style.display = 'none';
+            const btn = menu.previousElementSibling;
+            if (btn) btn.classList.remove('active');
+        }
+    });
     
-    confirmMessage.textContent = message;
-    confirmButton.onclick = onConfirm;
+    const dropdown = document.getElementById(`dropdown-${applicationId}`);
+    const button = dropdown.previousElementSibling;
     
-    modal.style.display = 'block';
+    if (dropdown.style.display === 'none') {
+        dropdown.style.display = 'block';
+        button.classList.add('active');
+    } else {
+        dropdown.style.display = 'none';
+        button.classList.remove('active');
+    }
 }
 
+// Close specific status dropdown
+function closeStatusDropdown(applicationId) {
+    const dropdown = document.getElementById(`dropdown-${applicationId}`);
+    if (dropdown) {
+        dropdown.style.display = 'none';
+        const button = dropdown.previousElementSibling;
+        if (button) button.classList.remove('active');
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.status-dropdown')) {
+        document.querySelectorAll('.status-dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+            const btn = menu.previousElementSibling;
+            if (btn) btn.classList.remove('active');
+        });
+    }
+});
+
+
+
+// Enhanced closeModal function
 function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 function showSuccessMessage(message) {
@@ -1478,7 +1731,13 @@ function showErrorMessage(message) {
     showNotification(message, 'error');
 }
 
+// Enhanced notification function
 function showNotification(message, type) {
+    // Remove any existing notifications first
+    document.querySelectorAll('.notification').forEach(notif => {
+        notif.remove();
+    });
+    
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -1493,9 +1752,15 @@ function showNotification(message, type) {
     
     document.body.appendChild(notification);
     
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.animation = 'slideOutRight 0.3s ease-in forwards';
     setTimeout(() => {
         if (notification.parentElement) {
             notification.remove();
+                }
+            }, 300);
         }
     }, 5000);
 }
@@ -1506,12 +1771,10 @@ function scrollToApplications() {
 }
 
 function exportApplications() {
-    // Implementation for exporting applications
     showSuccessMessage('سيتم تصدير التقدمات قريباً');
 }
 
 function showAnalytics() {
-    // Implementation for showing analytics
     showSuccessMessage('سيتم عرض التحليلات قريباً');
 }
 
@@ -1523,10 +1786,31 @@ function refreshTable() {
     location.reload();
 }
 
-// Close modal when clicking outside
+
+
+// Enhanced keyboard and click outside modal handlers
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        // Close all open modals
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (modal.style.display === 'block') {
+                closeModal(modal.id);
+            }
+        });
+        
+        // Close all dropdowns
+        document.querySelectorAll('.status-dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+            const btn = menu.previousElementSibling;
+            if (btn) btn.classList.remove('active');
+        });
+    }
+});
+
+// Enhanced click outside modal handler
 window.onclick = function(event) {
     if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
+        closeModal(event.target.id);
     }
 }
 </script>

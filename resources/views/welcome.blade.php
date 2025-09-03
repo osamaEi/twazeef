@@ -59,7 +59,19 @@
                 <a href="#golden-opportunities" class="nav-link">الفرص الوظيفية</a>
                 <a href="#success-stories" class="nav-link">النماذج الملهمة</a>
                 <a href="#dashboard" class="nav-link">المؤشرات</a>
-                <a style="color: #fff; background: #003858; padding: 0.7rem 0.6rem; border-radius: 10px" href="{{ route('register') }}" class="nav-link">الدخول للمنصة</a>
+                @auth
+                    @if(auth()->user()->isAdmin())
+                        <a style="color: #fff; background: #003858; padding: 0.7rem 0.6rem; border-radius: 10px" href="{{ route('admin.dashboard') }}" class="nav-link">لوحة الإدارة</a>
+                    @elseif(auth()->user()->isCompany())
+                        <a style="color: #fff; background: #003858; padding: 0.7rem 0.6rem; border-radius: 10px" href="{{ route('company.dashboard') }}" class="nav-link">لوحة الشركة</a>
+                    @elseif(auth()->user()->isEmployee())
+                        <a style="color: #fff; background: #003858; padding: 0.7rem 0.6rem; border-radius: 10px" href="{{ route('employee.dashboard') }}" class="nav-link">لوحة الموظف</a>
+                    @else
+                        <a style="color: #fff; background: #003858; padding: 0.7rem 0.6rem; border-radius: 10px" href="{{ route('dashboard') }}" class="nav-link">لوحة التحكم</a>
+                    @endif
+                @else
+                    <a style="color: #fff; background: #003858; padding: 0.7rem 0.6rem; border-radius: 10px" href="{{ route('register') }}" class="nav-link">الدخول للمنصة</a>
+                @endauth
             </nav>
 
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="القائمة">
@@ -198,7 +210,15 @@
                 }
             </style>
 <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-    <a href="auth" class="service-card" tabindex="0">
+    @auth
+        @if(auth()->user()->isEmployee())
+            <a href="{{ route('employee.dashboard') }}" class="service-card" tabindex="0">
+        @else
+            <a href="{{ route('register') }}" class="service-card" tabindex="0">
+        @endif
+    @else
+        <a href="{{ route('register') }}" class="service-card" tabindex="0">
+    @endauth
         <div class="service-icon">
             <i class="fas fa-building"></i>
         </div>
@@ -214,7 +234,15 @@
         </span>
     </a>
 
-    <a href="auth" class="service-card" tabindex="0">
+    @auth
+        @if(auth()->user()->isEmployee())
+            <a href="{{ route('employee.dashboard') }}" class="service-card" tabindex="0">
+        @else
+            <a href="{{ route('register') }}" class="service-card" tabindex="0">
+        @endif
+    @else
+        <a href="{{ route('register') }}" class="service-card" tabindex="0">
+    @endauth
         <div class="service-icon">
             <i class="fas fa-briefcase"></i>
         </div>
@@ -230,7 +258,19 @@
         </span>
     </a>
 
-    <a href="auth" class="service-card" tabindex="0">
+    @auth
+        @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="service-card" tabindex="0">
+        @elseif(auth()->user()->isCompany())
+            <a href="{{ route('company.dashboard') }}" class="service-card" tabindex="0">
+        @elseif(auth()->user()->isEmployee())
+            <a href="{{ route('employee.dashboard') }}" class="service-card" tabindex="0">
+        @else
+            <a href="{{ route('dashboard') }}" class="service-card" tabindex="0">
+        @endif
+    @else
+        <a href="{{ route('register') }}" class="service-card" tabindex="0">
+    @endauth
         <div class="service-icon">
             <i class="fas fa-building-circle-arrow-right"></i>
         </div>
@@ -246,7 +286,19 @@
         </span>
     </a>
 
-    <a href="auth" class="service-card" tabindex="0">
+    @auth
+        @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="service-card" tabindex="0">
+        @elseif(auth()->user()->isCompany())
+            <a href="{{ route('company.dashboard') }}" class="service-card" tabindex="0">
+        @elseif(auth()->user()->isEmployee())
+            <a href="{{ route('employee.dashboard') }}" class="service-card" tabindex="0">
+        @else
+            <a href="{{ route('dashboard') }}" class="service-card" tabindex="0">
+        @endif
+    @else
+        <a href="{{ route('register') }}" class="service-card" tabindex="0">
+    @endauth
         <div class="service-icon">
             <i class="fas fa-headset"></i>
         </div>
