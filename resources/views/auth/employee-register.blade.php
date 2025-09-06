@@ -2457,18 +2457,142 @@ document.addEventListener('DOMContentLoaded', function() {
     if (nextStep4Btn) {
         nextStep4Btn.addEventListener('click', () => {
             if (validateStep(4)) {
-                // عرض رقم الهاتف في خطوة التحقق
-                const phoneNumber = document.getElementById('phone');
-                const phoneDisplay = document.getElementById('phoneDisplay');
-                if (phoneNumber && phoneDisplay) {
-                    phoneDisplay.textContent = phoneNumber.value;
-                }
-                showStep(5);
-                setupPhoneVerification();
+                // إظهار حالة التحميل
+                nextStep4Btn.classList.add('loading');
+                nextStep4Btn.disabled = true;
+                
+                // إرسال النموذج أولاً لإنشاء الحساب
+                submitInitialForm();
             }
         });
     }
 
+    // دالة إزالة حالة التحميل من زر الخطوة 4
+    function removeStep4Loading() {
+        const nextStep4Btn = document.getElementById('nextStep4');
+        if (nextStep4Btn) {
+            nextStep4Btn.classList.remove('loading');
+            nextStep4Btn.disabled = false;
+        }
+    }
+    
+    // دالة إرسال النموذج الأولي (إنشاء الحساب)
+    function submitInitialForm() {
+        const form = document.getElementById('registerForm');
+        
+        if (!form) {
+            console.error('Form not found');
+            alert('خطأ في النظام: النموذج غير موجود');
+            removeStep4Loading();
+            return;
+        }
+
+        try {
+            // التحقق من وجود جميع البيانات المطلوبة
+            const requiredFields = ['first_name_ar', 'last_name_ar', 'first_name_en', 'last_name_en', 
+                                  'email', 'phone', 'password', 'password_confirmation', 
+                                  'national_id', 'birth_date', 'gender', 'marital_status', 
+                                  'education', 'specialization', 'address'];
+            
+            let missingFields = [];
+            requiredFields.forEach(fieldName => {
+                const field = form.querySelector(`[name="${fieldName}"]`);
+                if (!field || !field.value.trim()) {
+                    missingFields.push(fieldName);
+                }
+            });
+            
+            // التحقق من الملفات المطلوبة
+            const requiredFiles = ['national_id_image', 'certificate_image', 'experience_certificate'];
+            requiredFiles.forEach(fileName => {
+                const fileInput = form.querySelector(`[name="${fileName}"]`);
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    missingFields.push(fileName);
+                }
+            });
+            
+            if (missingFields.length > 0) {
+                console.error('Missing required fields:', missingFields);
+                alert('يرجى التأكد من ملء جميع البيانات المطلوبة ورفع جميع المستندات المطلوبة');
+                removeStep4Loading();
+                return;
+            }
+            
+            // إرسال النموذج للخادم
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    alert('يرجى التأكد من صحة البيانات المدخلة');
+                    removeStep4Loading();
+                    return;
+                }
+                
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        console.error('Server error response:', errorData);
+                        
+                        if (errorData.errors) {
+                            let errorMessage = 'يرجى تصحيح الأخطاء التالية:\n';
+                            for (const field in errorData.errors) {
+                                errorMessage += `• ${errorData.errors[field].join(', ')}\n`;
+                            }
+                            alert(errorMessage);
+                        } else {
+                            alert(errorData.message || 'حدث خطأ في التحقق من البيانات');
+                        }
+                        
+                        removeStep4Loading();
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    });
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.success) {
+                    console.log('Initial registration successful:', data);
+                    
+                    // عرض البريد الإلكتروني في خطوة التحقق
+                    const email = document.getElementById('email');
+                    const emailDisplay = document.getElementById('emailDisplay');
+                    if (email && emailDisplay) {
+                        emailDisplay.textContent = email.value;
+                    }
+                    
+                    // إرسال رمز التحقق للبريد الإلكتروني
+                    sendEmailOTP(email.value);
+                    
+                    // الانتقال إلى خطوة التحقق من البريد الإلكتروني
+                    showStep(5);
+                    setupEmailVerification();
+                } else {
+                    alert(data?.message || 'حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.');
+                    removeStep4Loading();
+                }
+            })
+            .catch(error => {
+                console.error('Error during initial submission:', error);
+                alert('حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.');
+                removeStep4Loading();
+            });
+            
+        } catch (error) {
+            console.error('Error during initial submission:', error);
+            alert('حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.');
+            removeStep4Loading();
+        }
+    }
+    
     // الخطوة 5 - التحقق من الهاتف
     const prevStep5Btn = document.getElementById('prevStep5');
     const verifyPhoneBtn = document.getElementById('verifyPhone');

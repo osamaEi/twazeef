@@ -3,12 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\CompanyInfoRequest;
+use App\Http\Requests\ManagerInfoRequest;
+use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\DocumentUploadRequest;
+use App\Http\Requests\EmployeePersonalInfoRequest;
+use App\Http\Requests\EmployeeProfessionalInfoRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use ZipArchive;
 
 class ProfileController extends Controller
 {
@@ -67,31 +77,66 @@ class ProfileController extends Controller
     /**
      * Upload company documents.
      */
-    public function uploadDocument(Request $request): RedirectResponse
+    public function uploadDocument(DocumentUploadRequest $request)
     {
-        $request->validate([
-            'document_file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
-            'document_type' => 'required|in:logo,license,certificate',
-        ]);
+        try {
+            $user = $request->user();
+            $file = $request->file('document_file');
+            $documentType = $request->input('document_type');
+            $documentName = $request->input('document_name', $file->getClientOriginalName());
 
-        $user = $request->user();
-        $file = $request->file('document_file');
-        $documentType = $request->input('document_type');
+            // Delete old file if exists
+            $oldField = $this->getDocumentField($documentType);
+            if ($user->$oldField) {
+                Storage::disk('public')->delete($user->$oldField);
+            }
 
-        // Delete old file if exists
-        $oldField = $this->getDocumentField($documentType);
-        if ($user->$oldField) {
-            Storage::disk('public')->delete($user->$oldField);
+            // Generate unique filename
+            $extension = $file->getClientOriginalExtension();
+            $filename = $documentType . '_' . $user->id . '_' . time() . '.' . $extension;
+
+            // Store new file
+            $path = $file->storeAs('company-documents', $filename, 'public');
+
+            // Update user record
+            $user->$oldField = $path;
+            $user->save();
+
+            // Log the upload
+            Log::info('Document uploaded', [
+                'user_id' => $user->id,
+                'document_type' => $documentType,
+                'file_path' => $path,
+                'file_size' => $file->getSize(),
+            ]);
+
+            // Check if this is an AJAX request
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'تم رفع المستند بنجاح',
+                    'file_path' => $path,
+                    'file_name' => $filename,
+                ]);
+            }
+
+            return Redirect::back()->with('success', 'تم رفع المستند بنجاح');
+        } catch (\Exception $e) {
+            Log::error('Document upload error', [
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'حدث خطأ أثناء رفع المستند: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return Redirect::back()->with('error', 'حدث خطأ أثناء رفع المستند');
         }
-
-        // Store new file
-        $path = $file->store('company-documents', 'public');
-
-        // Update user record
-        $user->$oldField = $path;
-        $user->save();
-
-        return Redirect::back()->with('status', 'document-uploaded');
     }
 
     /**
@@ -100,11 +145,179 @@ class ProfileController extends Controller
     private function getDocumentField(string $type): string
     {
         return match ($type) {
-            'logo' => 'logo',
-            'license' => 'license_image',
+            'commercial_license' => 'commercial_license',
+            'tax_certificate' => 'tax_certificate',
+            'national_id' => 'national_id_image',
             'certificate' => 'certificate_image',
-            default => 'logo',
+            'cv' => 'cv',
+            'additional_documents' => 'additional_documents',
+            default => 'commercial_license',
         };
+    }
+
+    /**
+     * Get company documents configuration.
+     */
+    public function getCompanyDocumentsConfig(): array
+    {
+        return [
+            'commercial_license' => [
+                'name' => 'السجل التجاري',
+                'field' => 'commercial_license',
+                'icon' => 'fas fa-file-pdf',
+                'description' => 'وثيقة السجل التجاري من وزارة التجارة',
+                'required' => true,
+                'accepted_types' => ['pdf', 'jpg', 'jpeg', 'png'],
+                'max_size' => 10240, // 10MB in KB
+            ],
+            'tax_certificate' => [
+                'name' => 'الشهادة الضريبية',
+                'field' => 'tax_certificate',
+                'icon' => 'fas fa-file-pdf',
+                'description' => 'الشهادة الضريبية من هيئة الزكاة والضريبة',
+                'required' => true,
+                'accepted_types' => ['pdf', 'jpg', 'jpeg', 'png'],
+                'max_size' => 10240,
+            ],
+            'national_id' => [
+                'name' => 'صورة الهوية',
+                'field' => 'national_id_image',
+                'icon' => 'fas fa-id-card',
+                'description' => 'صورة الهوية الوطنية للمسؤول',
+                'required' => true,
+                'accepted_types' => ['jpg', 'jpeg', 'png'],
+                'max_size' => 5120, // 5MB in KB
+            ],
+            'certificate' => [
+                'name' => 'الشهادات المهنية',
+                'field' => 'certificate_image',
+                'icon' => 'fas fa-certificate',
+                'description' => 'الشهادات المهنية والدورات التدريبية',
+                'required' => false,
+                'accepted_types' => ['pdf', 'jpg', 'jpeg', 'png'],
+                'max_size' => 10240,
+            ],
+            'cv' => [
+                'name' => 'السيرة الذاتية',
+                'field' => 'cv',
+                'icon' => 'fas fa-file-alt',
+                'description' => 'السيرة الذاتية للمسؤول',
+                'required' => false,
+                'accepted_types' => ['pdf', 'doc', 'docx'],
+                'max_size' => 10240,
+            ]
+        ];
+    }
+
+    /**
+     * Get user documents with status.
+     */
+    public function getUserDocuments(User $user): array
+    {
+        $config = $this->getCompanyDocumentsConfig();
+        $documents = [];
+
+        foreach ($config as $type => $docConfig) {
+            $field = $docConfig['field'];
+            $hasFile = !empty($user->$field);
+            
+            $documents[] = [
+                'type' => $type,
+                'name' => $docConfig['name'],
+                'field' => $field,
+                'icon' => $docConfig['icon'],
+                'description' => $docConfig['description'],
+                'required' => $docConfig['required'],
+                'accepted_types' => $docConfig['accepted_types'],
+                'max_size' => $docConfig['max_size'],
+                'has_file' => $hasFile,
+                'file_path' => $hasFile ? $user->$field : null,
+                'file_url' => $hasFile ? Storage::url($user->$field) : null,
+                'file_size' => $hasFile ? $this->getFileSize($user->$field) : null,
+                'upload_date' => $hasFile ? $user->updated_at->format('Y-m-d') : null,
+            ];
+        }
+
+        return $documents;
+    }
+
+    /**
+     * Get file size in human readable format.
+     */
+    private function getFileSize(string $filePath): string
+    {
+        $fullPath = storage_path('app/public/' . $filePath);
+        if (!file_exists($fullPath)) {
+            return 'غير محدد';
+        }
+
+        $bytes = filesize($fullPath);
+        $units = ['B', 'KB', 'MB', 'GB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    /**
+     * Delete a document.
+     */
+    public function deleteDocument(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $documentType = $request->input('document_type');
+            
+            // Get the field name for this document type
+            $field = $this->getDocumentField($documentType);
+            
+            // Check if the user has this document
+            if (!$user->$field) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المستند غير موجود',
+                ], 404);
+            }
+
+            // Delete the file from storage
+            $filePath = $user->$field;
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+
+            // Clear the field in database
+            $user->$field = null;
+            $user->save();
+
+            // Log the deletion
+            Log::info('Document deleted', [
+                'user_id' => $user->id,
+                'document_type' => $documentType,
+                'field' => $field,
+                'deleted_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم حذف المستند بنجاح',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Document deletion error', [
+                'user_id' => $request->user()->id,
+                'document_type' => $request->input('document_type'),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء حذف المستند',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
